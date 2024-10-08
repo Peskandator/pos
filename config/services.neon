@@ -1,0 +1,22 @@
+search:
+	-
+		in: %appDir%
+		classes:
+			- *Factory
+			- *Facade
+
+services:
+    templateDecorator: App\Template\TemplateDecorator(debugMode: %debugMode%)
+    - App\Router\RouterFactory::createRouter
+    - App\Utils\SrcDir(srcDir: '%srcDir%', publicDir: '%publicDir%')
+    - App\Utils\DateTimeFormatter
+    - App\Utils\PriceFilter
+    - App\Components\AdminMenu\AdminMenuFactoryInterface
+    - App\Components\Breadcrumb\BreadcrumbFactoryInterface
+
+
+
+    - App\Console\Command\SearchDocumentsCommand
+includes:
+    - services/user.neon
+

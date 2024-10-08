@@ -1,0 +1,221 @@
+html {
+    height: 100%;
+    min-height: 700px
+}
+
+body {
+    height: 100%;
+    min-height: 100% !important;
+}
+
+main {
+    background-color: #f1f4f6;
+    min-height: 100%;
+}
+
+.main-content {
+    padding: 40px;
+}
+
+main {
+    width: 100%;
+}
+
+.main-content {
+    overflow-x: auto;
+    max-width: 100%;
+    width: 100%;
+}
+
+.homepage-bg {
+    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background-size: cover;
+    min-height: 100%;
+}
+
+.form-box {
+    background-color: white;
+    border: 1px solid rgba(0,0,0,0.5);
+    border-radius: 10px;
+    box-shadow: 0 0.76875rem 2.4875rem rgba(52,58,64,0.3);
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+    margin-top: 0;
+}
+
+.form-box .form-control {
+    border-width: 2px;
+}
+
+.form-error {
+    color: red;
+}
+
+.custom-alert {
+    padding: 0.5rem 1rem;
+}
+
+.flash-message {
+    position: fixed;
+    width: 450px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    margin-left: auto;
+    margin-right: 40px;
+    left: 0;
+    right: 0;
+    padding: 0.3rem 1.5rem;
+    z-index: 10;
+    display: flex;
+}
+
+.flash-message .btn-close {
+    padding: 0.9rem 1rem;
+}
+
+.alert .close {
+    margin-left: auto;
+    font-size: 28px;
+}
+
+.flash-message-text {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.menu-signout a {
+    padding: .1875rem .5rem;
+    margin-left: 20px;
+    margin-top: 2px;
+}
+
+h1 {
+    margin-bottom: 30px;
+}
+
+.form-group label {
+    margin-bottom: 4px;
+    margin-top: 7px;
+    margin-left: 2px;
+}
+
+.card-active {
+    border: #28a745 2px solid;
+    min-height: 146px;
+}
+
+.entity-card {
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: white !important;
+}
+
+.card-header h5 {
+    margin-bottom: 7px;
+    margin-top: 7px;
+}
+
+.card {
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+}
+
+.icon {
+    font-size: 21px;
+    cursor: pointer;
+}
+
+.icon-left {
+    margin-left: 5px;
+}
+
+.icon-left.align-self-center {
+    margin-left: 10px;
+}
+
+h6 {
+    font-size: 18px !important;
+}
+
+.clickable-link {
+    text-decoration: none;
+}
+
+.clickable-link:hover {
+    text-decoration: underline;
+}
+
+.card-header-checkbox {
+    margin-left: auto;
+    font-size: 19px;
+    margin-right: 20px;
+}
+
+.scrollme {
+    overflow-x: auto;
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+.field-label {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #0d6efd;
+}
+
+.field-label-checklist {
+    font-size: 18px;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    color: #0d6efd;
+}
+
+.filter-row-first {
+    margin-left: 1rem;
+}
+
+.filter-row-mr {
+    margin-right: 1rem;
+}
+
+.custom-checkbox {
+    padding-left: 0;
+}
+
+label.custom-control-label {
+    padding-right: 0.5rem;
+}
+
+label.custom-control-label::before,
+label.custom-control-label::after {
+    right: 0;
+    left: auto;
+}
+
+.checkboxlist-row {
+    margin-top: 7px;
+}
+
+.card-header {
+    font-size: 20px;
+    background-color: #f7e5c6 !important;
+}
+
+.card-header-top {
+    border-top: 1px solid rgba(0, 0, 0, 0.175);
+}
+
+.dashboard-button {
+    display: block;
+    width: 100%;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}

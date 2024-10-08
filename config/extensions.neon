@@ -1,0 +1,54 @@
+#nette default extensions
+application:
+    errorPresenter: StaticPage:Error
+    mapping:
+        Admin: App\Presenters\Admin\*Presenter
+        *: App\*\Presenters\*Presenter
+
+
+
+# custom extensions
+
+extensions:
+    console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    doctrine.annotations: Nettrine\Annotations\DI\AnnotationsExtension
+    doctrine.dbal: Nettrine\DBAL\DI\DbalExtension
+    doctrine.dbal.console: Nettrine\DBAL\DI\DbalConsoleExtension
+    doctrine.orm: Nettrine\ORM\DI\OrmExtension
+    doctrine.orm.annotations: Nettrine\ORM\DI\OrmAnnotationsExtension
+    doctrine.orm.console: Nettrine\ORM\DI\OrmConsoleExtension
+    doctrine.cache: Nettrine\Cache\DI\CacheExtension
+    nettrine.migrations: Nettrine\Migrations\DI\MigrationsExtension
+
+    # Project
+    app: App\DI\AppExtension
+
+
+doctrine.orm.annotations:
+    mapping:
+        App\Entity: %srcDir%/Entity
+
+doctrine.dbal:
+    debug:
+        panel: %debugMode%
+    connection:
+        driver: pdo_mysql
+        host: %database.host%
+        user: %database.user%
+        password: %database.password%
+        dbname: %database.name%
+
+nettrine.migrations:
+    directory: %srcDir%/Migrations
+    namespace: App\Migrations
+
+
+
+
+
+
+
+
+
+
+

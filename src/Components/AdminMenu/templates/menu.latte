@@ -1,0 +1,21 @@
+
+<div class="flex-shrink-0 p-3 sidebar-mobile">
+    <button class="btn navbar-toggle hamburger-button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" role="button">
+        <i class="fa-solid fa-bars navbar-toggler fs-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"></i>
+    </button>
+</div>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas" data-bs-keyboard="false" data-bs-backdrop="false">
+    <div class="offcanvas-header mt-3">
+        <h6 class="offcanvas-title d-none d-sm-block" id="offcanvas">Menu</h6>
+        <button type="button" class="btn-close text-reset" style="margin-left: auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div style="padding-left: 1rem; padding-right: 1rem">
+        {include menuItems from 'menuItems.latte'}
+    </div>
+
+</div>
+
+
+<div class="flex-shrink-0 p-3 sidebar" style="width: 230px;">
+    {include menuItems from 'menuItems.latte'}
+</div>

@@ -1,0 +1,7 @@
+parameters:
+    debugMode: false
+    database:
+        host:
+        name:
+        user:
+        password:
