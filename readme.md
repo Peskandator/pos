@@ -13,11 +13,11 @@ Installation
 Make directories `temp/` and `log/` writable. (chmod 776)
 
 It is possible to run docker in .docker folder:
-    - run docker docker compose -p bp up -d --build --force-recreate)
+    - run docker docker compose -p pos up -d --build --force-recreate)
 
 
 ```bash
-$ mv etc/local.neon.dist etc/local.neon (copies)
+$ mv etc/local.neon.dist etc/local.neon (copy file and insert connection config to DB)
 $ composer install (inside docker= docker exec pos composer install)
 $ php bin/console doctrine:database:create # will take database name from config file (in docker is created)
 $ php bin/console migrations:migrate
