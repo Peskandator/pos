@@ -1,4 +1,7 @@
-docker compose -p bp up -d --build --force-recreate
+docker compose -p pos up -d --build --force-recreate
 docker compose down
 
 docker kill $(docker ps -q)
+
+docker image ls
+docker rmi imagename -f

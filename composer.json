@@ -26,19 +26,13 @@
 		"nettrine/annotations": "0.7.0",
 		"nettrine/cache": "0.3.0",
 		"nettrine/migrations": "0.8.0",
-		"sunra/php-simple-html-dom-parser": "1.5.2",
 		"symfony/css-selector": "6.0.19",
-		"kub-at/php-simple-html-dom-parser": "1.9.1",
-		"smalot/pdfparser": "2.11.0",
-		"thiagoalessio/tesseract_ocr": "2.13.0",
-		"spatie/pdf-to-image": "2.3.0",
 		"ext-dom": "*",
 		"ext-libxml": "*",
 		"ext-simplexml": "*",
 		"ext-iconv": "*",
 		"ext-zlib": "*",
-		"ext-mbstring": "*",
-		"ext-imagick": "*"
+		"ext-mbstring": "*"
     },
 	"require-dev": {
 

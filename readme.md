@@ -1,5 +1,5 @@
 
-Project for fixed asset accounting and depreciation for Czech accounting agencies/companies
+Project for subject IS project - Point of sale system
 =================
 
 Nette Web Project
@@ -10,16 +10,16 @@ Nette Web Project
 Installation
 ------------
 
-Make directories `temp/` and `log/` writable. (chmod 775)
+Make directories `temp/` and `log/` writable. (chmod 776)
 
 It is possible to run docker in .docker folder:
     - run docker docker compose -p bp up -d --build --force-recreate)
 
 
 ```bash
-$ mv etc/config.local.neon.dist etc/config.local.neon
-$ composer install
-$ php bin/console doctrine:database:create # will take database name from config file
+$ mv etc/local.neon.dist etc/local.neon (copies)
+$ composer install (inside docker= docker exec pos composer install)
+$ php bin/console doctrine:database:create # will take database name from config file (in docker is created)
 $ php bin/console migrations:migrate
 ```
 

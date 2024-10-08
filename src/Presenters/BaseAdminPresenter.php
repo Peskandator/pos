@@ -56,7 +56,6 @@ abstract class BaseAdminPresenter extends Presenter
     public function checkRequirements($element): void
     {
         parent::checkRequirements($element);
-        bdump($this->getUser()->isLoggedIn());
         if (!$this->getUser()->isLoggedIn()) {
             $this->redirect(':Home:default');
         }
