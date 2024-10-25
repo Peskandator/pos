@@ -17,12 +17,6 @@ final class DashboardPresenter extends BaseAdminPresenter
 
     public function actionDefault(): void
     {
-        $this->getComponent('breadcrumb')->addItem(
-            new BreadcrumbItem(
-                'Dashboard',
-                null)
-        );
-
         $user = $this->getCurrentUser();
 
         if (!isset($this->currentCompanyId)) {

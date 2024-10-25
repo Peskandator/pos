@@ -39,6 +39,12 @@ abstract class BaseAdminPresenter extends Presenter
 
     public function beforeRender()
     {
+        $currentCompany = null;
+
+        if (isset($this->currentCompanyId)) {
+            $currentCompany = $this->companyRepository->find($this->currentCompanyId);
+        }
+        $this->template->currentCompany = $currentCompany;
     }
 
     public function injectCurrentUser(

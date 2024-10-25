@@ -2,6 +2,7 @@
 
 namespace App\Components\AdminMenu;
 
+use App\Entity\Company;
 use App\User\Exception\NoSignedInUserException;
 use App\Utils\CurrentUser;
 use Nette\Application\UI\Control;
@@ -16,11 +17,10 @@ class AdminMenu extends Control
         $this->currentUserManager = $currentUser;
     }
 
-    public function render()
+    public function render(?Company $company)
     {
         $sections = $this->buildMenuItems();
-
-
+        $this->template->currentCompany = $company;
         $this->template->sections = $sections;
 
         $profileLink = $this->getPresenter()->lazyLink(':Admin:Profile:default');
