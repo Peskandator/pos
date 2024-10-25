@@ -1,0 +1,38 @@
+{layout $adminlayoutPath}
+
+{block content}
+
+    <h1>Firmy</h1>
+
+    <a class="btn btn-primary" n:href=":Admin:Companies:createNew">Nová firma</a>
+
+    <div class="row mt-4">
+        {foreach $companies as $company}
+            <div class="col-xs-12 col-sm-6">
+                <div class="card {if $company->getId() === $currentCompanyId}card-active{/if}" style="margin-bottom: 20px">
+                    <div class="card-body">
+                        <h4 class="card-title">{$company->getName()}</h4>
+                        <p class="card-text">{$company->getAddress()}</p>
+
+                        {if $company->getId() !== $currentCompanyId}
+                            <a n:href=":Admin:Companies:default, currentCompanyId: $company->getId()" class="btn btn-primary ml-2">Vstup</a>
+                        {/if}
+
+                        {if $company->getId() === $currentCompanyId}
+                            {if $signedUser->isCompanyAdmin($company)}
+                                <a n:href=":Admin:Companies:edit, companyId: $company->getId()" class="btn btn-info justify-content-center ml-2">Upravit</a>
+                            {/if}
+                            <a n:href=":Admin:Companies:manageUsers, companyId: $company->getId()" class="btn btn-secondary float-end mr-2">
+                                {if $signedUser->isCompanyAdmin($company)}
+                                    Správa uživatelů
+                                {else}
+                                    Uživatelé
+                                {/if}
+                            </a>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        {/foreach}
+    </div>
+{/block}

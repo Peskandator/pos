@@ -45,17 +45,17 @@ final class ProfilePresenter extends BaseAdminPresenter
         $form = new Form;
         $form
             ->addText('new_first_name', 'Jméno')
-            ->setRequired(true)
+            ->setRequired()
             ->setDefaultValue($editedUser->getFirstName())
         ;
         $form
             ->addText('new_last_name', 'Příjmení')
-            ->setRequired(true)
+            ->setRequired()
             ->setDefaultValue($editedUser->getLastName())
         ;
         $form
             ->addEmail('new_email', 'E-mailová adresa')
-            ->setRequired(true)
+            ->setRequired()
             ->setDefaultValue($editedUser->getEmail())
         ;
 

@@ -1,0 +1,8 @@
+services:
+    - App\Company\Action\CreateCompanyAction
+    - App\Company\Action\EditCompanyAction
+    - App\Company\Action\AddCompanyUserAction
+    - App\Company\Action\DeleteCompanyUserAction
+
+    - App\Company\ORM\CompanyRepository
+    - App\Company\ORM\CompanyUserRepository

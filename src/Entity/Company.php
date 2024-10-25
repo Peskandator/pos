@@ -1,0 +1,140 @@
+<?php
+
+namespace App\Entity;
+
+use App\Company\Requests\CreateCompanyRequest;
+use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="company")
+ */
+class Company
+{
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(name="id", type="integer")
+     */
+    private int $id;
+    /**
+     * @ORM\Column(name="name", type="string")
+     */
+    private string $name;
+    /**
+     * @ORM\Column(name="street", type="string", nullable=true)
+     */
+    private ?string $street;
+    /**
+     * @ORM\Column(name="city", type="string", nullable=true)
+     */
+    private ?string $city;
+    /**
+     * @ORM\Column(name="country", type="string", nullable=true)
+     */
+    private ?string $country;
+    /**
+     * @ORM\Column(name="zip_code", type="string", nullable=true)
+     */
+    private ?string $zipCode;
+    /**
+     * @ORM\Column(name="company_id", type="string", nullable=true)
+     */
+    private ?string $companyId;
+    /**
+     * @ORM\Column(name="creation_date", type="datetime", nullable=true)
+     */
+    private ?DateTimeInterface $creationDate;
+    /**
+     * @ORM\OneToMany(targetEntity="CompanyUser", mappedBy="company")
+     */
+    private Collection $companyUsers;
+
+
+    public function __construct(
+        CreateCompanyRequest $request,
+    )
+    {
+        $this->update($request);
+        $this->companyUsers = new ArrayCollection();
+        $this->creationDate = new \DateTimeImmutable();
+    }
+
+    public function update(CreateCompanyRequest $request)
+    {
+        $this->name = $request->name;
+        $this->companyId = $request->companyId;
+        $this->country = $request->country;
+        $this->city = $request->city;
+        $this->zipCode = $request->zipCode;
+        $this->street = $request->street;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function getCompanyUsers(): Collection
+    {
+        return $this->companyUsers;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function getCompanyId(): ?string
+    {
+        return $this->companyId;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function getZipCode(): ?string
+    {
+        return $this->zipCode;
+    }
+
+    public function getStreet(): ?string
+    {
+        return $this->street;
+    }
+
+    public function getAddress(): string
+    {
+        $country = $this->getCountry();
+        $city = $this->getCity();
+        $zipCode = $this->getZipCode();
+        $street = $this->getStreet();
+
+        return $street . ', ' . $zipCode . ' ' . $city . ', ' . $country;
+    }
+
+    public function getCreationDate(): ?DateTimeInterface
+    {
+        return $this->creationDate;
+    }
+
+    public function isCompanyUser(User $user): bool
+    {
+        $entityUser = $user->getCompanyUser($this);
+        if ($entityUser !== null) {
+            return true;
+        }
+
+        return false;
+    }
+}

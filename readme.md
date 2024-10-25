@@ -5,15 +5,15 @@ Project for subject IS project - Point of sale system
 Nette Web Project
 -------
 
-- Web Project for Nette 3.1 requires PHP 8.0 and- MySQL 8.*
+- Web Project for Nette 3.1 requires PHP 8.1 and- MySQL 8.*
 
 Installation
 ------------
 
-Make directories `temp/` and `log/` writable. (chmod 776)
+Make directories `var/temp/` and `var/log/` writable. (chmod 776)
 
 It is possible to run docker in .docker folder:
-    - run docker docker compose -p pos up -d --build --force-recreate)
+    - run:   docker compose -p pos up -d --build --force-recreate
 
 
 ```bash

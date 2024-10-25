@@ -26,8 +26,6 @@ final class HomePresenter extends BasePresenter
 
     public function actionDefault(): void
     {
-        bdump($this->getUser()->isLoggedIn());
-        bdump($this->getUser());
         if ($this->getUser()->isLoggedIn()) {
             $this->redirect(':Admin:Dashboard:default');
         }
@@ -49,11 +47,11 @@ final class HomePresenter extends BasePresenter
         $form = new Form;
         $form
             ->addEmail('email', 'E-mailová adresa')
-            ->setRequired(true)
+            ->setRequired()
         ;
         $form
             ->addPassword('password', 'Heslo')
-            ->setRequired(true)
+            ->setRequired()
         ;
         $form->addSubmit('send', 'Přihlásit');
 

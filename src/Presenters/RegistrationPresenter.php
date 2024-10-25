@@ -32,21 +32,21 @@ final class RegistrationPresenter extends BasePresenter
         $form = new Form;
         $form
             ->addText('name', 'Jméno')
-            ->setRequired(true)
+            ->setRequired()
         ;
         $form
             ->addText('surname', 'Příjmení')
-            ->setRequired(true)
+            ->setRequired()
         ;
         $form
             ->addEmail('email', 'E-mailová adresa')
-            ->setRequired(true)
+            ->setRequired()
         ;
 
         $form
             ->addPassword('password', 'Heslo')
             ->addRule($form::MIN_LENGTH, 'Heslo musí obsahovat minimálně 7 znaků.', 7)
-            ->setRequired(true)
+            ->setRequired()
         ;
 
         $form->addSubmit('send', 'Registrovat');

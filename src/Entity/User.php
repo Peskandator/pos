@@ -36,10 +36,6 @@ class User
      */
     private ?DateTimeInterface $lastLogonDate;
     /**
-     * @ORM\Column(name="roles", type="json")
-     */
-    private ?array $roles = [];
-    /**
      * @ORM\Column(name="first_name", type="string", nullable=true)
      */
     private ?string $firstName;
@@ -47,6 +43,11 @@ class User
      * @ORM\Column(name="last_name", type="string", nullable=true)
      */
     private ?string $lastName;
+    /**
+     * @ORM\OneToMany(targetEntity="CompanyUser", mappedBy="user")
+     */
+    private Collection $companyUsers;
+
 
     public function __construct(
         string $email,
@@ -55,7 +56,6 @@ class User
         string $lastName,
     )
     {
-
         $this->email = $email;
         $this->password = $password;
         $now = new \DateTimeImmutable();
@@ -63,6 +63,7 @@ class User
         $this->lastLogonDate = $now;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
+        $this->companyUsers = new ArrayCollection();
     }
 
     public function update(
@@ -134,22 +135,42 @@ class User
         $this->registrationDate = $registrationDate;
     }
 
-    public function getRoles(): array
+    public function getCompanyUsers(): Collection
     {
-        return $this->roles;
+        return $this->companyUsers;
     }
 
-    public function addRole(string $role): void
+    public function isCompanyAdmin(Company $company): bool
     {
-        if (!in_array($role, $this->roles)) {
-            $this->roles[] = $role;
+        if ($this->getCompanyUser($company)) {
+            return $this->getCompanyUser($company)->isAdmin();
         }
+
+        return false;
     }
 
-    public function addRoles(array $roles): void
+    public function getCompanyUser(Company $company): ?CompanyUser
     {
-        foreach ($roles as $role) {
-            $this->addRole($role);
+        $companyUsers = $this->getCompanyUsers();
+        /**
+         * @var CompanyUser $companyUser
+         */
+        foreach ($companyUsers as $companyUser) {
+            if ($companyUser->getCompany()->getId() === $company->getId()) {
+                return $companyUser;
+            }
         }
+
+        return null;
+    }
+
+    public function isCompanyUser(Company $company): bool
+    {
+        $companyUser = $this->getCompanyUser($company);
+        if ($companyUser !== null) {
+            return true;
+        }
+
+        return false;
     }
 }

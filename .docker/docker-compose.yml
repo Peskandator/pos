@@ -11,7 +11,6 @@ services:
       - NETTE_DEBUG=1
     links:
       - db
-    restart: always
   db:
     container_name: pos_db
     image: pos_db
@@ -23,7 +22,8 @@ services:
       - MYSQL_USER=pos
       - MYSQL_PASSWORD=test
       - MYSQL_DATABASE=pos
-    restart: always
+    volumes:
+      - pos-datavolume:/var/lib/mysql
   phpmyadmin:
     image: phpmyadmin
     container_name: phpmyadmin_pos
@@ -33,4 +33,5 @@ services:
       - PMA_HOST=db
       - PMA_USER=pos
       - PMA_PASSWORD=test
-    restart: always
+volumes:
+  pos-datavolume:

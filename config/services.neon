@@ -19,4 +19,5 @@ services:
     - App\Console\Command\SearchDocumentsCommand
 includes:
     - services/user.neon
+    - services/company.neon
 

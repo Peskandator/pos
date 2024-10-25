@@ -24,9 +24,13 @@ class AdminMenu extends Control
         $this->template->sections = $sections;
 
         $profileLink = $this->getPresenter()->lazyLink(':Admin:Profile:default');
+        $companiesLink = $this->getPresenter()->lazyLink(':Admin:Companies:default');
         $signOutLink = $this->getPresenter()->lazyLink(':Home:signOut');
         $this->template->profileLink = $profileLink;
         $this->template->isProfileLinkActive = $this->getPresenter()->isLinkCurrent($profileLink->getDestination(), $profileLink->getParameters());
+        $this->template->companiesLink = [$companiesLink, $this->getPresenter()->isLinkCurrent($companiesLink->getDestination(), $companiesLink->getParameters())];
+
+
         $this->template->signOutLink = $signOutLink;
 
         $this->template->setFile(__DIR__ . '/templates/menu.latte');
@@ -57,20 +61,20 @@ class AdminMenu extends Control
             throw new NoSignedInUserException();
         }
 
-        $boardsItems = $this->buildBoardsItems();
+        $ordersItems = $this->buildOrdersItems();
         $menuItems[] = $this->createMenuSection(
-            'Sledované desky',
-            $boardsItems
+            'Objednávky',
+            $ordersItems
         );
 
         return $menuItems;
     }
 
-    private function buildBoardsItems(): array
+    private function buildOrdersItems(): array
     {
         $items[] = $this->createMenuItem(
             'Přehled',
-            $this->getPresenter()->lazyLink(':Admin:Boards:default'),
+            $this->getPresenter()->lazyLink(':Admin:Companies:default'),
             [],
             $this->getCurrentLinkCallable()
         );
