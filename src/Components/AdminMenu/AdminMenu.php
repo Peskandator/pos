@@ -27,12 +27,23 @@ class AdminMenu extends Control
         $companiesLink = $this->getPresenter()->lazyLink(':Admin:Companies:default');
         $signOutLink = $this->getPresenter()->lazyLink(':Home:signOut');
         $this->template->profileLink = $profileLink;
-        $this->template->isProfileLinkActive = $this->getPresenter()->isLinkCurrent($profileLink->getDestination(), $profileLink->getParameters());
-        $this->template->companiesLink = [$companiesLink, $this->getPresenter()->isLinkCurrent($companiesLink->getDestination(), $companiesLink->getParameters())];
+        $this->template->isProfileLinkActive = $this->getPresenter()->isLinkCurrent(
+            $profileLink->getDestination(),
+            $profileLink->getParameters()
+        );
 
+        $isCompaniesLinkActive = $this->getPresenter()->isLinkCurrent(
+                $companiesLink->getDestination(),
+                $companiesLink->getParameters()
+            )
+            || $this->getPresenter()->getName() === 'Admin:Companies'
+        ;
 
+        $this->template->companiesLink = [
+            $companiesLink,
+            $isCompaniesLinkActive
+        ];
         $this->template->signOutLink = $signOutLink;
-
         $this->template->setFile(__DIR__ . '/templates/menu.latte');
         $this->template->render();
     }
