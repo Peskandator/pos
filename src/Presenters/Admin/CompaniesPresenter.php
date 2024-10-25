@@ -10,7 +10,7 @@ use App\Company\Action\EditCompanyAction;
 use App\Company\ORM\CompanyUserRepository;
 use App\Company\Requests\CreateCompanyRequest;
 use App\Components\Breadcrumb\BreadcrumbItem;
-use App\DancingClub\Enums\CompanyUserRoles;
+use App\Company\Enums\CompanyUserRoles;
 use App\Entity\Company;
 use App\Entity\CompanyUser;
 use App\Entity\User;

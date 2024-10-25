@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\DancingClub\Enums\CompanyUserRoles;
+use App\Company\Enums\CompanyUserRoles;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

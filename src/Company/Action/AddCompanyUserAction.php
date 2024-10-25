@@ -2,7 +2,7 @@
 
 namespace App\Company\Action;
 
-use App\DancingClub\Enums\CompanyUserRoles;
+use App\Company\Enums\CompanyUserRoles;
 use App\Entity\Company;
 use App\Entity\CompanyUser;
 use App\Entity\User;
