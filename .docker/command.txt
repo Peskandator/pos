@@ -1,6 +1,5 @@
 docker compose -p pos up -d --build --force-recreate
 
-docker compose up -d --build --force-recreate
 
 docker exec pos php bin/console ...
 

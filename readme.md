@@ -17,11 +17,17 @@ It is possible to run docker in .docker folder:
 
 
 ```bash
-$ mv etc/local.neon.dist etc/local.neon (copy file and insert connection config to DB)
+$ mv config/local.neon.dist config/local.neon (copy file and insert connection config to DB)
 $ composer install (inside docker= docker exec pos composer install)
 $ php bin/console doctrine:database:create # will take database name from config file (in docker is created)
 $ php bin/console migrations:migrate
+
+Make directories `temp/` and `log/` writable. (chmod 776)
 ```
+
+Local Development
+--------------
+
 
 Web Server Setup
 ----------------
