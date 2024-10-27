@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Presenters\Admin;
-use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Entity\User;
 use App\Presenters\BaseAdminPresenter;
 

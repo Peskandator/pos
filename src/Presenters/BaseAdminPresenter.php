@@ -7,6 +7,7 @@ use App\Components\AdminMenu\AdminMenu;
 use App\Components\AdminMenu\AdminMenuFactoryInterface;
 use App\Components\Breadcrumb\Breadcrumb;
 use App\Components\Breadcrumb\BreadcrumbFactoryInterface;
+use App\Entity\Company;
 use App\Entity\User;
 use App\Utils\CurrentUser;
 use App\Utils\FlashMessageType;
@@ -70,7 +71,6 @@ abstract class BaseAdminPresenter extends Presenter
         if (!$this->getUser()->isLoggedIn()) {
             $this->redirect(':Home:default');
         }
-        $currentUser = $this->getCurrentUser();
     }
 
     public function checkCompanyAdmin(): void
@@ -108,5 +108,10 @@ abstract class BaseAdminPresenter extends Presenter
         );
 
         $this->redirect(':Admin:Dashboard:default');
+    }
+
+    public function findCompanyById(): ?Company
+    {
+        return $this->companyRepository->find($this->currentCompanyId);
     }
 }

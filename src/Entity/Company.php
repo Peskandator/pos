@@ -52,6 +52,14 @@ class Company
      * @ORM\OneToMany(targetEntity="CompanyUser", mappedBy="company")
      */
     private Collection $companyUsers;
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="entity")
+     */
+    private Collection $categories;
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="entity")
+     */
+    private Collection $products;
 
 
     public function __construct(
@@ -59,8 +67,10 @@ class Company
     )
     {
         $this->update($request);
-        $this->companyUsers = new ArrayCollection();
         $this->creationDate = new \DateTimeImmutable();
+        $this->companyUsers = new ArrayCollection();
+        $this->categories = new ArrayCollection();
+        $this->products = new ArrayCollection();
     }
 
     public function update(CreateCompanyRequest $request)
@@ -136,5 +146,47 @@ class Company
         }
 
         return false;
+    }
+
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function getAllProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function getProducts(): array
+    {
+        $notDeletedProducts = [];
+        $products = $this->products;
+        /**
+         * @var Product $product
+         */
+        foreach ($products as $product) {
+            if (!$product->isDeleted()) {
+                $notDeletedProducts[] = $product;
+            }
+        }
+
+        return $notDeletedProducts;
+    }
+
+    public function getProductGroups(): array
+    {
+        $productGroups = [];
+        $notDeletedProduts = $this->getProducts();
+        /**
+         * @var Product $product
+         */
+        foreach ($notDeletedProduts as $product) {
+            if ($product->isGroup()) {
+                $productGroups[] = $product;
+            }
+        }
+
+        return $productGroups;
     }
 }

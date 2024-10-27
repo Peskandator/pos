@@ -10,7 +10,7 @@ Nette Web Project
 Installation
 ------------
 
-Make directories `var/temp/` and `var/log/` writable. (chmod 776)
+Make directories `var/temp/` and `var/log/` writable. (chmod -R 776)
 
 It is possible to run docker in .docker folder:
     - run:   docker compose -p pos up -d --build --force-recreate

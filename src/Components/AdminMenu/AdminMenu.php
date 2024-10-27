@@ -78,6 +78,12 @@ class AdminMenu extends Control
             $ordersItems
         );
 
+        $productManagementItems = $this->buildProductManagementItems();
+        $menuItems[] = $this->createMenuSection(
+            'Správa produktů',
+            $productManagementItems
+        );
+
         return $menuItems;
     }
 
@@ -85,7 +91,25 @@ class AdminMenu extends Control
     {
         $items[] = $this->createMenuItem(
             'Přehled',
-            $this->getPresenter()->lazyLink(':Admin:Companies:default'),
+            $this->getPresenter()->lazyLink(':Admin:Orders:default'),
+            [],
+            $this->getCurrentLinkCallable()
+        );
+
+        return $items;
+    }
+
+    private function buildProductManagementItems(): array
+    {
+        $items[] = $this->createMenuItem(
+            'Produkty',
+            $this->getPresenter()->lazyLink(':Admin:Products:default'),
+            [],
+            $this->getCurrentLinkCallable()
+        );
+        $items[] = $this->createMenuItem(
+            'Kategorie',
+            $this->getPresenter()->lazyLink(':Admin:Categories:default'),
             [],
             $this->getCurrentLinkCallable()
         );
