@@ -1,0 +1,9 @@
+services:
+    - App\Product\Forms\AddCategoryFormFactory
+
+    - App\Product\Action\AddCategoryAction
+
+    - App\Product\ORM\ProductRepository
+    - App\Product\ORM\CategoryRepository
+
+    - App\Product\Services\CodeValidator

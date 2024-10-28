@@ -17,9 +17,17 @@ class Category
      */
     private int $id;
     /**
-     * @ORM\Column(name="name", type="string", length=50)
+     * @ORM\Column(name="name", type="string", length=50, nullable=false)
      */
-    private ?string $name;
+    private string $name;
+    /**
+     * @ORM\Column(name="code", type="integer", nullable=false)
+     */
+    private int $code;
+    /**
+     * @ORM\Column(name="is_deleted", type="boolean", nullable=false)
+     */
+    private bool $isDeleted;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="categories")
      * @ORM\JoinColumn(name="company_id", referencedColumnName="id", nullable=false)
@@ -28,10 +36,13 @@ class Category
 
     public function __construct(
         Company $company,
+        int $code,
         string $name,
     ){
         $this->company = $company;
+        $this->code = $code;
         $this->name = $name;
+        $this->isDeleted = false;
     }
 
     public function getCompany(): Company
@@ -44,8 +55,23 @@ class Category
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getCode(): int
+    {
+        return $this->code;
+    }
+
+    public function getName(): string
     {
         return $this->name;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setDeleted(bool $isDeleted): void
+    {
+        $this->isDeleted = $isDeleted;
     }
 }

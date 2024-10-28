@@ -1,7 +1,7 @@
 docker compose -p pos up -d --build --force-recreate
 
 
-docker exec pos php bin/console ...
+docker exec pos php bin/console migrations:diff
 
 docker compose down
 

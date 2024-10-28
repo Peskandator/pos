@@ -53,11 +53,11 @@ class Company
      */
     private Collection $companyUsers;
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="entity")
+     * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="company")
      */
     private Collection $categories;
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="entity")
+     * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="company")
      */
     private Collection $products;
 
@@ -148,9 +148,25 @@ class Company
         return false;
     }
 
-    public function getCategories(): Collection
+    public function getAllCategories(): Collection
     {
         return $this->categories;
+    }
+
+    public function getCategories(): array
+    {
+        $notDeletedCategories = [];
+        $categories = $this->categories;
+        /**
+         * @var Category $category
+         */
+        foreach ($categories as $category) {
+            if (!$category->isDeleted()) {
+                $notDeletedCategories[] = $category;
+            }
+        }
+
+        return $notDeletedCategories;
     }
 
     public function getAllProducts(): Collection

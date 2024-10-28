@@ -23,6 +23,8 @@ abstract class BaseAdminPresenter extends Presenter
     private AdminMenuFactoryInterface $adminMenuFactory;
     private BreadcrumbFactoryInterface $breadcrumbFactory;
 
+    public Company $currentCompany;
+
     public function injectBaseDeps(
         CompanyRepository $companyRepository,
     ) {
@@ -71,6 +73,21 @@ abstract class BaseAdminPresenter extends Presenter
         if (!$this->getUser()->isLoggedIn()) {
             $this->redirect(':Home:default');
         }
+
+
+        if (isset($this->currentCompanyId) && $this->currentCompanyId) {
+            $currentCompany = $this->companyRepository->find($this->currentCompanyId);
+
+            if ($currentCompany === null) {
+                $this->redirect(':Admin:Dashboard:default', ['currentCompanyId' => null]);
+            }
+            $currentUser = $this->getCurrentUser();
+            if (!$currentUser->isCompanyUser($currentCompany)) {
+                $this->addNoPermissionError(true);
+            }
+
+            $this->currentCompany = $currentCompany;
+        }
     }
 
     public function checkCompanyAdmin(): void
@@ -100,12 +117,16 @@ abstract class BaseAdminPresenter extends Presenter
         return $loggedInUser;
     }
 
-    public function addNoPermissionError(): void
+    public function addNoPermissionError(bool $unsetCompany = false): void
     {
         $this->flashMessage(
             'K této akci nemáte oprávnění',
             FlashMessageType::ERROR
         );
+
+        if ($unsetCompany) {
+            $this->redirect(':Admin:Dashboard:default', ['currentCompanyId' => null]);
+        }
 
         $this->redirect(':Admin:Dashboard:default');
     }

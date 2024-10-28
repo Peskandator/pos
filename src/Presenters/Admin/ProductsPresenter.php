@@ -27,5 +27,7 @@ final class ProductsPresenter extends BaseCompanyPresenter
                 'Produkty',
                 null)
         );
+
+        $this->template->products = $this->currentCompany->getProducts();
     }
 }
