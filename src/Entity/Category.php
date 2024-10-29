@@ -45,6 +45,12 @@ class Category
         $this->isDeleted = false;
     }
 
+    public function update(int $code, string $name)
+    {
+        $this->code = $code;
+        $this->name = $name;
+    }
+
     public function getCompany(): Company
     {
         return $this->company;

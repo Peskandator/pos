@@ -1,7 +1,7 @@
-
-//Imports
+import category from './category.js';
 
 $(document).ready(function(){
+    category();
 
     setTimeout(flashMessage, 4200);
     function flashMessage() {

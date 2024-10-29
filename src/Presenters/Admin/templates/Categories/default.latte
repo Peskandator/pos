@@ -1,68 +1,113 @@
 {layout $adminlayoutPath}
 
 {block modals}
-
+    <div class="modal fade js-page-categories" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryLabel" aria-hidden="true">
+        {form editCategoryForm}
+            <input n:name="id" class="js-edit-category-id">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="editCategoryLabel">Upravit kategorii</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="editCategoryCode">Kód kategorie</label>
+                                <input n:name="code" type="number" class="form-control js-edit-category-code" id="editCategoryCode" min="1" max="999">
+                                <small class="form-error" n:ifcontent>{inputError code}</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="editCategoryName">Název</label>
+                                <input n:name="name" type="text" class="form-control js-edit-category-name" id="editCategoryName">
+                                <small class="form-error" n:ifcontent>{inputError name}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zpět</a>
+                        <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
+{*                        <button type="button" class="btn btn-danger js-modal-edit-category-confirm">Upravit</button>*}
+                    </div>
+                </div>
+            </div>
+        {/form}
+    </div>
 {/block}
 
 {block content}
-    <h1>Kategorie</h1>
+    <div class="js-page-categories">
+        <h1>Kategorie</h1>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive px-3 py-3">
-                        <table class="table table-bordered js-table">
-                            <thead>
-                                <tr>
-                                    <th>Kód</th>
-                                    <th>Název</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {foreach $categories as $category}
-                                    <tr>
-                                        <td>
-                                            {$category->getCode()}
-                                        </td>
-                                        <td>
-                                            {$category->getName()}
-                                        </td>
-                                    </tr>
-                                {/foreach}
-                            </tbody>
-                        </table>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        Seznam kategorií
                     </div>
-                </div>
+                    <div class="card-body">
+                        <div class="table-responsive px-3 py-3">
+                            <table class="table table-bordered js-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kód</th>
+                                        <th>Název</th>
+                                        <th>Akce</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {foreach $categories as $category}
+                                        <tr>
+                                            <td>
+                                                {$category->getCode()}
+                                            </td>
+                                            <td>
+                                                {$category->getName()}
+                                            </td>
+                                            <td>
+                                                <i class="fas fa-pencil-alt text-primary icon js-edit-category-start" title="Upravit"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-target="#editCategoryModal"
+                                                   data-category-id="{$category->getId()}"
+                                                   data-category-code="{$category->getCode()}"
+                                                   data-category-name="{$category->getName()}"
+                                                >
+                                                </i>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                <div class="card-header card-header-top">
-                    Přidat kategorii
-                </div>
-                <div class="card-body js-category-form-card">
-                    {form addCategoryForm}
-                        <div class="form-errors" n:ifcontent>
-                            <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
-                        </div>
-                        <div class="row px-2 mb-3">
-                            <div class="col-2">
-                                <div class="form-group">
-                                    <label for="categoryCode">Kód kategorie</label>
-                                    <input n:name="code" type="number" class="form-control" id="categoryCode" min="1" max="999">
-                                    <small class="form-error" n:ifcontent>{inputError code}</small>
+                    <div class="card-header card-header-top">
+                        Přidat kategorii
+                    </div>
+                    <div class="card-body js-category-form-card">
+                        {form addCategoryForm}
+                            <div class="form-errors" n:ifcontent>
+                                <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
+                            </div>
+                            <div class="row px-2 mb-3">
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="categoryCode">Kód kategorie</label>
+                                        <input n:name="code" type="number" class="form-control" id="categoryCode" min="1" max="999">
+                                        <small class="form-error" n:ifcontent>{inputError code}</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="categoryName">Název</label>
+                                        <input n:name="name" type="text" class="form-control" id="categoryName">
+                                        <small class="form-error" n:ifcontent>{inputError name}</small>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="categoryName">Název</label>
-                                    <input n:name="name" type="text" class="form-control" id="categoryName">
-                                    <small class="form-error" n:ifcontent>{inputError name}</small>
-                                </div>
-                            </div>
-                        </div>
-                        <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
-                    {/form}
+                            <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
+                        {/form}
+                    </div>
                 </div>
             </div>
         </div>
