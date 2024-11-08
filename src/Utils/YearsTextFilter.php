@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Majetek\Latte\Filters;
+namespace App\Utils;
 
 class YearsTextFilter
 {

@@ -2,8 +2,9 @@
 
 namespace App\Template;
 
-use App\Majetek\Latte\Filters\FloatFilter;
-use App\Majetek\Latte\Filters\YearsTextFilter;
+use App\Utils\FloatFilter;
+use App\Utils\YearsTextFilter;
+use App\Utils\PriceFilter;
 use App\Utils\SrcDir;
 use Nette\Bridges\ApplicationLatte\Template;
 
@@ -24,5 +25,6 @@ class TemplateDecorator
         $template->adminlayoutPath = $this->srcDir->getDir() . '/Presenters/templates/layout-admin.latte';
         $template->addFilter('yearsText', new YearsTextFilter());
         $template->addFilter('float', new FloatFilter());
+        $template->addFilter('price', new PriceFilter());
     }
 }

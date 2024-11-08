@@ -10,7 +10,7 @@ class CreateProductRequest
         public string $name,
         public int $inventoryNumber,
         public ?string $manufacturer,
-        public Category $category,
+        public ?Category $category,
         public bool $isGroup,
         public ?float $price,
         public ?int $vatRate,

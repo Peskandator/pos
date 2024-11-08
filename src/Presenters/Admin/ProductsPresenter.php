@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Presenters\Admin;
 use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Presenters\BaseCompanyPresenter;
+use App\Product\Forms\AddProductFormFactory;
+use Nette\Application\UI\Form;
 
 final class ProductsPresenter extends BaseCompanyPresenter
 {
 
     public function __construct(
+        private readonly AddProductFormFactory $addProductFormFactory,
     )
     {
         parent::__construct();
@@ -29,5 +32,10 @@ final class ProductsPresenter extends BaseCompanyPresenter
         );
 
         $this->template->products = $this->currentCompany->getProducts();
+    }
+
+    protected function createComponentAddProductForm(): Form
+    {
+        return $this->addProductFormFactory->create($this->currentCompany);
     }
 }

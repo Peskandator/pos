@@ -10,7 +10,7 @@ Nette Web Project
 Installation
 ------------
 
-Make directories `var/temp/` and `var/log/` writable. (chmod -R 776)
+Make directories `var/temp/` and `var/log/` writable. (chmod -R 777)
 
 It is possible to run docker in .docker folder:
     - run:   docker compose -p pos up -d --build --force-recreate
@@ -18,7 +18,7 @@ It is possible to run docker in .docker folder:
 
 ```bash
 $ mv config/local.neon.dist config/local.neon (copy file and insert connection config to DB)
-$ composer install (inside docker= docker exec pos composer install)
+$ composer install (inside docker: docker exec pos composer install)
 $ php bin/console doctrine:database:create # will take database name from config file (in docker is created)
 $ php bin/console migrations:migrate
 

@@ -2,31 +2,224 @@
 
 {block modals}
 
+
+
+
+
+
+
 {/block}
 
 {block content}
-    <h1>Produkty</h1>
+    <div class="js-page-products">
+        <h1>Produkty</h1>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive px-3 py-3">
-                        <table class="table table-bordered js-table">
-                            <thead>
-                            <tr>
-                            </tr>
-                            </thead>
-                            <tbody>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        Seznam produktů
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive px-3 py-3">
+                            <table class="table table-bordered js-table">
+                                <thead>
+                                <tr>
+                                    <th>Inv. číslo</th>
+                                    <th>Název</th>
+                                    <th>Cena</th>
+                                    <th>DPH</th>
+                                    <th>Výrobce</th>
+                                    <th>Popis</th>
+                                    <th>Skupina</th>
+                                    <th>Akce</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {foreach $products as $product}
+                                    <tr>
+                                        <td>
+                                            {$product->getInventoryNumber()}
+                                        </td>
+                                        <td>
+                                            {$product->getName()}
+                                        </td>
+                                        <td>
+                                            {$product->getPrice()|price}
+                                        </td>
+                                        <td>
+                                            {$product->getVatRate()}
+                                        </td>
+                                        <td>
+                                            {$product->getManufacturer()}
+                                        </td>
+                                        <td>
+                                            {$product->getDescription()}
+                                        </td>
+                                        <td>
+                                            <input class="form-check-input" type="checkbox" disabled {if $product->isGroup()}checked=""{/if}>
+                                        </td>
 
+                                        <td>
+                                            <i class="fas fa-pencil-alt text-primary icon js-edit-category-start" title="Upravit"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#editProductModal"
+                                               data-product-id="{$product->getId()}"
+                                               data-product-name="{$product->getName()}"
+                                            >
+                                            </i>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                            </tbody>
-                        </table>
+                    <div class="card-header card-header-top">
+                        Přidat produkt
+                    </div>
+                    <div class="card-body js-category-form-card">
+                        <form n:name="addProductForm" id="js-add-product-form">
+                            <div class="form-errors" n:ifcontent>
+                                <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
+                            </div>
+
+                            <div class="px-2">
+                                <div class="row mb-3">
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label for="inventoryNumber">Inventární číslo</label>
+                                            <input n:name="inventory_number" type="number" class="form-control" id="inventoryNumber" min="1" max="999" step="1">
+                                            <small class="form-error" n:ifcontent>{inputError inventory_number}</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="productName">Název</label>
+                                            <input n:name="name" type="text" class="form-control" id="productName">
+                                            <small class="form-error" n:ifcontent>{inputError name}</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="productCategory">Kategorie</label>
+                                            <select
+                                                    n:name="category"
+                                                    class="form-select"
+                                                    id="productCategory"
+                                            >
+                                            </select>
+                                            <small class="form-error" n:ifcontent>{inputError category}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label for="productPrice">Cena</label>
+                                            <input n:name="price" type="number" step="0.01" class="form-control" id="productPrice" min="0" max="1000000000">
+                                            <small class="form-error" n:ifcontent>{inputError price}</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="form-group">
+                                            <label for="productVatRate">DPH</label>
+                                            <input n:name="vat_rate" type="number" step="1" class="form-control" id="productVatRate" min="0" max="100">
+                                            <small class="form-error" n:ifcontent>{inputError vat_rate}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-2">
+                                        <div class="form-check">
+                                            <input n:name="is_group" class="form-check-input" type="checkbox" id="isGroupCheckbox">
+                                            <label n:name="is_group" class="form-check-label" for="isGroupCheckbox">
+                                                Skupina
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input n:name="products_in_group" id="js-products-in-group-input">
+                                <small class="form-error" n:ifcontent>{inputError products_in_group}</small>
+                                <div id="productGroupBox" style="display: none">
+                                    <div>Produkty ve skupině:</div>
+                                    <a class="btn btn-primary rounded btn-sm mt-1" id="addNextProductToGroupButton">Přidat další</a>
+                                    <div id="productGroupRows">
+                                        <div class="row pl-5 mt-2 mb-2 productGroupRow" style="margin-left: 1rem; display: none">
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <select
+                                                        class="form-select productGroupItemSelect"
+                                                    >
+                                                        <option value="0">Vyberte ...</option>
+                                                        {foreach $products as $product}
+                                                            <option value="{$product->getId()}">{$product->getName()}</option>
+                                                        {/foreach}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-2">
+                                                <div class="form-group">
+                                                    <input type="number" step="1" class="form-control productGroupItemQuantity" min="0" max="1000000" placeholder="Množství">
+                                                </div>
+                                            </div>
+                                            <div class="col-1" style="align-content: center">
+                                                <i class="fa-solid fa-trash text-danger icon align-self-center deleteProductButton"
+                                                   title="Odstranit"
+                                                ></i>
+                                            </div>
+                                        </div>
+                                        <div class="row pl-5 mt-2 mb-2 productGroupRow" style="margin-left: 1rem">
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <select
+                                                        class="form-select productGroupItemSelect"
+                                                    >
+                                                        <option value="0">Vyberte ...</option>
+                                                        {foreach $products as $product}
+                                                            <option value="{$product->getId()}">{$product->getName()}</option>
+                                                        {/foreach}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-2">
+                                                <div class="form-group">
+                                                    <input type="number" step="1" class="form-control productGroupItemQuantity" min="0" max="1000000" placeholder="Množství">
+                                                </div>
+                                            </div>
+                                            <div class="col-1" style="align-content: center">
+                                                <i class="fa-solid fa-trash text-danger icon align-self-center deleteProductButton"
+                                                   title="Odstranit"
+                                                ></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="productManufacturer">Výrobce</label>
+                                            <input n:name="manufacturer" type="text" class="form-control" id="productManufacturer">
+                                            <small class="form-error" n:ifcontent>{inputError manufacturer}</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="productDescription">Popis</label>
+                                            <input n:name="description" type="text" class="form-control" id="productDescription">
+                                            <small class="form-error" n:ifcontent>{inputError description}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button id="addProductButton" class="mb-2 btn rounded-3 btn-primary">Přidat</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 {/block}

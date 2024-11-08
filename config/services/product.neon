@@ -1,9 +1,11 @@
 services:
     - App\Product\Forms\AddCategoryFormFactory
     - App\Product\Forms\EditCategoryFormFactory
+    - App\Product\Forms\AddProductFormFactory
 
     - App\Product\Action\AddCategoryAction
     - App\Product\Action\EditCategoryAction
+    - App\Product\Action\AddProductAction
 
     - App\Product\ORM\ProductRepository
     - App\Product\ORM\CategoryRepository

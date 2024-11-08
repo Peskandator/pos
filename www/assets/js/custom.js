@@ -1,7 +1,9 @@
 import category from './category.js';
+import product from './product.js';
 
 $(document).ready(function(){
     category();
+    product();
 
     setTimeout(flashMessage, 4200);
     function flashMessage() {

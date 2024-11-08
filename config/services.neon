@@ -14,9 +14,6 @@ services:
     - App\Components\AdminMenu\AdminMenuFactoryInterface
     - App\Components\Breadcrumb\BreadcrumbFactoryInterface
 
-
-
-    - App\Console\Command\SearchDocumentsCommand
 includes:
     - services/user.neon
     - services/company.neon

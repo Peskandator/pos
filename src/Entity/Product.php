@@ -39,7 +39,6 @@ class Product
      * @ORM\Column(name="price", type="float", nullable=true)
      */
     private ?float $price;
-
     /**
      * @ORM\Column(name="vat_rate", type="integer", nullable=true)
      */
@@ -62,15 +61,11 @@ class Product
     private ?string $description;
     /**
      * @ORM\ManyToOne(targetEntity="Category")
-     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=true)
      */
     private ?Category $category;
     /**
-     * @ORM\ManyToMany(targetEntity="Product")
-     * @ORM\JoinTable(name="productgroup_product",
-     *      joinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")}
-     *      )
+     * @ORM\OneToMany(targetEntity="ProductInGroup", mappedBy="company")
      */
     private Collection $productsInGroup;
     /**
@@ -82,12 +77,10 @@ class Product
     public function __construct(
         Company $company,
         CreateProductRequest $request,
-        bool $isGroup,
     )
     {
         $this->updateFromRequest($request);
         $this->company = $company;
-        $this->isGroup = $isGroup;
         $this->isDeleted = false;
         $this->creationDate = new \DateTimeImmutable();
         $this->productsInGroup = new ArrayCollection();
