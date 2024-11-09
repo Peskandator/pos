@@ -59,7 +59,6 @@
                                         <td>
                                             <input class="form-check-input" type="checkbox" disabled {if $product->isGroup()}checked=""{/if}>
                                         </td>
-
                                         <td>
                                             <i class="fas fa-pencil-alt text-primary icon js-edit-category-start" title="Upravit"
                                                data-bs-toggle="modal"
@@ -213,7 +212,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button id="addProductButton" class="mb-2 btn rounded-3 btn-primary">Přidat</button>
+{*                                <button id="addProductButton" class="mb-2 btn rounded-3 btn-primary">Přidat</button>*}
+                                <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
                             </div>
                         </form>
                     </div>

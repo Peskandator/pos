@@ -7,12 +7,8 @@ export default function() {
 
     let isGroupCheckbox = $('#isGroupCheckbox');
 
-    console.log(isGroupCheckbox);
-
     checkIsGroupCheckBox();
     isGroupCheckbox.change(function() {
-        console.log('idiot');
-
         checkIsGroupCheckBox()
     });
 
@@ -42,13 +38,14 @@ export default function() {
 
     function deleteProductRow (buttonElement) {
         buttonElement.parent().parent().remove();
+        updateProductsInGroupsJson()
     }
 
-    $('#addProductButton').click(function(event) {
-        event.preventDefault();
+    $('#js-add-product-form').submit(function() {
+        updateProductsInGroupsJson();
+    });
 
-        console.log('idiot')
-
+    function updateProductsInGroupsJson() {
         let jsonObj = [];
         $('.productGroupRow').each(function() {
             let product = $(this).find('.productGroupItemSelect').val();
@@ -60,8 +57,6 @@ export default function() {
         });
 
         let jsonString = JSON.stringify(jsonObj);
-
         $('#js-products-in-group-input').val(jsonString);
-        $('#js-add-product-form').submit();
-    });
+    }
 }

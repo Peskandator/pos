@@ -32,7 +32,8 @@ class AddProductAction
             if ($productInGroup === null) {
                 continue;
             }
-            $productItem = new ProductInGroup($product, $productInGroup, $productInGroupData['quantity']);
+            $quantity = (int)$productInGroupData['quantity'];
+            $productItem = new ProductInGroup($product, $productInGroup, $quantity);
             $this->entityManager->persist($productItem);
             $group->add($productItem);
         }
