@@ -65,7 +65,7 @@ class Product
      */
     private ?Category $category;
     /**
-     * @ORM\OneToMany(targetEntity="ProductInGroup", mappedBy="company")
+     * @ORM\OneToMany(targetEntity="ProductInGroup", mappedBy="group")
      */
     private Collection $productsInGroup;
     /**
@@ -167,5 +167,10 @@ class Product
     public function getProductsInGroup(): Collection
     {
         return $this->productsInGroup;
+    }
+
+    public function clearProductsInGroup(): void
+    {
+        $this->productsInGroup->clear();
     }
 }

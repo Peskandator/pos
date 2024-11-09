@@ -9,6 +9,7 @@ use App\Components\Breadcrumb\Breadcrumb;
 use App\Components\Breadcrumb\BreadcrumbFactoryInterface;
 use App\Entity\Company;
 use App\Entity\User;
+use App\Product\ORM\ProductRepository;
 use App\Utils\CurrentUser;
 use App\Utils\FlashMessageType;
 use Nette\Application\Attributes\Persistent;
@@ -19,6 +20,7 @@ abstract class BaseAdminPresenter extends Presenter
     #[Persistent]
     public int $currentCompanyId;
     protected CompanyRepository $companyRepository;
+    protected ProductRepository $productRepository;
     private CurrentUser $currentUser;
     private AdminMenuFactoryInterface $adminMenuFactory;
     private BreadcrumbFactoryInterface $breadcrumbFactory;
@@ -27,8 +29,10 @@ abstract class BaseAdminPresenter extends Presenter
 
     public function injectBaseDeps(
         CompanyRepository $companyRepository,
+        ProductRepository $productRepository,
     ) {
         $this->companyRepository = $companyRepository;
+        $this->productRepository = $productRepository;
     }
 
     public function injectAdminMenuFactory(

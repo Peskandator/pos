@@ -6,9 +6,10 @@ use App\Entity\Company;
 use App\Entity\Product;
 use App\Product\Requests\CreateProductRequest;
 use App\Product\Services\ProductsInGroupGenerator;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 
-class AddProductAction
+class EditProductAction
 {
 
     public function __construct(
@@ -17,21 +18,23 @@ class AddProductAction
     ) {
     }
 
-    public function __invoke(Company $company, CreateProductRequest $request, array $productsInGroup): void
+    public function __invoke(Company $company, Product $product, CreateProductRequest $request, array $productsInGroup): void
     {
-        $product = new Product
-        (
-            $company,
-            $request,
-        );
-
         if ($request->isGroup) {
+            $group = $product->getProductsInGroup();
+            $this->deleteCurrentProductsInGroup($group);
+            $product->clearProductsInGroup();
+
             $this->productsInGroupGenerator->generateProductsInGroup($product, $productsInGroup);
         }
 
-        $company->getAllProducts()->add($product);
-        $this->entityManager->persist($product);
-
         $this->entityManager->flush();
+    }
+
+    private function deleteCurrentProductsInGroup(Collection $productsInGroup): void
+    {
+        foreach ($productsInGroup as $productInGroup) {
+            $this->entityManager->remove($productInGroup);
+        }
     }
 }

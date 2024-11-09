@@ -3,26 +3,31 @@
 namespace App\Product\Forms;
 
 use App\Entity\Company;
+use App\Entity\Product;
 use App\Product\Action\AddProductAction;
+use App\Product\Action\EditProductAction;
 use App\Product\ORM\CategoryRepository;
 use App\Product\ORM\ProductRepository;
 use App\Product\Requests\CreateProductRequest;
 use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
 
-class AddProductFormFactory
+class ProductFormFactory
 {
     public function __construct(
         private readonly AddProductAction $addProductAction,
         private readonly CategoryRepository $categoryRepository,
         private readonly ProductRepository $productRepository,
+        private readonly EditProductAction $editProductAction,
     )
     {
     }
 
-    public function create(Company $company): Form
+    public function create(Company $company, ?Product $editedProduct): Form
     {
         $form = new Form;
+
+        $editing = ($editedProduct instanceof Product);
 
         $form
             ->addText('name', 'Název')
@@ -70,25 +75,36 @@ class AddProductFormFactory
             ->addHidden('products_in_group')
         ;
 
-        $form->addSubmit('send', 'Přidat');
+        $submitText = $editing ? 'Upravit' : 'Přidat';
+        $form->addSubmit('send', $submitText);
 
-        $form->onValidate[] = function (Form $form, \stdClass $values) use ($company) {
+        $form->onValidate[] = function (Form $form, \stdClass $values) use ($company, $editedProduct) {
+            if ($values->category !== null && $values->category !== 0) {
+                $category = $this->categoryRepository->find($values->category);
+                if ($category === null) {
+                    $errMsg = 'Kategorie nebyla nalezena.';
+                    $form->addError($errMsg);
+                    $form->getPresenter()->flashMessage($errMsg,FlashMessageType::ERROR);
+                }
+            }
+
+            if (!$this->isInventoryNumberAvailable($company, $values->inventory_number, $editedProduct)) {
+                $form['inventory_number']->addError('Majetek s tímto inventárním číslem již existuje');
+                $form->addError('Produkt se zadaným inventárním číslem již existuje');
+            }
         };
 
-        $form->onSuccess[] = function (Form $form, \stdClass $values) use ($company) {
+        $form->onSuccess[] = function (Form $form, \stdClass $values) use ($company, $editing, $editedProduct) {
             $category = $this->categoryRepository->find($values->category);
-            if ($category === null) {
-                $errMsg = 'Kategorie nebyla nalezena.';
-                $form->addError($errMsg);
-                $form->getPresenter()->flashMessage($errMsg,FlashMessageType::ERROR);
-            }
+
+            $isGroup = $editing ? $editedProduct->isGroup() : $values->is_group;
 
             $request = new CreateProductRequest(
                 $values->name,
                 $values->inventory_number,
                 $values->manufacturer,
                 $category,
-                $values->is_group,
+                $isGroup,
                 $values->price,
                 $values->vat_rate,
                 $values->description,
@@ -96,7 +112,8 @@ class AddProductFormFactory
             );
 
             $productsInGroup = [];
-            if (isset($values->products_in_group)) {
+
+            if ($isGroup && isset($values->products_in_group)) {
                 $products = json_decode($values->products_in_group, true);
                 foreach ($products as $productInGroupData) {
                     if ((int)$productInGroupData['product'] === 0) {
@@ -114,12 +131,55 @@ class AddProductFormFactory
                 }
             }
 
-            $this->addProductAction->__invoke($company, $request, $productsInGroup);
-            $form->getPresenter()->flashMessage('Produkt byl přidán.', FlashMessageType::SUCCESS);
+            $message = 'Produkt byl přidán';
+            if ($editing) {
+                $message = 'Produkt byl upraven';
+                $this->editProductAction->__invoke($company, $editedProduct, $request, $productsInGroup);
+            } else {
+                $this->addProductAction->__invoke($company, $request, $productsInGroup);
+            }
+            $form->getPresenter()->flashMessage($message, FlashMessageType::SUCCESS);
             $form->getPresenter()->redirect('this');
         };
 
         return $form;
+    }
+
+    public function fillInForm(Form $form, Product $product): Form
+    {
+        $form->setDefaults([
+            'name' => $product->getName(),
+            'manufacturer' => $product->getManufacturer(),
+            'description' => $product->getDescription(),
+            'is_group' => $product->isGroup(),
+            'price' => $product->getPrice(),
+            'vat_rate' => $product->getVatRate(),
+            'inventory_number' => $product->getInventoryNumber(),
+        ]);
+
+        $form->setValues(array(
+            'category' => $product->getCategory()?->getId(),
+        ));
+
+        return $form;
+    }
+
+
+    protected function isInventoryNumberAvailable(Company $company, int $number, ?Product $editedProduct): bool
+    {
+        $products = $company->getAllProducts();
+        /**
+         * @var Product $product
+         */
+        foreach ($products as $product) {
+            if ($editedProduct !== null && $editedProduct->getId() === $product->getId()) {
+                continue;
+            }
+            if ($product->getInventoryNumber() === $number) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected function getCollectionForSelect(array $array): array

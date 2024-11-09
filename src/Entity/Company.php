@@ -190,6 +190,23 @@ class Company
         return $notDeletedProducts;
     }
 
+    public function getSingleProducts(): array
+    {
+        $singleProducts = [];
+        $notDeletedProduts = $this->getProducts();
+        /**
+         * @var Product $product
+         */
+        foreach ($notDeletedProduts as $product) {
+            if (!$product->isGroup()) {
+                $singleProducts[] = $product;
+            }
+        }
+
+        return $singleProducts;
+
+    }
+
     public function getProductGroups(): array
     {
         $productGroups = [];

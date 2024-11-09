@@ -1,0 +1,31 @@
+{define productInGroupRow, $isTemplate, $productsInGroupOptions, $productInGroup}
+    <div class="row pl-5 mt-2 mb-2 productGroupRow" style="margin-left: 1rem; {if $isTemplate}display: none{/if}">
+        <div class="col-4">
+            <div class="form-group">
+                <select class="form-select productGroupItemSelect">
+                    {if !$productInGroup}
+                        <option value="0">Vyberte ...</option>
+                    {/if}
+                    {foreach $productsInGroupOptions as $productInGroupOption}
+                        <option value="{$productInGroupOption->getId()}"
+                                {if $productInGroup && $productInGroupOption->getId() === $productInGroup->getId()} selected{/if}>
+                            {$productInGroupOption->getName()}
+                        </option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="form-group">
+                <input type="number" step="1" class="form-control productGroupItemQuantity" min="0" max="1000000" placeholder="Množství"
+                        {if $productInGroup}value="{$productInGroup->getQuantity()}"{/if}
+                >
+            </div>
+        </div>
+        <div class="col-1" style="align-content: center">
+            <i class="fa-solid fa-trash text-danger icon align-self-center deleteProductButton"
+               title="Odstranit"
+            ></i>
+        </div>
+    </div>
+{/define}

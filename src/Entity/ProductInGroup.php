@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Company\Enums\CompanyUserRoles;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

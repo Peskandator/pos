@@ -41,7 +41,7 @@ export default function() {
         updateProductsInGroupsJson()
     }
 
-    $('#js-add-product-form').submit(function() {
+    $('#js-product-form').submit(function() {
         updateProductsInGroupsJson();
     });
 

@@ -1,13 +1,15 @@
 services:
     - App\Product\Forms\AddCategoryFormFactory
     - App\Product\Forms\EditCategoryFormFactory
-    - App\Product\Forms\AddProductFormFactory
+    - App\Product\Forms\ProductFormFactory
 
     - App\Product\Action\AddCategoryAction
     - App\Product\Action\EditCategoryAction
     - App\Product\Action\AddProductAction
+    - App\Product\Action\EditProductAction
 
     - App\Product\ORM\ProductRepository
     - App\Product\ORM\CategoryRepository
 
     - App\Product\Services\CodeValidator
+    - App\Product\Services\ProductsInGroupGenerator

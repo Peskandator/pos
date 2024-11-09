@@ -26,7 +26,7 @@
                     </div>
                     <div class="modal-footer">
                         <a type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zpět</a>
-                        <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
+                        <input n:name="send" class="btn btn-primary" type="submit">
                     </div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
                     <div class="card-header card-header-top">
                         Přidat kategorii
                     </div>
-                    <div class="card-body js-category-form-card">
+                    <div class="card-body">
                         {form addCategoryForm}
                             <div class="form-errors" n:ifcontent>
                                 <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
