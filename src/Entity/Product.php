@@ -86,7 +86,7 @@ class Product
         $this->productsInGroup = new ArrayCollection();
     }
 
-    protected function updateFromRequest(CreateProductRequest $request)
+    public function updateFromRequest(CreateProductRequest $request)
     {
         $this->name = $request->name;
         $this->inventoryNumber = $request->inventoryNumber;

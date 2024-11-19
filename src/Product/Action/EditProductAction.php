@@ -27,6 +27,7 @@ class EditProductAction
 
             $this->productsInGroupGenerator->generateProductsInGroup($product, $productsInGroup);
         }
+        $product->updateFromRequest($request);
 
         $this->entityManager->flush();
     }
