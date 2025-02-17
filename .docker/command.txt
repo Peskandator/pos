@@ -9,3 +9,5 @@ docker kill $(docker ps -q)
 
 docker image ls
 docker rmi imagename -f
+
+docker exec -it pos sh

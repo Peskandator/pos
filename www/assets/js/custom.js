@@ -1,9 +1,11 @@
 import category from './category.js';
 import product from './product.js';
+import table from './table.js';
 
 $(document).ready(function(){
     category();
     product();
+    table();
 
     setTimeout(flashMessage, 4200);
     function flashMessage() {

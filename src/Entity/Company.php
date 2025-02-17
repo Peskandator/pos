@@ -57,6 +57,10 @@ class Company
      */
     private Collection $categories;
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Table", mappedBy="company")
+     */
+    private Collection $tables;
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="company")
      */
     private Collection $products;
@@ -71,6 +75,7 @@ class Company
         $this->companyUsers = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->tables = new ArrayCollection();
     }
 
     public function update(CreateCompanyRequest $request)
@@ -153,6 +158,11 @@ class Company
         return $this->categories;
     }
 
+    public function getAllTables(): Collection
+    {
+        return $this->tables;
+    }
+
     public function getCategories(): array
     {
         $notDeletedCategories = [];
@@ -167,6 +177,22 @@ class Company
         }
 
         return $notDeletedCategories;
+    }
+
+    public function getTables(): array
+    {
+        $notDeletedTables = [];
+        $tables = $this->tables;
+        /**
+         * @var Table $table
+         */
+        foreach ($tables as $table) {
+            if (!$table->isDeleted()) {
+                $notDeletedTables[] = $table;
+            }
+        }
+
+        return $notDeletedTables;
     }
 
     public function getAllProducts(): Collection

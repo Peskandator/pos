@@ -89,15 +89,16 @@ class ProductFormFactory
             }
 
             if (!$this->isInventoryNumberAvailable($company, $values->inventory_number, $editedProduct)) {
-                $form['inventory_number']->addError('Majetek s tímto inventárním číslem již existuje');
-                $form->addError('Produkt se zadaným inventárním číslem již existuje');
+                $errMsg = 'Produkt s tímto inventárním číslem již existuje';
+                $form['inventory_number']->addError($errMsg);
+                $form->addError($errMsg);
             }
         };
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) use ($company, $editing, $editedProduct) {
             $category = $this->categoryRepository->find($values->category);
 
-            $isGroup = $editing ? $editedProduct->isGroup() : $values->is_group;
+            $isGroup = $values->is_group;
 
             $request = new CreateProductRequest(
                 $values->name,

@@ -3,16 +3,16 @@
 namespace App\Product\Forms;
 
 use App\Entity\Company;
-use App\Product\Action\AddCategoryAction;
+use App\Product\Action\AddTableAction;
 use App\Product\Services\CodeValidator;
 use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
 
-class AddCategoryFormFactory
+class AddTableFormFactory
 {
     public function __construct(
         private readonly CodeValidator $codeValidator,
-        private readonly AddCategoryAction $addCategoryAction,
+        private readonly AddTableAction $addTableAction,
     )
     {
     }
@@ -22,18 +22,17 @@ class AddCategoryFormFactory
         $form = new Form;
 
         $form
-            ->addInteger('code', 'Kód')
+            ->addInteger('number', 'Číslo')
             ->setRequired()
         ;
         $form
-            ->addText('name', 'Název')
-            ->setMaxLength(50)
+            ->addText('description', 'Popis')
             ->setRequired()
         ;
         $form->addSubmit('send', 'Přidat');
 
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company) {
-            $validationMsg = $this->codeValidator->isCategoryCodeValid($company, $values->code);
+            $validationMsg = $this->codeValidator->isTableNumberValid($company, $values->number);
             if ($validationMsg !== '') {
                 $form->addError($validationMsg);
                 $form->getPresenter()->flashMessage($validationMsg,FlashMessageType::ERROR);
@@ -41,8 +40,8 @@ class AddCategoryFormFactory
         };
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) use ($company) {
-            $this->addCategoryAction->__invoke($company, $values->code, $values->name);
-            $form->getPresenter()->flashMessage('Kategorie byla přidána.', FlashMessageType::SUCCESS);
+            $this->addTableAction->__invoke($company, $values->number, $values->description);
+            $form->getPresenter()->flashMessage('Stůl byl přidán.', FlashMessageType::SUCCESS);
             $form->getPresenter()->redirect('this');
         };
 

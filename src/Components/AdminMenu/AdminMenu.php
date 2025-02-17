@@ -105,7 +105,7 @@ class AdminMenu extends Control
             'Produkty',
             $this->getPresenter()->lazyLink(':Admin:Products:default'),
             [],
-            $this->getCurrentLinkCallable()
+            $this->getCurrentLinkCallable(['Admin:EditProduct'])
         );
         $items[] = $this->createMenuItem(
             'Kategorie',
@@ -113,13 +113,23 @@ class AdminMenu extends Control
             [],
             $this->getCurrentLinkCallable()
         );
+        $items[] = $this->createMenuItem(
+            'Stoly',
+            $this->getPresenter()->lazyLink(':Admin:Tables:default'),
+            [],
+            $this->getCurrentLinkCallable()
+        );
 
         return $items;
     }
 
-    private function getCurrentLinkCallable(): callable
+    private function getCurrentLinkCallable(array $additionalPresenters = []): callable
     {
-        return function (Link $link) {
+        return function (Link $link) use ($additionalPresenters) {
+            if (in_array($this->getPresenter()->getName(), $additionalPresenters, true)) {
+                return true;
+            }
+
             return $this->getPresenter()->isLinkCurrent($link->getDestination(), $link->getParameters());
         };
     }

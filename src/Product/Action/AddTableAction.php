@@ -2,11 +2,11 @@
 
 namespace App\Product\Action;
 
-use App\Entity\Category;
 use App\Entity\Company;
+use App\Entity\Table;
 use Doctrine\ORM\EntityManagerInterface;
 
-class AddCategoryAction
+class AddTableAction
 {
     private EntityManagerInterface $entityManager;
 
@@ -16,16 +16,18 @@ class AddCategoryAction
         $this->entityManager = $entityManager;
     }
 
-    public function __invoke(Company $company, int $code, string $name): void
+    public function __invoke(Company $company, int $number, ?string $description): void
     {
-        $category = new Category(
+        $table = new Table(
             $company,
-            $code,
-            $name,
+            $number,
+            $description ?? '',
         );
 
-        $this->entityManager->persist($category);
-        $company->getAllCategories()->add($category);
+        bdump($table);
+
+        $this->entityManager->persist($table);
+        $company->getAllTables()->add($table);
 
         $this->entityManager->flush();
     }

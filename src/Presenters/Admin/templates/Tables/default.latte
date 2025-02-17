@@ -1,0 +1,115 @@
+{layout $adminlayoutPath}
+
+{block modals}
+    <div class="modal fade js-page-tables" id="editTableModal" tabindex="-1" aria-labelledby="editTableLabel" aria-hidden="true">
+        {form editTableForm}
+            <input n:name="id" class="js-edit-table-id">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="editTableLabel">Upravit stůl</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="editTableNumber">Číslo stolu</label>
+                                <input n:name="number" type="number" class="form-control js-edit-table-number" id="editTableNumber" min="1" max="999">
+                                <small class="form-error" n:ifcontent>{inputError number}</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="editTableDescription">Popis</label>
+                                <input n:name="description" type="text" class="form-control js-edit-table-description" id="editTableDescription">
+                                <small class="form-error" n:ifcontent>{inputError description}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zpět</a>
+                        <input n:name="send" class="btn btn-primary" type="submit">
+                    </div>
+                </div>
+            </div>
+        {/form}
+    </div>
+{/block}
+
+{block content}
+    <div class="js-page-tables">
+        <h1>Stoly</h1>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        Seznam stolů
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive px-3 py-3">
+                            <table class="table table-bordered js-table">
+                                <thead>
+                                <tr>
+                                    <th>Číslo stolu</th>
+                                    <th>Popis</th>
+                                    <th>Akce</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+{*                                {foreach $tables as $table}*}
+{*                                    <tr>*}
+{*                                        <td>*}
+{*                                            {$table->getNumber()}*}
+{*                                        </td>*}
+{*                                        <td>*}
+{*                                            {$table->getDescription()}*}
+{*                                        </td>*}
+{*                                        <td>*}
+{*                                            <i class="fas fa-pencil-alt text-primary icon js-edit-table-start" title="Upravit"*}
+{*                                               data-bs-toggle="modal"*}
+{*                                               data-bs-target="#editTableModal"*}
+{*                                               data-table-id="{$table->getId()}"*}
+{*                                               data-table-number="{$table->getNumber()}"*}
+{*                                               data-table-description="{$table->getDescription()}"*}
+{*                                            >*}
+{*                                            </i>*}
+{*                                        </td>*}
+{*                                    </tr>*}
+{*                                {/foreach}*}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card-header card-header-top">
+                        Přidat stůl
+                    </div>
+                    <div class="card-body">
+                        {form addTableForm}
+                            <div class="form-errors" n:ifcontent>
+                                <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
+                            </div>
+                            <div class="row px-2 mb-3">
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="tableNumber">Číslo stolu</label>
+                                        <input n:name="number" type="number" class="form-control" id="tableNumber" min="1" max="999">
+                                        <small class="form-error" n:ifcontent>{inputError number}</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="tableDescription">Popis</label>
+                                        <input n:name="description" type="text" class="form-control" id="tableDescription">
+                                        <small class="form-error" n:ifcontent>{inputError description}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
+                        {/form}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{/block}

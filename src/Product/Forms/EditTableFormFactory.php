@@ -3,18 +3,18 @@
 namespace App\Product\Forms;
 
 use App\Entity\Company;
-use App\Product\Action\EditCategoryAction;
-use App\Product\ORM\CategoryRepository;
+use App\Product\Action\EditTableAction;
+use App\Product\ORM\TableRepository;
 use App\Product\Services\CodeValidator;
 use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
 
-class EditCategoryFormFactory
+class EditTableFormFactory
 {
     public function __construct(
         private readonly CodeValidator $codeValidator,
-        private readonly CategoryRepository $categoryRepository,
-        private readonly EditCategoryAction $editCategoryAction,
+        private readonly TableRepository $tableRepository,
+        private readonly EditTableAction $editTableAction,
     )
     {
     }
@@ -28,30 +28,29 @@ class EditCategoryFormFactory
             ->setRequired()
         ;
         $form
-            ->addInteger('code', 'Kód')
+            ->addInteger('number', 'Číslo stolu')
             ->setRequired()
         ;
         $form
-            ->addText('name', 'Název')
-            ->setMaxLength(50)
+            ->addText('description', 'Popis')
             ->setRequired()
         ;
         $form->addSubmit('send', 'Upravit');
 
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company) {
-            $category = $this->categoryRepository->find($values->id);
-            if ($category === null) {
-                $errMsg = 'Kategorie nebyla nalezena.';
+            $table = $this->tableRepository->find($values->id);
+            if ($table === null) {
+                $errMsg = 'Stůl nebyl nalezen.';
                 $form->addError($errMsg);
                 $form->getPresenter()->flashMessage($errMsg,FlashMessageType::ERROR);
             }
-            if ($category->getCompany()->getId() !== $company->getId()) {
+            if ($table->getCompany()->getId() !== $company->getId()) {
                 $errMsg = 'K této akci nemáte přístup.';
                 $form->addError($errMsg);
                 $form->getPresenter()->flashMessage($errMsg,FlashMessageType::ERROR);
             }
 
-            $validationMsg = $this->codeValidator->isCategoryCodeValid($company, $values->code, $category->getCode());
+            $validationMsg = $this->codeValidator->isTableNumberValid($company, $values->number, $table->getNumber());
             if ($validationMsg !== '') {
                 $form->addError($validationMsg);
                 $form->getPresenter()->flashMessage($validationMsg,FlashMessageType::ERROR);
@@ -59,9 +58,9 @@ class EditCategoryFormFactory
         };
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) use ($company) {
-            $category = $this->categoryRepository->find($values->id);
-            $this->editCategoryAction->__invoke($category, $values->code, $values->name);
-            $form->getPresenter()->flashMessage('Kategorie byla upravena.', FlashMessageType::SUCCESS);
+            $table = $this->tableRepository->find($values->id);
+            $this->editTableAction->__invoke($table, $values->number, $values->description);
+            $form->getPresenter()->flashMessage('Stůl byl upraven.', FlashMessageType::SUCCESS);
             $form->getPresenter()->redirect('this');
         };
 
