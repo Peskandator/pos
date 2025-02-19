@@ -57,9 +57,9 @@ class Company
      */
     private Collection $categories;
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Table", mappedBy="company")
+     * @ORM\OneToMany(targetEntity="App\Entity\DiningTable", mappedBy="company")
      */
-    private Collection $tables;
+    private Collection $diningTables;
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="company")
      */
@@ -75,7 +75,7 @@ class Company
         $this->companyUsers = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->products = new ArrayCollection();
-        $this->tables = new ArrayCollection();
+        $this->diningTables = new ArrayCollection();
     }
 
     public function update(CreateCompanyRequest $request)
@@ -158,9 +158,9 @@ class Company
         return $this->categories;
     }
 
-    public function getAllTables(): Collection
+    public function getAllDiningTables(): Collection
     {
-        return $this->tables;
+        return $this->diningTables;
     }
 
     public function getCategories(): array
@@ -179,12 +179,12 @@ class Company
         return $notDeletedCategories;
     }
 
-    public function getTables(): array
+    public function getDiningTables(): array
     {
         $notDeletedTables = [];
-        $tables = $this->tables;
+        $tables = $this->diningTables;
         /**
-         * @var Table $table
+         * @var DiningTable $table
          */
         foreach ($tables as $table) {
             if (!$table->isDeleted()) {

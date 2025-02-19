@@ -2,7 +2,7 @@
 
 namespace App\Product\Action;
 
-use App\Entity\Table;
+use App\Entity\DiningTable;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EditTableAction
@@ -15,7 +15,7 @@ class EditTableAction
         $this->entityManager = $entityManager;
     }
 
-    public function __invoke(Table $table, int $number, ?string $description): void
+    public function __invoke(DiningTable $table, int $number, ?string $description): void
     {
         $table->update($number, $description);
         $this->entityManager->persist($table);

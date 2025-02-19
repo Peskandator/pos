@@ -1,11 +1,11 @@
 import category from './category.js';
 import product from './product.js';
-import table from './table.js';
+import diningTable from './diningTable.js';
 
 $(document).ready(function(){
     category();
     product();
-    table();
+    diningTable();
 
     setTimeout(flashMessage, 4200);
     function flashMessage() {

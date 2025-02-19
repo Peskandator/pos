@@ -2,8 +2,8 @@ services:
     - App\Product\Forms\ProductFormFactory
     - App\Product\Forms\AddCategoryFormFactory
     - App\Product\Forms\EditCategoryFormFactory
-    - App\Product\Forms\AddTableFormFactory
-    - App\Product\Forms\EditTableFormFactory
+    - App\Product\Forms\AddDiningTableFormFactory
+    - App\Product\Forms\EditDiningTableFormFactory
 
     - App\Product\Action\AddCategoryAction
     - App\Product\Action\EditCategoryAction

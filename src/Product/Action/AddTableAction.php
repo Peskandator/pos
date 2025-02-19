@@ -3,7 +3,7 @@
 namespace App\Product\Action;
 
 use App\Entity\Company;
-use App\Entity\Table;
+use App\Entity\DiningTable;
 use Doctrine\ORM\EntityManagerInterface;
 
 class AddTableAction
@@ -18,7 +18,7 @@ class AddTableAction
 
     public function __invoke(Company $company, int $number, ?string $description): void
     {
-        $table = new Table(
+        $table = new DiningTable(
             $company,
             $number,
             $description ?? '',
@@ -27,7 +27,7 @@ class AddTableAction
         bdump($table);
 
         $this->entityManager->persist($table);
-        $company->getAllTables()->add($table);
+        $company->getAllDiningTables()->add($table);
 
         $this->entityManager->flush();
     }

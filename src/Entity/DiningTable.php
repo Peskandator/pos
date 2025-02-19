@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity()
  * @ORM\Table(name="dining_table")
  */
-class Table
+class DiningTable
 {
     /**
      * @ORM\Id()

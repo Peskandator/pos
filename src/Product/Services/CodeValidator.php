@@ -6,7 +6,7 @@ namespace App\Product\Services;
 
 use App\Entity\Category;
 use App\Entity\Company;
-use App\Entity\Table;
+use App\Entity\DiningTable;
 
 class CodeValidator
 {
@@ -47,20 +47,20 @@ class CodeValidator
         return '';
     }
 
-    public function isTableNumberValid(Company $company, ?int $number, ?int $currentNumber = null): string
+    public function isDiningTableNumberValid(Company $company, ?int $number, ?int $currentNumber = null): string
     {
         if ($number === $currentNumber || !$number) {
             return '';
         }
 
         if (!$this->validateCode($number)) {
-            return 'Kód musí být v rozmezí 7-999';
+            return 'Kód musí být v rozmezí 1-999';
         }
 
         // TODO: get all tables? to not have duplicate code with deleted?
-        $tables = $company->getTables();
+        $tables = $company->getDiningTables();
         /**
-         * @var Table $table
+         * @var DiningTable $table
          */
         foreach ($tables as $table) {
             if ($number === $table->getNumber()) {

@@ -1,9 +1,9 @@
 {layout $adminlayoutPath}
 
 {block modals}
-    <div class="modal fade js-page-tables" id="editTableModal" tabindex="-1" aria-labelledby="editTableLabel" aria-hidden="true">
-        {form editTableForm}
-            <input n:name="id" class="js-edit-table-id">
+    <div class="modal fade js-page-dining-tables" id="editTableModal" tabindex="-1" aria-labelledby="editTableLabel" aria-hidden="true">
+        {form editDiningTableForm}
+            <input n:name="id" class="js-edit-dining-table-id">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -14,12 +14,12 @@
                         <div class="row">
                             <div class="form-group">
                                 <label for="editTableNumber">Číslo stolu</label>
-                                <input n:name="number" type="number" class="form-control js-edit-table-number" id="editTableNumber" min="1" max="999">
+                                <input n:name="number" type="number" class="form-control js-edit-dining-table-number" id="editTableNumber" min="1" max="999">
                                 <small class="form-error" n:ifcontent>{inputError number}</small>
                             </div>
                             <div class="form-group">
                                 <label for="editTableDescription">Popis</label>
-                                <input n:name="description" type="text" class="form-control js-edit-table-description" id="editTableDescription">
+                                <input n:name="description" type="text" class="form-control js-edit-dining-table-description" id="editTableDescription">
                                 <small class="form-error" n:ifcontent>{inputError description}</small>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
 {/block}
 
 {block content}
-    <div class="js-page-tables">
+    <div class="js-page-dining-tables">
         <h1>Stoly</h1>
 
         <div class="row">
@@ -55,26 +55,26 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-{*                                {foreach $tables as $table}*}
-{*                                    <tr>*}
-{*                                        <td>*}
-{*                                            {$table->getNumber()}*}
-{*                                        </td>*}
-{*                                        <td>*}
-{*                                            {$table->getDescription()}*}
-{*                                        </td>*}
-{*                                        <td>*}
-{*                                            <i class="fas fa-pencil-alt text-primary icon js-edit-table-start" title="Upravit"*}
-{*                                               data-bs-toggle="modal"*}
-{*                                               data-bs-target="#editTableModal"*}
-{*                                               data-table-id="{$table->getId()}"*}
-{*                                               data-table-number="{$table->getNumber()}"*}
-{*                                               data-table-description="{$table->getDescription()}"*}
-{*                                            >*}
-{*                                            </i>*}
-{*                                        </td>*}
-{*                                    </tr>*}
-{*                                {/foreach}*}
+                                {foreach $diningTables as $diningTable}
+                                    <tr>
+                                        <td>
+                                            {$diningTable->getNumber()}
+                                        </td>
+                                        <td>
+                                            {$diningTable->getDescription()}
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-pencil-alt text-primary icon js-edit-dining-table-start" title="Upravit"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#editTableModal"
+                                               data-dining-table-id="{$diningTable->getId()}"
+                                               data-dining-table-number="{$diningTable->getNumber()}"
+                                               data-dining-table-description="{$diningTable->getDescription()}"
+                                            >
+                                            </i>
+                                        </td>
+                                    </tr>
+                                {/foreach}
                                 </tbody>
                             </table>
                         </div>
@@ -84,7 +84,7 @@
                         Přidat stůl
                     </div>
                     <div class="card-body">
-                        {form addTableForm}
+                        {form addDiningTableForm}
                             <div class="form-errors" n:ifcontent>
                                 <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
                             </div>

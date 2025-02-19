@@ -9,7 +9,7 @@ use App\Product\Services\CodeValidator;
 use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
 
-class EditTableFormFactory
+class EditDiningTableFormFactory
 {
     public function __construct(
         private readonly CodeValidator $codeValidator,
@@ -50,7 +50,7 @@ class EditTableFormFactory
                 $form->getPresenter()->flashMessage($errMsg,FlashMessageType::ERROR);
             }
 
-            $validationMsg = $this->codeValidator->isTableNumberValid($company, $values->number, $table->getNumber());
+            $validationMsg = $this->codeValidator->isDiningTableNumberValid($company, $values->number, $table->getNumber());
             if ($validationMsg !== '') {
                 $form->addError($validationMsg);
                 $form->getPresenter()->flashMessage($validationMsg,FlashMessageType::ERROR);

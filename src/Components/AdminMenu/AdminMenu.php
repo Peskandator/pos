@@ -115,7 +115,7 @@ class AdminMenu extends Control
         );
         $items[] = $this->createMenuItem(
             'Stoly',
-            $this->getPresenter()->lazyLink(':Admin:Tables:default'),
+            $this->getPresenter()->lazyLink(':Admin:DiningTables:default'),
             [],
             $this->getCurrentLinkCallable()
         );
