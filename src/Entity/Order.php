@@ -24,7 +24,7 @@ class Order
     private ?string $description;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\DiningTable")
-     * @ORM\JoinColumn(name="company_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="dining_table_id", referencedColumnName="id", nullable=false)
      */
     private DiningTable $diningTable;
     /**
