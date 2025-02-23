@@ -64,6 +64,10 @@ class Company
      * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="company")
      */
     private Collection $products;
+    /**
+     * @ORM\OneToMany(targetEntity="Order", mappedBy="company")
+     */
+    private Collection $orders;
 
 
     public function __construct(
@@ -76,6 +80,7 @@ class Company
         $this->categories = new ArrayCollection();
         $this->products = new ArrayCollection();
         $this->diningTables = new ArrayCollection();
+        $this->orders = new ArrayCollection();
     }
 
     public function update(CreateCompanyRequest $request)
@@ -161,6 +166,11 @@ class Company
     public function getAllDiningTables(): Collection
     {
         return $this->diningTables;
+    }
+
+    public function getOrders(): Collection
+    {
+        return $this->orders;
     }
 
     public function getCategories(): array

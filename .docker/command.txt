@@ -1,11 +1,15 @@
 docker compose -p pos up -d --build --force-recreate
 
+-------------------
 
 docker exec pos php bin/console migrations:diff
 
 docker exec pos php bin/console migrations:migrate
 
 
+docker exec pos composer install
+
+--------------------------
 
 docker compose down
 
@@ -15,3 +19,13 @@ docker image ls
 docker rmi imagename -f
 
 docker exec -it pos sh
+
+---------------
+SMAZÁNÍ CACHE
+
+1.    cd var/temp
+ a pak
+2. sudo rm -rf cache
+
+smazazání vše v proxies (někdy nutné smazat nacachované data z objektů - např. při regenerování migrace)
+

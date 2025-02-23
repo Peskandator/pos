@@ -18,3 +18,4 @@ includes:
     - services/user.neon
     - services/company.neon
     - services/product.neon
+    - services/order.neon
