@@ -32,7 +32,10 @@
 		"ext-simplexml": "*",
 		"ext-iconv": "*",
 		"ext-zlib": "*",
-		"ext-mbstring": "*"
+		"ext-mbstring": "*",
+		"ext-zip": "*",
+		"ext-gd": "*",
+		"phpoffice/phpspreadsheet": "4.0.0"
     },
 	"require-dev": {
 

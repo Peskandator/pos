@@ -13,5 +13,12 @@ RUN a2enmod rewrite
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 RUN docker-php-ext-enable mysqli pdo pdo_mysql
 
+RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install gd
+
+RUN apt-get update && apt-get install -y libzip-dev && \
+    docker-php-ext-install zip
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer self-update

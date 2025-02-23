@@ -18,3 +18,5 @@ services:
 
     - App\Product\Services\CodeValidator
     - App\Product\Services\ProductsInGroupGenerator
+
+    - App\Utils\XlsxExporter
