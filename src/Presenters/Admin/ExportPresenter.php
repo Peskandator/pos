@@ -2,38 +2,61 @@
 
 namespace App\Presenters\Admin;
 
-use Nette;
-use App\Utils\XlsxExporter;
-use App\Product\ORM\ProductRepository;
+use App\Entity\Product;
 use App\Presenters\BaseCompanyPresenter;
+use App\Utils\XlsxExporter;
 
 class ExportPresenter extends BaseCompanyPresenter
 {
-    protected XlsxExporter $xlsxExporter;
-    protected ProductRepository $productRepository;
-
-    public function __construct(XlsxExporter $xlsxExporter, ProductRepository $productRepository)
+    public function __construct(
+        private readonly XlsxExporter $xlsxExporter,
+    )
     {
-        $this->xlsxExporter = $xlsxExporter;
-        $this->productRepository = $productRepository;
+        parent::__construct();
     }
 
-    public function actionXlsx(): void
+    public function actionProduct(): void
     {
         $products = $this->productRepository->findAll();
 
-        // Define columns and headers for the product export
-        $columns = [
-            'Inv. číslo' => 'getInventoryNumber',
-            'Název' => 'getName',
-            'Cena' => 'getPrice',
-            'DPH' => 'getVatRate',
-            'Výrobce' => 'getManufacturer'
-        ];
+        $rows = $this->createProductDataForExport($products);
 
+        $columns = [];
         // Export to XLSX
         $this->xlsxExporter->export($products, $columns, '/tmp/products_export.xlsx');
         $this->terminate();
+    }
+
+    private function createProductDataForExport(array $products): array
+    {
+        // Define columns and headers for the product export
+        $header = [
+            'Inv. číslo',
+            'Název',
+            'Cena',
+            'DPH',
+            'Výrobce'
+        ];
+
+        $rows = [];
+        $rows[] = $header;
+
+        /**
+         * @var Product $product
+         */
+        foreach ($products as $product) {
+            $row = [];
+
+            $row[] = $product->getInventoryNumber();
+            $row[] = $product->getName();
+            $row[] = $product->getPrice();
+            $row[] = $product->getVatRate();
+            $row[] = $product->getManufacturer();
+
+            // TODO add more columns
+        }
+
+        return $rows;
     }
 }
 
