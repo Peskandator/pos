@@ -22,5 +22,7 @@ final class OrdersPresenter extends BaseCompanyPresenter
                 'Objednávky',
                 null)
         );
+
+        $this->template->orders = $this->currentCompany->getOrders();
     }
 }
