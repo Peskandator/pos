@@ -5,7 +5,6 @@ namespace App\Presenters\Admin;
 use App\Entity\Product;
 use App\Presenters\BaseCompanyPresenter;
 use App\Utils\XlsxExporter;
-
 class ExportPresenter extends BaseCompanyPresenter
 {
     public function __construct(
@@ -21,9 +20,8 @@ class ExportPresenter extends BaseCompanyPresenter
 
         $rows = $this->createProductDataForExport($products);
 
-        $columns = [];
         // Export to XLSX
-        $this->xlsxExporter->export($products, $columns, '/tmp/products_export.xlsx');
+        $this->xlsxExporter->export($rows, '/tmp/products_export.xlsx');
         $this->terminate();
     }
 
@@ -35,7 +33,11 @@ class ExportPresenter extends BaseCompanyPresenter
             'Název',
             'Cena',
             'DPH',
-            'Výrobce'
+            'Výrobce',
+            'Skupina',
+            'Kategorie',
+            'Kat. číslo'
+
         ];
 
         $rows = [];
@@ -52,8 +54,14 @@ class ExportPresenter extends BaseCompanyPresenter
             $row[] = $product->getPrice();
             $row[] = $product->getVatRate();
             $row[] = $product->getManufacturer();
+            $row[] = $product->isGroup() ? 'Ano' : 'Ne';
 
-            // TODO add more columns
+            // Get category details
+            $category = $product->getCategory();
+            $row[] = $category ? $category->getName() : '';
+            $row[] = $category ? $category->getId() : '';
+
+            $rows[] = $row;
         }
 
         return $rows;
