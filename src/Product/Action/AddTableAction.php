@@ -24,8 +24,6 @@ class AddTableAction
             $description ?? '',
         );
 
-        bdump($table);
-
         $this->entityManager->persist($table);
         $company->getAllDiningTables()->add($table);
 

@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
+use App\Order\Requests\CreateOrderRequest;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="order")
+ * @ORM\Table(name="`order`")
  */
 class Order
 {
@@ -22,6 +23,10 @@ class Order
      * @ORM\Column(name="description", type="string", length=255, nullable=true)
      */
     private ?string $description;
+    /**
+     * @ORM\Column(name="inventory_number", type="integer", length=30, nullable=false)
+     */
+    private ?int $inventoryNumber;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\DiningTable")
      * @ORM\JoinColumn(name="dining_table_id", referencedColumnName="id", nullable=false)
@@ -48,12 +53,12 @@ class Order
 
     public function __construct(
         Company $company,
-        DiningTable $diningTable,
-        ?string $description,
+        CreateOrderRequest $createOrderRequest,
     ){
         $this->company = $company;
-        $this->diningTable = $diningTable;
-        $this->description = $description;
+        $this->diningTable = $createOrderRequest->diningTable;
+        $this->description = $createOrderRequest->description;
+        $this->inventoryNumber = $createOrderRequest->inventoryNumber;
         $this->orderItems = new ArrayCollection();
         $this->creationDate = new \DateTimeImmutable();
         $this->updateDate = new \DateTimeImmutable();
@@ -108,5 +113,15 @@ class Order
     public function setDescription(?string $description): void
     {
         $this->description = $description;
+    }
+
+    public function getInventoryNumber(): ?int
+    {
+        return $this->inventoryNumber;
+    }
+
+    public function setInventoryNumber(?int $inventoryNumber): void
+    {
+        $this->inventoryNumber = $inventoryNumber;
     }
 }

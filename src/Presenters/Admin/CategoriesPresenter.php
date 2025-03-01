@@ -33,8 +33,6 @@ final class CategoriesPresenter extends BaseCompanyPresenter
                 null)
         );
 
-        bdump($this->currentCompany->getCategories());
-
         $this->template->categories = $this->currentCompany->getCategories();
     }
 
