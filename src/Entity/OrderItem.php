@@ -36,10 +36,11 @@ class OrderItem
     public function __construct(
         Order $order,
         Product $product,
+        int $quantity
     ){
         $this->order = $order;
         $this->product = $product;
-        $this->quantity = 1;
+        $this->quantity = $quantity;
     }
 
     public function getId(): int

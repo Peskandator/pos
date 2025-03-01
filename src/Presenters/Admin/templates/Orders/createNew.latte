@@ -1,0 +1,80 @@
+{layout $adminlayoutPath}
+{import '../_partials/orderItemRow.latte'}
+
+{block modals}
+
+{/block}
+
+{block content}
+
+<div class="js-page-order">
+
+    <h1>Nová objednávka</h1>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form n:name="createOrderForm" id="js-order-form">
+                        <div class="form-errors" n:ifcontent>
+                            <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
+                        </div>
+
+                        <div class="px-2">
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="inventoryNumber">Inventární číslo</label>
+                                        <input n:name="inventory_number" type="number" class="form-control" id="inventoryNumber" min="1" max="9999999999" step="1">
+                                        <small class="form-error" n:ifcontent>{inputError inventory_number}</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="diningTable">Stůl</label>
+                                        <select
+                                                n:name="dining_table"
+                                                class="form-select"
+                                                id="diningTable"
+                                        >
+                                        </select>
+                                        <small class="form-error" n:ifcontent>{inputError dining_table}</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input n:name="order_items" id="js-order-items-input">
+                            <small class="form-error" n:ifcontent>{inputError order_items}</small>
+                            <div id="orderItemsBox">
+                                <div>Položky objednávky:</div>
+                                <a class="btn btn-primary rounded btn-sm mt-1" id="addNextOrderItemButton">Přidat další</a>
+                                <div id="orderItemRows">
+                                    {include orderItemRow, isTemplate: true, orderItemOptions: $orderItemOptions, orderItem: null}
+                                    {include orderItemRow, isTemplate: false, orderItemOptions: $orderItemOptions, orderItem: null}
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="productDescription">Popis</label>
+                                    <input n:name="description" type="text" class="form-control" id="productDescription">
+                                    <small class="form-error" n:ifcontent>{inputError description}</small>
+                                </div>
+                            </div>
+                            {*                                <button id="addProductButton" class="mb-2 btn rounded-3 btn-primary">Přidat</button>*}
+                            <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
+                        </div>
+                    </form>
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

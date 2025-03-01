@@ -5,7 +5,7 @@ namespace App\Product\ORM;
 use App\Entity\DiningTable;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TableRepository
+class DiningTableRepository
 {
     private DiningTable|\Doctrine\ORM\EntityRepository $repository;
     private EntityManagerInterface $entityManager;

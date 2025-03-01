@@ -1,2 +1,7 @@
 services:
     - App\Order\ORM\OrderRepository
+
+    - App\Order\Forms\OrderFormFactory
+
+    - App\Order\Action\CreateOrderAction
+    - App\Order\Action\EditOrderAction

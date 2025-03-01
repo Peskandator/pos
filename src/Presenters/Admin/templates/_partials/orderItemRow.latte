@@ -1,0 +1,31 @@
+{define orderItemRow, $isTemplate, $orderItemOptions, $orderItem}
+    <div class="row pl-5 mt-2 mb-2 orderItemRow" style="margin-left: 1rem; {if $isTemplate}display: none{/if}">
+        <div class="col-4">
+            <div class="form-group">
+                <select class="form-select orderItemSelect">
+                    {if !$orderItem}
+                        <option value="0">Vyberte ...</option>
+                    {/if}
+                    {foreach $orderItemOptions as $orderItemOption}
+                        <option value="{$orderItemOption->getId()}"
+                                {if $orderItem && $orderItemOption->getId() === $orderItem->getId()} selected{/if}>
+                            {$orderItemOption->getName()}
+                        </option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="form-group">
+                <input type="number" step="1" class="form-control orderItemQuantity" min="0" max="1000000" placeholder="Množství"
+                       {if $orderItem}value="{$orderItem->getQuantity()}"{/if}
+                >
+            </div>
+        </div>
+        <div class="col-1" style="align-content: center">
+            <i class="fa-solid fa-trash text-danger icon align-self-center deleteOrderItemButton"
+               title="Odstranit"
+            ></i>
+        </div>
+    </div>
+{/define}

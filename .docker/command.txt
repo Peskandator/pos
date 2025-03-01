@@ -28,4 +28,4 @@ SMAZÁNÍ CACHE
 2. sudo rm -rf cache
 
 smazazání vše v proxies (někdy nutné smazat nacachované data z objektů - např. při regenerování migrace)
-
+ (kromě gitignoru - jen php soubory)
