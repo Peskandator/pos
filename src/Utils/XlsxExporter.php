@@ -109,4 +109,29 @@ class XlsxExporter
         return $rows;
     }
 
+
+    /**
+     * Prepares all table data for export
+     */
+    public function createTableDataForExport(array $tables): array
+    {
+        $header = [
+            'Číslo stolu',
+            'Popis'
+        ];
+        $rows = [];
+        $rows[] = $header;
+
+        /**
+         * @var table $table
+         */
+        foreach ($tables as $table) {
+            $row = [];
+            $row[] = $table->getNumber();
+            $row[] = $table->getDescription();
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+
 }
