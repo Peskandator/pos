@@ -32,7 +32,10 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="mb-3">
+                                    <input n:name="order_items" id="js-order-items-input">
+                                    <small class="form-error" n:ifcontent>{inputError order_items}</small>
                                     <label>Položky objednávky:</label>
                                     <div id="orderItemsBox">
                                         <a class="btn btn-primary rounded btn-sm mt-1" id="addNextOrderItemButton">Přidat další</a>
