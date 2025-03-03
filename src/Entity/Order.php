@@ -64,6 +64,14 @@ class Order
         $this->updateDate = new \DateTimeImmutable();
     }
 
+    public function updateFromRequest(CreateOrderRequest $request): void
+    {
+        $this->description = $request->description;
+        $this->updateDate = new \DateTimeImmutable();
+        $this->diningTable = $request->diningTable;
+        $this->inventoryNumber = $request->inventoryNumber;
+    }
+
     public function update(): void
     {
         $this->updateDate = new \DateTimeImmutable();
@@ -95,6 +103,11 @@ class Order
         $orderItems->add($orderItem);
     }
 
+    public function removeOrderItems(): void
+    {
+        $this->orderItems->clear();
+    }
+
     public function getCreationDate(): \DateTimeInterface
     {
         return $this->creationDate;
@@ -124,4 +137,5 @@ class Order
     {
         $this->inventoryNumber = $inventoryNumber;
     }
+
 }
