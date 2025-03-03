@@ -103,9 +103,10 @@ class Order
         $orderItems->add($orderItem);
     }
 
-    public function removeOrderItems(): void
+    public function clearOrderItems(): void
     {
-        $this->orderItems->clear();
+        $this->orderItems = new ArrayCollection();
+//        $this->orderItems->clear(); // TODO: WHY IS NOT WORKING???????
     }
 
     public function getCreationDate(): \DateTimeInterface

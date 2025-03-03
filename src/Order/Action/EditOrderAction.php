@@ -21,13 +21,15 @@ class EditOrderAction
 
     public function __invoke(Company $company, Order $order, CreateOrderRequest $request, array $orderItems): void
     {
-        $order->removeOrderItems();
         $order->updateFromRequest($request);
 
         $currentItems = $order->getOrderItems();
+        $order->clearOrderItems();
+
         foreach ($currentItems as $item) {
             $this->entityManager->remove($item);
         }
+        $this->entityManager->persist($order);
         $this->entityManager->flush();
 
         foreach ($orderItems as $orderItem) {
@@ -38,14 +40,6 @@ class EditOrderAction
             $this->entityManager->persist($item);
         }
 
-
         $this->entityManager->flush();
     }
-
-//    private function deleteCurrentProductsInGroup(Collection $productsInGroup): void
-//    {
-//        foreach ($productsInGroup as $productInGroup) {
-//            $this->entityManager->remove($productInGroup);
-//        }
-//    }
 }

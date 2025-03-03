@@ -57,11 +57,10 @@ class OrderFormFactory
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company, $editedOrder) {
             $diningTable = $this->diningTableRepository->find($values->dining_table);
             if ($diningTable === null) {
-                $errMsg = 'Stůl nenalezen. Nutno vyplnit číslo stolu.';
+                $errMsg = 'Je nutné vyplnit platné číslo stolu.';
                 $form->addError($errMsg);
                 $form->getPresenter()->flashMessage($errMsg, FlashMessageType::ERROR);
             }
-
 
             if (!$this->isInventoryNumberAvailable($company, $values->inventory_number, $editedOrder)) {
                 $errMsg = 'Objednávka s tímto inventárním číslem již existuje';
@@ -121,7 +120,7 @@ class OrderFormFactory
         ]);
 
         $form->setValues(array(
-            'table' => $order->getDiningTable()?->getId(),
+            'dining_table' => $order->getDiningTable()?->getId(),
         ));
 
         return $form;
