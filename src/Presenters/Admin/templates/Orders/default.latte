@@ -21,13 +21,25 @@
                         <table class="table table-bordered js-table">
                             <thead>
                                 <tr>
-
-
+                                    <th>Inv. č.</th>
+                                    <th>Stůl</th>
+                                    <th>Vytvořeno</th>
+                                    <th>Akce</th>
                                 </tr>
                             </thead>
                             <tbody>
-
-
+                            {foreach $orders as $order}
+                                <tr>
+                                    <td>{$order->getInventoryNumber()}</td>
+                                    <td>{$order->getDiningTable()->getNumber()}</td>
+                                    <td>{$order->getCreationDate()|date:'Y-m-d'}</td>
+                                    <td>
+                                        <a n:href=":Admin:EditOrder:default, $order->getId()">
+                                            <i class="fas fa-pencil-alt text-primary icon" title="Upravit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {/foreach}
                             </tbody>
                         </table>
                     </div>
@@ -35,4 +47,5 @@
             </div>
         </div>
     </div>
+</div>
 {/block}
