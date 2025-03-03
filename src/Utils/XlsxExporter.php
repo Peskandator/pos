@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Utils;
+use App\Entity\DiningTable;
 use App\Entity\Product;
 use App\Entity\Category;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
@@ -9,12 +10,11 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class XlsxExporter
 {
-    public function export(array $data, string $fileObject): void
+    public function export(array $data, string $fileName): void
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Populate rows with data
         $rowIndex = 1;
         foreach ($data as $row) {
             $columnIndex = 1;
@@ -27,26 +27,22 @@ class XlsxExporter
             $rowIndex++;
         }
 
-        // Write the spreadsheet to a file
         $timestamp = date('Y-m-d');
-        $filename = '/tmp/' . $fileObject . '_export_' . $timestamp . '.xlsx';
+        $filePath = '/tmp/' . $fileName . '_export_' . $timestamp . '.xlsx';
         $writer = new Xlsx($spreadsheet);
-        $writer->save($filename);
+        $writer->save($filePath);
 
-        // Force download the file
+        $downloadFileName = $fileName . ' ' . $timestamp . '.xlsx';
+
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Disposition: attachment; filename="' . $downloadFileName . '"');
         header('Cache-Control: max-age=0');
-        $writer->save('php://output');
+        readfile($filePath);
     }
 
 
-    /**
-     * Prepares a product data for export
-     */
     public function createProductDataForExport(array $products): array
     {
-        // Define columns and headers for the product export
         $header = [
             'Inv. číslo',
             'Název',
@@ -75,7 +71,6 @@ class XlsxExporter
             $row[] = $product->getManufacturer();
             $row[] = $product->isGroup() ? 'Ano' : 'Ne';
 
-            // Get category details
             $category = $product->getCategory();
             $row[] = $category ? $category->getName() : '';
             $row[] = $category ? $category->getId() : '';
@@ -85,9 +80,6 @@ class XlsxExporter
         return $rows;
     }
 
-    /**
-     * Prepares a category data for export
-     */
     public function createCategoryDataForExport(array $categories): array
     {
         $header = [
@@ -110,9 +102,6 @@ class XlsxExporter
     }
 
 
-    /**
-     * Prepares all table data for export
-     */
     public function createTableDataForExport(array $tables): array
     {
         $header = [
@@ -123,7 +112,7 @@ class XlsxExporter
         $rows[] = $header;
 
         /**
-         * @var table $table
+         * @var DiningTable $table
          */
         foreach ($tables as $table) {
             $row = [];
@@ -133,5 +122,4 @@ class XlsxExporter
         }
         return $rows;
     }
-
 }

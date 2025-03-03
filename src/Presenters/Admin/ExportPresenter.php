@@ -5,14 +5,14 @@ namespace App\Presenters\Admin;
 use App\Presenters\BaseCompanyPresenter;
 use App\Utils\XlsxExporter;
 use App\Product\ORM\CategoryRepository;
-use App\Product\ORM\TableRepository;
+use App\Product\ORM\DiningTableRepository;
 
 class ExportPresenter extends BaseCompanyPresenter
 {
     public function __construct(
         private readonly XlsxExporter       $xlsxExporter,
         private readonly CategoryRepository $categoryRepository,
-        private readonly TableRepository    $tableRepository
+        private readonly DiningTableRepository    $tableRepository
     )
     {
         parent::__construct();
@@ -24,7 +24,7 @@ class ExportPresenter extends BaseCompanyPresenter
 
         $rows = $this->xlsxExporter->createProductDataForExport($products);
 
-        $this->xlsxExporter->export($rows, 'produkty');
+        $this->xlsxExporter->export($rows, 'Produkty');
         $this->terminate();
     }
 
@@ -33,7 +33,7 @@ class ExportPresenter extends BaseCompanyPresenter
         $category = $this->categoryRepository->findAll();
         $rows = $this->xlsxExporter->createCategoryDataForExport($category);
 
-        $this->xlsxExporter->export($rows, 'kategorie');
+        $this->xlsxExporter->export($rows, 'Kategorie produktů');
         $this->terminate();
     }
 
@@ -42,7 +42,7 @@ class ExportPresenter extends BaseCompanyPresenter
         $table = $this->tableRepository->findAll();
         $rows = $this->xlsxExporter->createTableDataForExport($table);
 
-        $this->xlsxExporter->export($rows, 'stoly');
+        $this->xlsxExporter->export($rows, 'Stoly');
         $this->terminate();
     }
 }
