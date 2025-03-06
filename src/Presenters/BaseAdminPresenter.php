@@ -13,6 +13,7 @@ use App\Product\ORM\ProductRepository;
 use App\Utils\CurrentUser;
 use App\Utils\FlashMessageType;
 use Nette\Application\Attributes\Persistent;
+use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 
 abstract class BaseAdminPresenter extends Presenter
@@ -138,5 +139,15 @@ abstract class BaseAdminPresenter extends Presenter
     public function findCompanyById(): ?Company
     {
         return $this->companyRepository->find($this->currentCompanyId);
+    }
+
+    protected function checkAccessToElementsCompany(Form $form, ?Company $company): Form
+    {
+        if (!$company || $company->getId() !== $this->currentCompanyId) {
+            $form->addError('K této akci nemáte oprávnění.');
+            $this->flashMessage('K této akci nemáte oprávnění',FlashMessageType::ERROR);
+        }
+
+        return $form;
     }
 }

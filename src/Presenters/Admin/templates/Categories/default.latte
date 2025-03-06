@@ -32,11 +32,35 @@
             </div>
         {/form}
     </div>
+    <div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteCategoryLabel">Smazat kategorii</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Chcete opravdu odstranit kategorii <b class="js-modal-record-name"></b>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zpět</button>
+                    <button type="button" class="btn btn-danger js-modal-delete-confirm">Odstranit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {/block}
 
 {block content}
     <div class="js-page-categories">
         <h1>Kategorie</h1>
+
+        <form n:name="deleteCategoryForm" class="js-delete-form">
+            <div class="form-errors" n:ifcontent>
+                <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert mt-2">{$error}</div>
+            </div>
+            <input n:name="id" class="js-delete-record-id">
+        </form>
 
         <div class="row">
             <div class="col-12">
@@ -65,14 +89,23 @@
                                                 {$category->getName()}
                                             </td>
                                             <td>
-                                                <i class="fas fa-pencil-alt text-primary icon js-edit-category-start" title="Upravit"
-                                                   data-bs-toggle="modal"
-                                                   data-bs-target="#editCategoryModal"
-                                                   data-category-id="{$category->getId()}"
-                                                   data-category-code="{$category->getCode()}"
-                                                   data-category-name="{$category->getName()}"
-                                                >
-                                                </i>
+                                                <div class="d-flex">
+                                                    <i class="fas fa-pencil-alt text-primary icon js-edit-category-start" title="Upravit"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#editCategoryModal"
+                                                       data-category-id="{$category->getId()}"
+                                                       data-category-code="{$category->getCode()}"
+                                                       data-category-name="{$category->getName()}"
+                                                    >
+                                                    </i>
+                                                    <i class="fa-solid fa-trash text-danger icon js-delete-record-button js-edit-text icon-left align-self-center"
+                                                       title="Odstranit"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#deleteCategoryModal"
+                                                       data-record-name="{$category->getName()}"
+                                                       data-record-id="{$category->getId()}"
+                                                    ></i>
+                                                </div>
                                             </td>
                                         </tr>
                                     {/foreach}
