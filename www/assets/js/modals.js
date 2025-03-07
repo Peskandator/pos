@@ -8,9 +8,6 @@ $(document).ready(function(){
         $(`.js-delete-record-id`).val(recordId);
 
         let recordName = $(this).attr('data-record-name');
-        if (!recordName) {
-            recordName = recordId;
-        }
         $(`.js-modal-record-name`).text(recordName);
     });
 

@@ -14,10 +14,12 @@ services:
     - App\Product\Action\AddDiningTableAction
     - App\Product\Action\EditDiningTableAction
     - App\Product\Action\DeleteDiningTableAction
+    - App\Product\Action\DeleteOrderAction
 
     - App\Product\ORM\ProductRepository
     - App\Product\ORM\CategoryRepository
     - App\Product\ORM\DiningTableRepository
+    - App\Product\ORM\OrdersRepository
 
     - App\Product\Services\CodeValidator
     - App\Product\Services\ProductsInGroupGenerator

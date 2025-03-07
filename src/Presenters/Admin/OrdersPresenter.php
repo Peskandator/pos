@@ -6,6 +6,9 @@ namespace App\Presenters\Admin;
 use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Order\Forms\OrderFormFactory;
 use App\Presenters\BaseCompanyPresenter;
+use App\Product\Action\DeleteOrderAction;
+use App\Product\ORM\OrdersRepository;
+use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
 
 final class OrdersPresenter extends BaseCompanyPresenter
@@ -13,6 +16,8 @@ final class OrdersPresenter extends BaseCompanyPresenter
 
     public function __construct(
         private readonly OrderFormFactory $orderFormFactory,
+        private readonly OrdersRepository $ordersRepository,
+        private readonly DeleteOrderAction $deleteOrderAction,
     )
     {
         parent::__construct();
@@ -48,5 +53,37 @@ final class OrdersPresenter extends BaseCompanyPresenter
     protected function createComponentCreateOrderForm(): Form
     {
         return $this->orderFormFactory->create($this->currentCompany, null);
+    }
+
+    protected function createComponentDeleteOrderForm(): Form
+    {
+        $form = new Form;
+
+        $form
+            ->addHidden('id')
+            ->setRequired(true)
+        ;
+        $form->addSubmit('send');
+
+        $form->onValidate[] = function (Form $form, \stdClass $values) {
+            $order = $this->ordersRepository->find((int)$values->id);
+
+            if (!$order) {
+                $form->addError('Kategorie nebyla nalezena.');
+                $this->flashMessage('Kategorie nebyla nalezena.', FlashMessageType::ERROR);
+                return;
+            }
+            $entity = $order->getCompany();
+            $form = $this->checkAccessToElementsCompany($form, $entity);
+        };
+
+        $form->onSuccess[] = function (Form $form, \stdClass $values) {
+            $order = $this->ordersRepository->find((int)$values->id);
+            $this->deleteOrderAction->__invoke($order);
+            $this->flashMessage('Kategorie byla smazána.', FlashMessageType::SUCCESS);
+            $this->redirect('this');
+        };
+
+        return $form;
     }
 }
