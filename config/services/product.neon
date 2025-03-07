@@ -10,6 +10,7 @@ services:
     - App\Product\Action\DeleteCategoryAction
     - App\Product\Action\AddProductAction
     - App\Product\Action\EditProductAction
+    - App\Product\Action\DeleteProductAction
     - App\Product\Action\AddTableAction
     - App\Product\Action\EditTableAction
 

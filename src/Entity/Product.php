@@ -149,6 +149,11 @@ class Product
         return $this->isDeleted;
     }
 
+    public function setDeleted(bool $isDeleted): void
+    {
+        $this->isDeleted = $isDeleted;
+    }
+
     public function getManufacturer(): ?string
     {
         return $this->manufacturer;
