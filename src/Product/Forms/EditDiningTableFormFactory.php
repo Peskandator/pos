@@ -3,7 +3,7 @@
 namespace App\Product\Forms;
 
 use App\Entity\Company;
-use App\Product\Action\EditTableAction;
+use App\Product\Action\EditDiningTableAction;
 use App\Product\ORM\DiningTableRepository;
 use App\Product\Services\CodeValidator;
 use App\Utils\FlashMessageType;
@@ -12,9 +12,9 @@ use Nette\Application\UI\Form;
 class EditDiningTableFormFactory
 {
     public function __construct(
-        private readonly CodeValidator $codeValidator,
+        private readonly CodeValidator         $codeValidator,
         private readonly DiningTableRepository $tableRepository,
-        private readonly EditTableAction $editTableAction,
+        private readonly EditDiningTableAction $editTableAction,
     )
     {
     }

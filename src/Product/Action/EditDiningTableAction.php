@@ -5,7 +5,7 @@ namespace App\Product\Action;
 use App\Entity\DiningTable;
 use Doctrine\ORM\EntityManagerInterface;
 
-class EditTableAction
+class EditDiningTableAction
 {
     private EntityManagerInterface $entityManager;
 

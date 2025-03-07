@@ -11,8 +11,9 @@ services:
     - App\Product\Action\AddProductAction
     - App\Product\Action\EditProductAction
     - App\Product\Action\DeleteProductAction
-    - App\Product\Action\AddTableAction
-    - App\Product\Action\EditTableAction
+    - App\Product\Action\AddDiningTableAction
+    - App\Product\Action\EditDiningTableAction
+    - App\Product\Action\DeleteDiningTableAction
 
     - App\Product\ORM\ProductRepository
     - App\Product\ORM\CategoryRepository

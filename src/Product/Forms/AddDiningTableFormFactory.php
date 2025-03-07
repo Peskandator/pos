@@ -3,7 +3,7 @@
 namespace App\Product\Forms;
 
 use App\Entity\Company;
-use App\Product\Action\AddTableAction;
+use App\Product\Action\AddDiningTableAction;
 use App\Product\Services\CodeValidator;
 use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
@@ -11,8 +11,8 @@ use Nette\Application\UI\Form;
 class AddDiningTableFormFactory
 {
     public function __construct(
-        private readonly CodeValidator $codeValidator,
-        private readonly AddTableAction $addTableAction,
+        private readonly CodeValidator        $codeValidator,
+        private readonly AddDiningTableAction $addDiningTableAction,
     )
     {
     }
@@ -40,7 +40,7 @@ class AddDiningTableFormFactory
         };
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) use ($company) {
-            $this->addTableAction->__invoke($company, $values->number, $values->description);
+            $this->addDiningTableAction->__invoke($company, $values->number, $values->description);
             $form->getPresenter()->flashMessage('Stůl byl přidán.', FlashMessageType::SUCCESS);
             $form->getPresenter()->redirect('this');
         };

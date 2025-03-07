@@ -32,11 +32,35 @@
             </div>
         {/form}
     </div>
+    <div class="modal fade" id="deleteDiningTableModal" tabindex="-1" aria-labelledby="deleteDiningTableLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteDiningTableLabel">Smazat stůl</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Chcete opravdu odstranit stůl <b class="js-modal-record-name"></b>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zpět</button>
+                    <button type="button" class="btn btn-danger js-modal-delete-confirm">Odstranit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {/block}
 
 {block content}
     <div class="js-page-dining-tables">
         <h1>Stoly</h1>
+
+        <form n:name="deleteDiningTableForm" class="js-delete-form">
+            <div class="form-errors" n:ifcontent>
+                <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert mt-2">{$error}</div>
+            </div>
+            <input n:name="id" class="js-delete-record-id">
+        </form>
 
         <div class="row">
             <div class="col-12">
@@ -65,14 +89,22 @@
                                             {$diningTable->getDescription()}
                                         </td>
                                         <td>
-                                            <i class="fas fa-pencil-alt text-primary icon js-edit-dining-table-start" title="Upravit"
-                                               data-bs-toggle="modal"
-                                               data-bs-target="#editTableModal"
-                                               data-dining-table-id="{$diningTable->getId()}"
-                                               data-dining-table-number="{$diningTable->getNumber()}"
-                                               data-dining-table-description="{$diningTable->getDescription()}"
-                                            >
-                                            </i>
+                                            <div class="d-flex">
+                                                <i class="fas fa-pencil-alt text-primary icon js-edit-dining-table-start" title="Upravit"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-target="#editTableModal"
+                                                   data-dining-table-id="{$diningTable->getId()}"
+                                                   data-dining-table-number="{$diningTable->getNumber()}"
+                                                   data-dining-table-description="{$diningTable->getDescription()}"
+                                                >
+                                                </i>
+                                                <i class="fa-solid fa-trash text-danger icon js-delete-record-button js-edit-text icon-left align-self-center"
+                                                   title="Odstranit"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-target="#deleteDiningTableModal"
+                                                   data-record-id="{$diningTable->getId()}"
+                                                ></i>
+                                            </div>
                                         </td>
                                     </tr>
                                 {/foreach}

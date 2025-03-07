@@ -6,7 +6,7 @@ use App\Entity\Company;
 use App\Entity\DiningTable;
 use Doctrine\ORM\EntityManagerInterface;
 
-class AddTableAction
+class AddDiningTableAction
 {
     private EntityManagerInterface $entityManager;
 
