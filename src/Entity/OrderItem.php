@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Entity()
@@ -25,14 +27,15 @@ class OrderItem
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
      */
     private Product $product;
-
     /**
      * @ORM\ManyToOne(targetEntity="Order", inversedBy="orderItems")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id", nullable=false)
      */
     private Order $order;
-
-
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\OrderItemPayment", mappedBy="orderItem", cascade={"persist", "remove"})
+     */
+    private Collection $orderItemPayments;
     public function __construct(
         Order $order,
         Product $product,
@@ -41,6 +44,7 @@ class OrderItem
         $this->order = $order;
         $this->product = $product;
         $this->quantity = $quantity;
+        $this->orderItemPayments = new ArrayCollection();
     }
 
     public function getId(): int
@@ -53,13 +57,55 @@ class OrderItem
         return $this->quantity;
     }
 
+    public function setQuantity(int $quantity): self
+    {
+        $this->quantity = $quantity;
+        return $this;
+    }
+
     public function getProduct(): Product
     {
         return $this->product;
     }
 
+    public function setProduct(Product $product): self
+    {
+        $this->product = $product;
+        return $this;
+    }
+
     public function getOrder(): Order
     {
         return $this->order;
+    }
+
+    public function setOrder(Order $order): self
+    {
+        $this->order = $order;
+        return $this;
+    }
+
+    public function getOrderItemPayments(): Collection
+    {
+        return $this->orderItemPayments;
+    }
+
+    public function addOrderItemPayment(OrderItemPayment $orderItemPayment): self
+    {
+        if (!$this->orderItemPayments->contains($orderItemPayment)) {
+            $this->orderItemPayments->add($orderItemPayment);
+            $orderItemPayment->setOrderItem($this);
+        }
+        return $this;
+    }
+
+    public function removeOrderItemPayment(OrderItemPayment $orderItemPayment): self
+    {
+        if ($this->orderItemPayments->removeElement($orderItemPayment)) {
+            if ($orderItemPayment->getOrderItem() === $this) {
+                $orderItemPayment->setOrderItem(null);
+            }
+        }
+        return $this;
     }
 }
