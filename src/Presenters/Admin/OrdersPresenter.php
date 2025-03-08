@@ -69,8 +69,8 @@ final class OrdersPresenter extends BaseCompanyPresenter
             $order = $this->ordersRepository->find((int)$values->id);
 
             if (!$order) {
-                $form->addError('Kategorie nebyla nalezena.');
-                $this->flashMessage('Kategorie nebyla nalezena.', FlashMessageType::ERROR);
+                $form->addError('Objednávka nebyla nalezena.');
+                $this->flashMessage('Objednávka nebyla nalezena.', FlashMessageType::ERROR);
                 return;
             }
             $entity = $order->getCompany();
@@ -80,7 +80,7 @@ final class OrdersPresenter extends BaseCompanyPresenter
         $form->onSuccess[] = function (Form $form, \stdClass $values) {
             $order = $this->ordersRepository->find((int)$values->id);
             $this->deleteOrderAction->__invoke($order);
-            $this->flashMessage('Kategorie byla smazána.', FlashMessageType::SUCCESS);
+            $this->flashMessage('Objednávka byla smazána.', FlashMessageType::SUCCESS);
             $this->redirect('this');
         };
 

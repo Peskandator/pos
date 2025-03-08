@@ -66,8 +66,8 @@ final class DiningTablesPresenter extends BaseCompanyPresenter
             $diningTable = $this->diningTableRepository->find((int)$values->id);
 
             if (!$diningTable) {
-                $form->addError('Kategorie nebyla nalezena.');
-                $this->flashMessage('Kategorie nebyla nalezena.', FlashMessageType::ERROR);
+                $form->addError('Stůl nebyl nalezen.');
+                $this->flashMessage('Stůl nebyl nalezen.', FlashMessageType::ERROR);
                 return;
             }
             $entity = $diningTable->getCompany();
@@ -77,7 +77,7 @@ final class DiningTablesPresenter extends BaseCompanyPresenter
         $form->onSuccess[] = function (Form $form, \stdClass $values) {
             $diningTable = $this->diningTableRepository->find((int)$values->id);
             $this->deleteDiningTableAction->__invoke($diningTable);
-            $this->flashMessage('Kategorie byla smazána.', FlashMessageType::SUCCESS);
+            $this->flashMessage('Stůl byl smazán.', FlashMessageType::SUCCESS);
             $this->redirect('this');
         };
 
