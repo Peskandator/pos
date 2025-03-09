@@ -36,6 +36,11 @@ class Payment
     private \DateTimeInterface $paymentTime;
 
     /**
+     * @ORM\Column(name="paymentMethod", type="string", length=50, nullable=false)
+     */
+    private string $paymentMethod;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\OrderItemPayment", mappedBy="payment", cascade={"persist", "remove"})
      */
     private Collection $orderItemPayments;
@@ -80,6 +85,17 @@ class Payment
     public function setPaymentTime(\DateTimeInterface $paymentTime): self
     {
         $this->paymentTime = $paymentTime;
+        return $this;
+    }
+
+    public function getPaymentMethod(): string
+    {
+        return $this->paymentMethod;
+    }
+
+    public function setPaymentMethod(string $paymentMethod): self
+    {
+        $this->paymentMethod = $paymentMethod;
         return $this;
     }
 

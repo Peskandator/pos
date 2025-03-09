@@ -27,11 +27,6 @@ final class EditOrderPresenter extends BaseCompanyPresenter
 
         $this->getComponent('breadcrumb')->addItem(
             new BreadcrumbItem(
-                'Správa objednávek',
-                null)
-        );
-        $this->getComponent('breadcrumb')->addItem(
-            new BreadcrumbItem(
                 'Objednávky',
                 $this->lazyLink(':Admin:Orders:default'))
         );

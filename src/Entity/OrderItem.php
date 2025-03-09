@@ -36,6 +36,11 @@ class OrderItem
      * @ORM\OneToMany(targetEntity="App\Entity\OrderItemPayment", mappedBy="orderItem", cascade={"persist", "remove"})
      */
     private Collection $orderItemPayments;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $isPaid = false;
+
     public function __construct(
         Order $order,
         Product $product,
@@ -85,6 +90,16 @@ class OrderItem
         return $this;
     }
 
+    public function isPaid(): bool
+    {
+        return $this->isPaid;
+    }
+
+    public function markAsPaid(): void
+    {
+        $this->isPaid = true;
+    }
+
     public function getOrderItemPayments(): Collection
     {
         return $this->orderItemPayments;
@@ -107,5 +122,23 @@ class OrderItem
             }
         }
         return $this;
+    }
+
+    public function getPrice(): float
+    {
+        return $this->product->getPrice();
+    }
+
+    public function getPriceIncludingVat(): float
+    {
+        $price = $this->getPrice();
+        $vatRate = $this->product->getVatRate();
+
+        return $price + ($price * ($vatRate / 100));
+    }
+
+    public function getProductName(): string
+    {
+        return $this->product->getName();
     }
 }

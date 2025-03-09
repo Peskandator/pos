@@ -158,5 +158,23 @@ class Order
         return $this;
     }
 
+    public function calculateTotalAmount(): float
+    {
+        $total = 0;
+        foreach ($this->orderItems as $item) {
+            $total += $item->getPrice();
+        }
+        return $total;
+    }
+
+    public function calculateTotalAmountIncludingVat(): float
+    {
+        $total = 0;
+        foreach ($this->orderItems as $item) {
+            $total += $item->getPriceIncludingVat();
+        }
+        return $total;
+    }
+
 
 }
