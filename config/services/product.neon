@@ -19,7 +19,6 @@ services:
     - App\Product\ORM\ProductRepository
     - App\Product\ORM\CategoryRepository
     - App\Product\ORM\DiningTableRepository
-    - App\Product\ORM\OrdersRepository
 
     - App\Product\Services\CodeValidator
     - App\Product\Services\ProductsInGroupGenerator

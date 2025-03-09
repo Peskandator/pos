@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Presenters\Admin;
 use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Order\Forms\OrderFormFactory;
+use App\Order\ORM\OrderRepository;
 use App\Presenters\BaseCompanyPresenter;
 use App\Product\Action\DeleteOrderAction;
-use App\Product\ORM\OrdersRepository;
 use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
 
@@ -15,8 +15,8 @@ final class OrdersPresenter extends BaseCompanyPresenter
 {
 
     public function __construct(
-        private readonly OrderFormFactory $orderFormFactory,
-        private readonly OrdersRepository $ordersRepository,
+        private readonly OrderFormFactory  $orderFormFactory,
+        private readonly OrderRepository   $orderRepository,
         private readonly DeleteOrderAction $deleteOrderAction,
     )
     {
@@ -66,7 +66,7 @@ final class OrdersPresenter extends BaseCompanyPresenter
         $form->addSubmit('send');
 
         $form->onValidate[] = function (Form $form, \stdClass $values) {
-            $order = $this->ordersRepository->find((int)$values->id);
+            $order = $this->orderRepository->find((int)$values->id);
 
             if (!$order) {
                 $form->addError('Objednávka nebyla nalezena.');
@@ -78,7 +78,7 @@ final class OrdersPresenter extends BaseCompanyPresenter
         };
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) {
-            $order = $this->ordersRepository->find((int)$values->id);
+            $order = $this->orderRepository->find((int)$values->id);
             $this->deleteOrderAction->__invoke($order);
             $this->flashMessage('Objednávka byla smazána.', FlashMessageType::SUCCESS);
             $this->redirect('this');
