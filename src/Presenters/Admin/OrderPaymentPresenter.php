@@ -77,7 +77,6 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
 
         $form->addSelect('paymentMethod', 'Způsob platby:', [
             'cash' => 'Hotovost',
-            'card' => 'Karta',
             'qr' => 'QR Platba',
         ])->setRequired();
 

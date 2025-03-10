@@ -123,6 +123,11 @@ final class CompaniesPresenter extends BaseAdminPresenter
         $form
             ->addText('company_id', 'IČO')
         ;
+
+        $form
+            ->addText('bank_account', 'Číslo bankovního účtu (IBAN)')
+        ;
+
         $form
             ->addText('country', 'Stát')
             ->setRequired()
@@ -146,6 +151,7 @@ final class CompaniesPresenter extends BaseAdminPresenter
             $request = new CreateCompanyRequest(
                 $values->name,
                 $values->company_id,
+                $values->bank_account,
                 $values->country,
                 $values->city,
                 $values->zip_code,
@@ -177,6 +183,10 @@ final class CompaniesPresenter extends BaseAdminPresenter
             ->setDefaultValue($company->getCompanyId())
         ;
         $form
+            ->addText('bank_account', 'Číslo bankovního účtu (IBAN)')
+            ->setDefaultValue($company->getBankAccount())
+        ;
+        $form
             ->addText('country', 'Stát')
             ->setRequired()
             ->setDefaultValue($company->getCountry())
@@ -202,6 +212,7 @@ final class CompaniesPresenter extends BaseAdminPresenter
             $request = new CreateCompanyRequest(
                 $values->name,
                 $values->company_id,
+                $values->bank_account,
                 $values->country,
                 $values->city,
                 $values->zip_code,

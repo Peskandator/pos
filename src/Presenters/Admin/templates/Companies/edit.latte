@@ -21,6 +21,11 @@
                             <small class="form-error" n:ifcontent>{inputError company_id}</small>
                         </div>
                         <div class="form-group">
+                            <label for="newCompanyBankAccount">Číslo bankovního účtu (IBAN) <small>(nepovinné)</small></label>
+                            <input n:name="bank_account" type="text" class="form-control" id="newCompanyBankAccount">
+                            <small class="form-error" n:ifcontent>{inputError bank_account}</small>
+                        </div>
+                        <div class="form-group">
                             <label for="newCompanyCountry">Stát</label>
                             <input n:name="country" type="text" class="form-control" id="newCompanyCountry">
                             <small class="form-error" n:ifcontent>{inputError country}</small>
