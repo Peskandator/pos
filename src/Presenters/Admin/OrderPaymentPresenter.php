@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Presenters\Admin;
 
 use App\Components\Breadcrumb\BreadcrumbItem;
-use App\Entity\Order;
+use App\Entity\OrderItem;
 use App\Entity\Payment;
 use App\Order\ORM\OrderRepository;
 use App\Presenters\BaseCompanyPresenter;
@@ -47,6 +47,8 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
 
         $paidAmount = 0;
         $unpaidItems = [];
+
+        /** @var OrderItem $item */
         foreach ($order->getOrderItems() as $item) {
             if ($item->isPaid()) {
                 $paidAmount += $item->getPriceIncludingVat() * $item->getQuantity();
@@ -93,6 +95,7 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $order = $this->template->order;
         $unpaidItemsList = [];
 
+        /** @var OrderItem $item */
         foreach ($order->getOrderItems() as $item) {
             if (!$item->isPaid()) {
                 $unpaidItemsList[$item->getId()] =
@@ -114,11 +117,12 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         }
 
         $totalToPay = 0;
+
+        /** @var OrderItem $item */
         foreach ($order->getOrderItems() as $item) {
             if (in_array($item->getId(), $selectedItems) && !$item->isPaid()) {
                 $item->markAsPaid();
                 $totalToPay += $item->getPriceIncludingVat() * $item->getQuantity();
-
             }
         }
 
@@ -134,5 +138,4 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $this->flashMessage("Platba byla úspěšně zpracována.", "success");
         $this->redirect("this");
     }
-
 }

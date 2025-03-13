@@ -6,6 +6,7 @@ use App\Entity\Company;
 use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Order\Requests\CreateOrderRequest;
+use App\Order\Services\OrderItemHelper;
 use App\Product\ORM\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -15,6 +16,7 @@ class CreateOrderAction
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ProductRepository $productRepository,
+        private readonly OrderItemHelper $orderItemHelper,
     ) {
     }
 
@@ -25,9 +27,11 @@ class CreateOrderAction
             $request,
         );
 
-        foreach ($orderItems as $orderItem) {
-            $product = $this->productRepository->find($orderItem['product']);
-            $item = new OrderItem($order, $product, $orderItem['quantity']);
+        $mergedOrderItems = $this->orderItemHelper->mergeDuplicateOrderItems($orderItems);
+
+        foreach ($mergedOrderItems as $productId => $quantity) {
+            $product = $this->productRepository->find($productId);
+            $item = new OrderItem($order, $product, $quantity);
 
             $order->addOrderItem($item);
             $this->entityManager->persist($item);

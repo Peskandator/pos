@@ -171,8 +171,8 @@
                                     <div>Produkty ve skupině:</div>
                                     <a class="btn btn-primary rounded btn-sm mt-1" id="addNextProductToGroupButton">Přidat další</a>
                                     <div id="productGroupRows">
-                                        {include productInGroupRow, isTemplate: true, productsInGroupOptions: $productsInGroupOptions, productInGroup: null}
-                                        {include productInGroupRow, isTemplate: false, productsInGroupOptions: $productsInGroupOptions, productInGroup: null}
+                                        {include productInGroupRow, isTemplate: true, singleProductsOptions: $singleProductsOptions, productInGroup: null}
+                                        {include productInGroupRow, isTemplate: false, singleProductsOptions: $singleProductsOptions, productInGroup: null}
                                     </div>
                                 </div>
                                 <div class="row mb-3">

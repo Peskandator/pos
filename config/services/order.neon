@@ -5,3 +5,5 @@ services:
 
     - App\Order\Action\CreateOrderAction
     - App\Order\Action\EditOrderAction
+
+    - App\Order\Services\OrderItemHelper

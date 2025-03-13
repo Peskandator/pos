@@ -6,10 +6,11 @@
                     {if !$orderItem}
                         <option value="0">Vyberte ...</option>
                     {/if}
-                    {foreach $orderItemOptions as $orderItemOption}
-                        <option value="{$orderItemOption->getId()}"
-                                {if $orderItem && $orderItemOption->getId() === $orderItem->getId()} selected{/if}>
-                            {$orderItemOption->getName()}
+
+                    {foreach $orderItemOptions as $option}
+                        <option value="{$option->getId()}"
+                                {if $orderItem && $option->getId() === $orderItem->getProduct()->getId()} selected{/if}>
+                            {$option->getName()}
                         </option>
                     {/foreach}
                 </select>

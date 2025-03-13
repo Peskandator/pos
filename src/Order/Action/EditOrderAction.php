@@ -6,8 +6,8 @@ use App\Entity\Company;
 use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Order\Requests\CreateOrderRequest;
+use App\Order\Services\OrderItemHelper;
 use App\Product\ORM\ProductRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EditOrderAction
@@ -16,6 +16,7 @@ class EditOrderAction
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ProductRepository $productRepository,
+        private readonly OrderItemHelper $orderItemHelper,
     ) {
     }
 
@@ -23,21 +24,33 @@ class EditOrderAction
     {
         $order->updateFromRequest($request);
 
-        $currentItems = $order->getOrderItems();
-        $order->clearOrderItems();
+        $mergedOrderItems = $this->orderItemHelper->mergeDuplicateOrderItems($orderItems);
 
+        $currentUpdatedItems = [];
+        $currentItems = $order->getOrderItems();
+        /**
+         * @var OrderItem $item
+         */
         foreach ($currentItems as $item) {
+            if (array_key_exists($item->getId(), $mergedOrderItems)) {
+                $currentUpdatedItems[] = $item->getId();
+                $item->setQuantity($mergedOrderItems[$item->getId()]);
+                continue;
+            }
+
             $this->entityManager->remove($item);
         }
         $this->entityManager->persist($order);
         $this->entityManager->flush();
 
-        foreach ($orderItems as $orderItem) {
-            $product = $this->productRepository->find($orderItem['product']);
-            $item = new OrderItem($order, $product, $orderItem['quantity']);
+        foreach ($mergedOrderItems as $productId => $quantity) {
+            if (!array_key_exists($productId, $currentUpdatedItems)) {
+                $product = $this->productRepository->find($productId);
+                $item = new OrderItem($order, $product, $quantity);
 
-            $order->addOrderItem($item);
-            $this->entityManager->persist($item);
+                $order->addOrderItem($item);
+                $this->entityManager->persist($item);
+            }
         }
 
         $this->entityManager->flush();

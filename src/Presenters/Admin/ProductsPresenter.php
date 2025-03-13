@@ -37,7 +37,7 @@ final class ProductsPresenter extends BaseCompanyPresenter
         );
 
         $this->template->products = $this->currentCompany->getProducts();
-        $this->template->productsInGroupOptions = $this->currentCompany->getSingleProducts();
+        $this->template->singleProductsOptions = $this->currentCompany->getSingleProducts();
     }
 
     protected function createComponentAddProductForm(): Form

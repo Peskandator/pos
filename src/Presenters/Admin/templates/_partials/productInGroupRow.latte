@@ -1,4 +1,4 @@
-{define productInGroupRow, $isTemplate, $productsInGroupOptions, $productInGroup}
+{define productInGroupRow, $isTemplate, $singleProductsOptions, $productInGroup}
     <div class="row pl-5 mt-2 mb-2 productGroupRow" style="margin-left: 1rem; {if $isTemplate}display: none{/if}">
         <div class="col-4">
             <div class="form-group">
@@ -6,10 +6,12 @@
                     {if !$productInGroup}
                         <option value="0">Vyberte ...</option>
                     {/if}
-                    {foreach $productsInGroupOptions as $productInGroupOption}
-                        <option value="{$productInGroupOption->getId()}"
-                                {if $productInGroup && $productInGroupOption->getId() === $productInGroup->getId()} selected{/if}>
-                            {$productInGroupOption->getName()}
+                    {foreach $singleProductsOptions as $option}
+                        <option
+                            value="{$option->getId()}"
+                            {if $productInGroup && $option->getId() === $productInGroup->getProduct()->getId()}selected{/if}
+                        >
+                            {$option->getName()}
                         </option>
                     {/foreach}
                 </select>
