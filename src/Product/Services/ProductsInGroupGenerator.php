@@ -21,12 +21,11 @@ class ProductsInGroupGenerator
     public function generateProductsInGroup(Product $product, array $productsInGroup): void
     {
         $group = $product->getProductsInGroup();
-        foreach ($productsInGroup as $productInGroupData) {
-            $productInGroup = $this->productRepository->find($productInGroupData['product']);
+        foreach ($productsInGroup as $productId => $quantity) {
+            $productInGroup = $this->productRepository->find($productId);
             if ($productInGroup === null) {
                 continue;
             }
-            $quantity = (int)$productInGroupData['quantity'];
             $productItem = new ProductInGroup($product, $productInGroup, $quantity);
             $this->entityManager->persist($productItem);
             $group->add($productItem);

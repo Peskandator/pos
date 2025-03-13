@@ -22,5 +22,6 @@ services:
 
     - App\Product\Services\CodeValidator
     - App\Product\Services\ProductsInGroupGenerator
+    - App\Product\Services\ProductInGroupHelper
 
     - App\Utils\XlsxExporter

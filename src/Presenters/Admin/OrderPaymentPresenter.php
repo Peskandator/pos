@@ -85,11 +85,11 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $paymentMethods = [
             'cash' => 'Hotovost',
         ];
-    
+
         if ($this->template->bankAccount) {
             $paymentMethods['qr'] = 'QR Platba';
         }
-    
+
         $form->addSelect('paymentMethod', 'Způsob platby:', $paymentMethods)
             ->setRequired();
 
