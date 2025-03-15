@@ -49,6 +49,10 @@ class Order
      * @ORM\Column(name="update_date", type="date", nullable=false)
      */
     private \DateTimeInterface $updateDate;
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Payment", mappedBy="order")
+     */
+    private Collection $payments;
 
 
     public function __construct(
@@ -62,6 +66,7 @@ class Order
         $this->orderItems = new ArrayCollection();
         $this->creationDate = new \DateTimeImmutable();
         $this->updateDate = new \DateTimeImmutable();
+        $this->payments = new ArrayCollection();
     }
 
     public function updateFromRequest(CreateOrderRequest $request): void
@@ -138,5 +143,38 @@ class Order
     {
         $this->inventoryNumber = $inventoryNumber;
     }
+
+    public function getPayments(): Collection
+    {
+        return $this->payments;
+    }
+
+    public function addPayment(Payment $payment): self
+    {
+        if (!$this->payments->contains($payment)) {
+            $this->payments->add($payment);
+            $payment->setOrder($this);
+        }
+        return $this;
+    }
+
+    public function calculateTotalAmount(): float
+    {
+        $total = 0;
+        foreach ($this->orderItems as $item) {
+            $total += $item->getPrice();
+        }
+        return $total;
+    }
+
+    public function calculateTotalAmountIncludingVat(): float
+    {
+        $total = 0;
+        foreach ($this->orderItems as $item) {
+            $total += $item->getPriceIncludingVat();
+        }
+        return $total;
+    }
+
 
 }

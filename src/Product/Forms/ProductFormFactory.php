@@ -89,7 +89,7 @@ class ProductFormFactory
             }
 
             if (!$this->isInventoryNumberAvailable($company, $values->inventory_number, $editedProduct)) {
-                $errMsg = 'Produkt s tímto inventárním číslem již existuje';
+                $errMsg = 'Produkt s tímto inventárním číslem již existuje.';
                 $form['inventory_number']->addError($errMsg);
                 $form->addError($errMsg);
             }
@@ -132,9 +132,9 @@ class ProductFormFactory
                 }
             }
 
-            $message = 'Produkt byl přidán';
+            $message = 'Produkt byl přidán.';
             if ($editing) {
-                $message = 'Produkt byl upraven';
+                $message = 'Produkt byl upraven.';
                 $this->editProductAction->__invoke($company, $editedProduct, $request, $productsInGroup);
             } else {
                 $this->addProductAction->__invoke($company, $request, $productsInGroup);

@@ -63,7 +63,7 @@ class OrderFormFactory
             }
 
             if (!$this->isInventoryNumberAvailable($company, $values->inventory_number, $editedOrder)) {
-                $errMsg = 'Objednávka s tímto inventárním číslem již existuje';
+                $errMsg = 'Objednávka s tímto inventárním číslem již existuje.';
                 $form['inventory_number']->addError($errMsg);
                 $form->addError($errMsg);
             }
@@ -98,9 +98,9 @@ class OrderFormFactory
                 }
             }
 
-            $message = 'Objednávka byla přidána';
+            $message = 'Objednávka byla přidána.';
             if ($editing) {
-                $message = 'Objednávka byla upravena';
+                $message = 'Objednávka byla upravena.';
                 $this->editOrderAction->__invoke($company, $editedOrder, $request, $orderItems);
             } else {
                 $this->createOrderAction->__invoke($company, $request, $orderItems);

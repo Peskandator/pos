@@ -67,7 +67,7 @@ final class RegistrationPresenter extends BasePresenter
                 return;
             }
             $this->flashMessage('Byl jste úspěšně registrován.');
-            $this->redirect('this');
+            $this->redirect(':Home:default');
         };
 
         return $form;

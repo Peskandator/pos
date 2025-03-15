@@ -42,7 +42,7 @@
                                         <div id="orderItemRows">
                                             {include orderItemRow, isTemplate: true, orderItemOptions: $orderItemOptions, orderItem: null}
                                              {foreach $order->getOrderItems() as $orderItem}
-                                                {include orderItemRow, isTemplate: false, orderItemOptions: $orderItemOptions, orderItem:$orderItem }
+                                                {include orderItemRow, isTemplate: false, orderItemOptions: $orderItemOptions, orderItem: $orderItem}
                                             {/foreach}
                                         </div>
                                     </div>

@@ -1,0 +1,74 @@
+{layout $adminlayoutPath}
+{import '../_partials/orderItemRow.latte'}
+
+{block modals}
+{/block}
+
+{block content}
+    <div class="js-page-order">
+        <h1>Platba objednávky č. {$order->getInventoryNumber()}</h1>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        {var $totalAmount = 0}
+
+                        {foreach $order->getOrderItems() as $item}
+                            {var $totalAmount = $totalAmount + ($item->getQuantity() * $item->getPriceIncludingVat())}
+                        {/foreach}
+
+                        <p><strong>Zaplaceno:</strong> {$paidAmount} Kč</p>
+                        <p><strong>Zbývá zaplatit:</strong> {$remainingAmount = $totalAmount - $paidAmount} Kč</p>
+
+                        <h3>Vyberte položky k platbě:</h3>
+                        <form n:name="paymentForm">
+                            <div class="form-errors" n:ifcontent>
+                                <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
+                            </div>
+
+                            <div class="px-2">
+                                <div class="mb-3">
+                                    <label for="orderItems">Položky objednávky:</label>
+                                    <div id="orderItemsBox">
+                                        <div class="order-items">
+                                            <ul>
+                                                {foreach $order->getOrderItems() as $item}
+                                                    <li>
+                                                        <div class="item">
+                                                            {if $item->isPaid()}
+                                                                <span class="paid-item">✔</span>
+                                                            {else}
+                                                                <input type="checkbox" name="items[]" value="{$item->getId()}" />
+                                                            {/if}
+                                                            <span>{$item->getProductName()} - {$item->getQuantity()} x {$item->getPriceIncludingVat()} Kč</span>
+                                                        </div>
+                                                    </li>
+                                                {/foreach}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {if $remainingAmount > 0}
+                                    <div class="mb-3">
+                                        <label for="paymentMethod">Způsob platby:</label>
+                                        <select n:name="paymentMethod" class="form-select" id="paymentMethod">
+                                            <option value="cash">Hotovost</option>
+                                            <option value="card">Karta</option>
+                                            <option value="qr">QR Platba</option>
+                                        </select>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Zaplatit</button>
+                                {else}
+                                    <p class="text-success">Objednávka je plně zaplacená.</p>
+                                {/if}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}

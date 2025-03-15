@@ -39,7 +39,7 @@ final class EditProductPresenter extends BaseCompanyPresenter
         );
 
         $this->template->product = $product;
-        $this->template->productsInGroupOptions = $this->currentCompany->getSingleProducts();
+        $this->template->singleProductsOptions = $this->currentCompany->getSingleProducts();
     }
 
     protected function createComponentEditProductForm(): Form
