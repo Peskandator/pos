@@ -20,8 +20,8 @@ export default function() {
         }
     }
 
-    $('#addNextProductToGroupButton').click(function() {
-        let firstProductRow = $(`.productGroupRow`).first();
+    function addNewProductRow() {
+        let firstProductRow = $('.productGroupRow').first();
         let newProductRow = firstProductRow.clone();
         newProductRow.show();
 
@@ -29,8 +29,30 @@ export default function() {
             deleteProductRow($(this));
         });
 
-        newProductRow.insertAfter("div.productGroupRow:last")
+        newProductRow.find('.productGroupItemSelect').change(function() {
+            shouldAddNewProductRow();
+        });
+
+        newProductRow.insertAfter("div.productGroupRow:last");
+    }
+
+    $('#addNextProductToGroupButton').click(function() {
+        addNewProductRow();
     });
+
+
+    $('.productGroupItemSelect').change(function() {
+        shouldAddNewProductRow();
+    });
+
+    function shouldAddNewProductRow() {
+        if ($('.productGroupItemSelect').filter(function() {
+            return $(this).val() === "0";
+        }).length < 2) {
+            addNewProductRow();
+        }
+    }
+
 
     $('.deleteProductButton').click(function() {
         deleteProductRow($(this));

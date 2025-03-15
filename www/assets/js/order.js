@@ -4,8 +4,8 @@ export default function() {
         return;
     }
 
-    $('#addNextOrderItemButton').click(function() {
-        let firstOrderItemRow = $(`.orderItemRow`).first();
+    function addNewOrderItemRow() {
+        let firstOrderItemRow = $('.orderItemRow').first();
         let newOrderItemRow = firstOrderItemRow.clone();
         newOrderItemRow.show();
 
@@ -13,8 +13,29 @@ export default function() {
             deleteOrderItemRow($(this));
         });
 
-        newOrderItemRow.insertAfter("div.orderItemRow:last")
+        newOrderItemRow.find('.orderItemSelect').change(function() {
+            shouldAddNewOrderItemRow();
+        });
+
+        newOrderItemRow.insertAfter("div.orderItemRow:last");
+    }
+
+    $('#addNextOrderItemButton').click(function() {
+        addNewOrderItemRow();
     });
+
+    $('.orderItemSelect').change(function() {
+        shouldAddNewOrderItemRow();
+    });
+
+    function shouldAddNewOrderItemRow() {
+        if ($('.orderItemSelect').filter(function() {
+            return $(this).val() === "0";
+        }).length < 2) {
+            addNewOrderItemRow();
+        }
+    }
+
 
     $('.deleteOrderItemButton').click(function() {
         deleteOrderItemRow($(this));
