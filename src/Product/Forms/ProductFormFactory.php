@@ -128,6 +128,10 @@ class ProductFormFactory
                         continue;
                     }
 
+                    if ($productInGroupData['quantity'] === '') {
+                        $productInGroupData['quantity'] = 1;
+                    }
+
                     $productsInGroup[] = $productInGroupData;
                 }
             }

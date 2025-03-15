@@ -54,7 +54,7 @@
                             {foreach $orders as $order}
                                 <tr>
                                     <td>{$order->getInventoryNumber()}</td>
-                                    <td>{$order->getDiningTable()->getNumber()}</td>
+                                    <td>{$order->getDiningTable()?->getNumber()}</td>
                                     <td>{$order->getCreationDate()|date:'Y-m-d'}</td>
                                     <td>
                                         <div class="d-flex">

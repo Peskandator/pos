@@ -29,9 +29,9 @@ class Order
     private ?int $inventoryNumber;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\DiningTable")
-     * @ORM\JoinColumn(name="dining_table_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="dining_table_id", referencedColumnName="id", nullable=true)
      */
-    private DiningTable $diningTable;
+    private ?DiningTable $diningTable;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="orders")
      * @ORM\JoinColumn(name="company_id", referencedColumnName="id", nullable=false)
@@ -92,7 +92,7 @@ class Order
         return $this->id;
     }
 
-    public function getDiningTable(): DiningTable
+    public function getDiningTable(): ?DiningTable
     {
         return $this->diningTable;
     }
