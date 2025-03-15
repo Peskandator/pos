@@ -32,7 +32,6 @@ class OrderFormFactory
 
         $form
             ->addText('description', 'Popis')
-            ->setRequired()
             ->addRule($form::MAX_LENGTH,'Maximální délka je 200 znaků', 200)
         ;
 
@@ -55,11 +54,13 @@ class OrderFormFactory
         $form->addSubmit('send', $submitText);
 
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company, $editedOrder) {
-            $diningTable = $this->diningTableRepository->find($values->dining_table);
-            if ($diningTable === null) {
-                $errMsg = 'Je nutné vyplnit platné číslo stolu.';
-                $form->addError($errMsg);
-                $form->getPresenter()->flashMessage($errMsg, FlashMessageType::ERROR);
+            if ($values->dining_table !== 0) {
+                $diningTable = $this->diningTableRepository->find($values->dining_table);
+                if ($diningTable === null) {
+                    $errMsg = 'Je nutné vyplnit platné číslo stolu.';
+                    $form->addError($errMsg);
+                    $form->getPresenter()->flashMessage($errMsg, FlashMessageType::ERROR);
+                }
             }
 
             if (!$this->isInventoryNumberAvailable($company, $values->inventory_number, $editedOrder)) {
@@ -92,6 +93,10 @@ class OrderFormFactory
                     }
                     if ($product->getCompany()->getId() !== $company->getId()) {
                         continue;
+                    }
+
+                    if ($orderItemData['quantity'] === '') {
+                        $orderItemData['quantity'] = 1;
                     }
 
                     $orderItems[] = $orderItemData;
