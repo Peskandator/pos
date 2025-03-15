@@ -52,7 +52,7 @@ class EditDiningTableFormFactory
 
             $validationMsg = $this->codeValidator->isDiningTableNumberValid($company, $values->number, $table->getNumber());
             if ($validationMsg !== '') {
-                $form->addError($validationMsg);
+                $form['number']->addError($validationMsg);
                 $form->getPresenter()->flashMessage($validationMsg,FlashMessageType::ERROR);
             }
         };

@@ -108,6 +108,30 @@ class Order
         $orderItems->add($orderItem);
     }
 
+    public function getOrderItemsText(): string
+    {
+        $text = '';
+        $orderItems = $this->getOrderItems();
+
+        $itemsCount = $orderItems->count();
+        $counter = 0;
+
+        /** @var OrderItem $orderItem */
+        foreach ($orderItems as $orderItem) {
+            $counter++;
+            $text .= $orderItem->getQuantity() . 'x ' . $orderItem->getProductName();
+            if ($counter < $itemsCount) {
+                $text .= ', ';
+            }
+        }
+
+        if (strlen($text) > 25) {
+            $text = mb_substr($text, 0, 23) . '..';
+        }
+
+        return $text;
+    }
+
     public function clearOrderItems(): void
     {
         $this->orderItems = new ArrayCollection();

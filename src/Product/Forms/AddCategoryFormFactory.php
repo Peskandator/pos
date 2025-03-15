@@ -35,7 +35,7 @@ class AddCategoryFormFactory
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company) {
             $validationMsg = $this->codeValidator->isCategoryCodeValid($company, $values->code);
             if ($validationMsg !== '') {
-                $form->addError($validationMsg);
+                $form['code']->addError($validationMsg);
                 $form->getPresenter()->flashMessage($validationMsg,FlashMessageType::ERROR);
             }
         };

@@ -51,6 +51,7 @@
                                     <th>DPH</th>
                                     <th>Výrobce</th>
                                     <th>Popis</th>
+                                    <th>Kategorie</th>
                                     <th>Skupina</th>
                                     <th>Akce</th>
                                 </tr>
@@ -68,13 +69,16 @@
                                             {$product->getPrice()|price}
                                         </td>
                                         <td>
-                                            {$product->getVatRate()}
+                                            {$product->getVatRatePercentage()}
                                         </td>
                                         <td>
                                             {$product->getManufacturer()}
                                         </td>
                                         <td>
                                             {$product->getDescription()}
+                                        </td>
+                                        <td>
+                                            {$product->getCategory()?->getCategoryCodeAndName()}
                                         </td>
                                         <td>
                                             <input class="form-check-input" type="checkbox" disabled {if $product->isGroup()}checked=""{/if}>
