@@ -80,4 +80,9 @@ class Category
     {
         $this->isDeleted = $isDeleted;
     }
+
+    public function getCategoryCodeAndName(): string
+    {
+        return $this->getCode() . ' - ' . $this->getName();
+    }
 }

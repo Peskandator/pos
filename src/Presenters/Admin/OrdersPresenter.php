@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presenters\Admin;
 use App\Components\Breadcrumb\BreadcrumbItem;
+use App\Entity\Order;
 use App\Order\Forms\OrderFormFactory;
 use App\Order\ORM\OrderRepository;
 use App\Presenters\BaseCompanyPresenter;
@@ -52,7 +53,15 @@ final class OrdersPresenter extends BaseCompanyPresenter
 
     protected function createComponentCreateOrderForm(): Form
     {
-        return $this->orderFormFactory->create($this->currentCompany, null);
+        $nextInventoryNumber = $this->getNextInventoryNumber();
+
+        $form = $this->orderFormFactory->create($this->currentCompany, null);
+
+        $form->setDefaults([
+            'inventory_number' => $nextInventoryNumber,
+        ]);
+
+        return $form;
     }
 
     protected function createComponentDeleteOrderForm(): Form
@@ -85,5 +94,22 @@ final class OrdersPresenter extends BaseCompanyPresenter
         };
 
         return $form;
+    }
+
+    private function getNextInventoryNumber(): int
+    {
+        $orders = $this->currentCompany->getOrders();
+
+        $highest = 1;
+
+        /** @var Order $order */
+        foreach ($orders as $order) {
+            $inventoryNumber = $order->getInventoryNumber();
+            if ($inventoryNumber > $highest) {
+                $highest = $inventoryNumber;
+            }
+        }
+
+        return $highest + 1;
     }
 }

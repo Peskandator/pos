@@ -124,9 +124,30 @@ class Product
         return $this->price;
     }
 
+    public function getPriceWithoutVatRate(): ?float
+    {
+        $vatRate = $this->getVatRate();
+        $price = $this->getPrice();
+        if ($vatRate === 0 || $vatRate === null) {
+            return $price;
+        }
+
+        return $price * ((100 - $vatRate) / 100);
+    }
+
     public function getVatRate(): ?int
     {
         return $this->vatRate;
+    }
+
+    public function getVatRatePercentage(): string
+    {
+        $vatRate = $this->getVatRate();
+        if ($vatRate === null) {
+            $vatRate = 0;
+        }
+
+        return $vatRate . ' %';
     }
 
     public function getCreationDate(): \DateTimeInterface

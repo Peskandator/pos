@@ -58,6 +58,7 @@ class ProductFormFactory
 
         $form
             ->addInteger('vat_rate')
+            ->addRule($form::Max, 'DPH nemůže být vyšší než 100%', 100)
             ->setNullable()
         ;
 
