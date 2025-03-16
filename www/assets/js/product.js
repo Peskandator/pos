@@ -81,4 +81,37 @@ export default function() {
         let jsonString = JSON.stringify(jsonObj);
         $('#js-products-in-group-input').val(jsonString);
     }
+
+    let productPriceInput = $('#productPrice');
+    let productVatRateInput = $('#productVatRate');
+    let priceWithoutVatInput = $('#priceWithoutVat');
+
+    productPriceInput.change(function(){
+        calculatePriceWithoutVat();
+    });
+
+    productVatRateInput.change(function(){
+        calculatePriceWithoutVat();
+    });
+
+    setInterval(function () {
+        if (productPriceInput.is(':focus') || productVatRateInput.is(':focus')) {
+            calculatePriceWithoutVat();
+        }
+    }, 200)
+
+    function calculatePriceWithoutVat() {
+        let price = productPriceInput.val();
+        let vatRateValue = productVatRateInput.val();
+
+        let isPriceNumeric = $.isNumeric(price);
+
+        if (isPriceNumeric) {
+            if (!$.isNumeric(vatRateValue) || vatRateValue === 0) {
+                priceWithoutVatInput.val(price);
+            }
+            let priceWithoutVat = price * ((100 - vatRateValue) / 100);
+            priceWithoutVatInput.val(priceWithoutVat);
+        }
+    }
 }
