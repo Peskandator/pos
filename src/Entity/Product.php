@@ -124,7 +124,7 @@ class Product
         return $this->price;
     }
 
-    public function getPriceWithoutVatRate(): ?float
+    public function getPriceWithoutVat(): ?float
     {
         $vatRate = $this->getVatRate();
         $price = $this->getPrice();

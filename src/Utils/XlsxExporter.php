@@ -69,7 +69,7 @@ class XlsxExporter
             $row[] = $product->getName();
             $row[] = $product->getPrice() . ' Kč';
             $row[] = $product->getVatRatePercentage();
-            $row[] = $product->getPriceWithoutVatRate();
+            $row[] = $product->getPriceWithoutVat();
             $row[] = $product->getManufacturer();
 
             $category = $product->getCategory();
