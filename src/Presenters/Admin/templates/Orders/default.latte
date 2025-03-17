@@ -46,6 +46,8 @@
                                 <tr>
                                     <th>Inv. č.</th>
                                     <th>Stůl</th>
+                                    <th>Popis</th>
+                                    <th>Produkty</th>
                                     <th>Vytvořeno</th>
                                     <th>Akce</th>
                                 </tr>
@@ -54,8 +56,10 @@
                             {foreach $orders as $order}
                                 <tr>
                                     <td>{$order->getInventoryNumber()}</td>
-                                    <td>{$order->getDiningTable()->getNumber()}</td>
-                                    <td>{$order->getCreationDate()|date:'Y-m-d'}</td>
+                                    <td>{$order->getDiningTable()?->getNumber()}</td>
+                                    <td>{$order->getDescription()}</td>
+                                    <td>{$order->getOrderItemsText()}</td>
+                                    <td>{$order->getCreationDate()|date:'j. m. Y'}</td>
                                     <td>
                                         <div class="d-flex">
                                             <a n:href=":Admin:OrderPayment:default, $order->getId()" class="me-2">

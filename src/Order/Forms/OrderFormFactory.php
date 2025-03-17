@@ -32,7 +32,6 @@ class OrderFormFactory
 
         $form
             ->addText('description', 'Popis')
-            ->setRequired()
             ->addRule($form::MAX_LENGTH,'Maximální délka je 200 znaků', 200)
         ;
 
@@ -55,17 +54,19 @@ class OrderFormFactory
         $form->addSubmit('send', $submitText);
 
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company, $editedOrder) {
-            $diningTable = $this->diningTableRepository->find($values->dining_table);
-            if ($diningTable === null) {
-                $errMsg = 'Je nutné vyplnit platné číslo stolu.';
-                $form->addError($errMsg);
-                $form->getPresenter()->flashMessage($errMsg, FlashMessageType::ERROR);
+            if ($values->dining_table !== 0) {
+                $diningTable = $this->diningTableRepository->find($values->dining_table);
+                if ($diningTable === null) {
+                    $errMsg = 'Je nutné vyplnit platné číslo stolu.';
+                    $form->addError($errMsg);
+                    $form->getPresenter()->flashMessage($errMsg, FlashMessageType::ERROR);
+                }
             }
 
             if (!$this->isInventoryNumberAvailable($company, $values->inventory_number, $editedOrder)) {
                 $errMsg = 'Objednávka s tímto inventárním číslem již existuje.';
                 $form['inventory_number']->addError($errMsg);
-                $form->addError($errMsg);
+                $form->getPresenter()->flashMessage($errMsg, FlashMessageType::ERROR);
             }
         };
 
@@ -94,19 +95,25 @@ class OrderFormFactory
                         continue;
                     }
 
+                    if ($orderItemData['quantity'] === '') {
+                        $orderItemData['quantity'] = 1;
+                    }
+
                     $orderItems[] = $orderItemData;
                 }
             }
 
-            $message = 'Objednávka byla přidána.';
             if ($editing) {
                 $message = 'Objednávka byla upravena.';
                 $this->editOrderAction->__invoke($company, $editedOrder, $request, $orderItems);
+                $form->getPresenter()->flashMessage($message, FlashMessageType::SUCCESS);
+                $form->getPresenter()->redirect('this');
             } else {
+                $message = 'Objednávka byla přidána.';
                 $this->createOrderAction->__invoke($company, $request, $orderItems);
+                $form->getPresenter()->flashMessage($message, FlashMessageType::SUCCESS);
+                $form->getPresenter()->redirect(':Admin:Orders:default');
             }
-            $form->getPresenter()->flashMessage($message, FlashMessageType::SUCCESS);
-            $form->getPresenter()->redirect('this');
         };
 
         return $form;

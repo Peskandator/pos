@@ -4,6 +4,7 @@ namespace App\Utils;
 use App\Entity\DiningTable;
 use App\Entity\Product;
 use App\Entity\Category;
+use App\Entity\ProductInGroup;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -48,11 +49,11 @@ class XlsxExporter
             'Název',
             'Cena',
             'DPH',
+            'Cena bez DPH',
             'Výrobce',
-            'Skupina',
             'Kategorie',
-            'Kat. číslo'
-
+            'Skupina',
+            'Produkty ve skupině'
         ];
 
         $rows = [];
@@ -66,14 +67,16 @@ class XlsxExporter
 
             $row[] = $product->getInventoryNumber();
             $row[] = $product->getName();
-            $row[] = $product->getPrice();
-            $row[] = $product->getVatRate();
+            $row[] = $product->getPrice() . ' Kč';
+            $row[] = $product->getVatRatePercentage();
+            $row[] = $product->getPriceWithoutVat();
             $row[] = $product->getManufacturer();
-            $row[] = $product->isGroup() ? 'Ano' : 'Ne';
 
             $category = $product->getCategory();
-            $row[] = $category ? $category->getName() : '';
-            $row[] = $category ? $category->getId() : '';
+            $row[] = $category ? $category->getCategoryCodeAndName() : '';
+
+            $row[] = $product->isGroup() ? 'Ano' : 'Ne';
+            $row[] = $this->getGroupedProductsText($product);
 
             $rows[] = $row;
         }
@@ -121,5 +124,27 @@ class XlsxExporter
             $rows[] = $row;
         }
         return $rows;
+    }
+
+    private function getGroupedProductsText(Product $product): string
+    {
+        $groupedProductsText = '';
+        if ($product->isGroup()) {
+            $productsInGroup = $product->getProductsInGroup()->toArray();
+
+            $productsCount = count($productsInGroup);
+
+            $counter = 0;
+            /** @var ProductInGroup $productInGroup */
+            foreach ($productsInGroup as $productInGroup) {
+                $counter++;
+                $groupedProductsText .= $productInGroup->getProduct()->getName();
+                if ($counter !== $productsCount) {
+                    $groupedProductsText .= ', ';
+                }
+            }
+        }
+
+        return $groupedProductsText;
     }
 }

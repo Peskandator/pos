@@ -29,9 +29,9 @@ class Order
     private ?int $inventoryNumber;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\DiningTable")
-     * @ORM\JoinColumn(name="dining_table_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="dining_table_id", referencedColumnName="id", nullable=true)
      */
-    private DiningTable $diningTable;
+    private ?DiningTable $diningTable;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="orders")
      * @ORM\JoinColumn(name="company_id", referencedColumnName="id", nullable=false)
@@ -92,7 +92,7 @@ class Order
         return $this->id;
     }
 
-    public function getDiningTable(): DiningTable
+    public function getDiningTable(): ?DiningTable
     {
         return $this->diningTable;
     }
@@ -106,6 +106,30 @@ class Order
     {
         $orderItems = $this->getOrderItems();
         $orderItems->add($orderItem);
+    }
+
+    public function getOrderItemsText(): string
+    {
+        $text = '';
+        $orderItems = $this->getOrderItems();
+
+        $itemsCount = $orderItems->count();
+        $counter = 0;
+
+        /** @var OrderItem $orderItem */
+        foreach ($orderItems as $orderItem) {
+            $counter++;
+            $text .= $orderItem->getQuantity() . 'x ' . $orderItem->getProductName();
+            if ($counter < $itemsCount) {
+                $text .= ', ';
+            }
+        }
+
+        if (strlen($text) > 25) {
+            $text = mb_substr($text, 0, 23) . '..';
+        }
+
+        return $text;
     }
 
     public function clearOrderItems(): void

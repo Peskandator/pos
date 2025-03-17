@@ -34,7 +34,7 @@ class AddDiningTableFormFactory
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company) {
             $validationMsg = $this->codeValidator->isDiningTableNumberValid($company, $values->number);
             if ($validationMsg !== '') {
-                $form->addError($validationMsg);
+                $form['number']->addError($validationMsg);
                 $form->getPresenter()->flashMessage($validationMsg,FlashMessageType::ERROR);
             }
         };

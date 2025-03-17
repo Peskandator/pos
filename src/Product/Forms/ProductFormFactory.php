@@ -58,6 +58,7 @@ class ProductFormFactory
 
         $form
             ->addInteger('vat_rate')
+            ->addRule($form::Max, 'DPH nemůže být vyšší než 100%', 100)
             ->setNullable()
         ;
 
@@ -126,6 +127,10 @@ class ProductFormFactory
                     }
                     if ($product->getCompany()->getId() !== $company->getId()) {
                         continue;
+                    }
+
+                    if ($productInGroupData['quantity'] === '') {
+                        $productInGroupData['quantity'] = 1;
                     }
 
                     $productsInGroup[] = $productInGroupData;

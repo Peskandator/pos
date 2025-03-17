@@ -20,8 +20,8 @@ export default function() {
         }
     }
 
-    $('#addNextProductToGroupButton').click(function() {
-        let firstProductRow = $(`.productGroupRow`).first();
+    function addNewProductRow() {
+        let firstProductRow = $('.productGroupRow').first();
         let newProductRow = firstProductRow.clone();
         newProductRow.show();
 
@@ -29,8 +29,30 @@ export default function() {
             deleteProductRow($(this));
         });
 
-        newProductRow.insertAfter("div.productGroupRow:last")
+        newProductRow.find('.productGroupItemSelect').change(function() {
+            shouldAddNewProductRow();
+        });
+
+        newProductRow.insertAfter("div.productGroupRow:last");
+    }
+
+    $('#addNextProductToGroupButton').click(function() {
+        addNewProductRow();
     });
+
+
+    $('.productGroupItemSelect').change(function() {
+        shouldAddNewProductRow();
+    });
+
+    function shouldAddNewProductRow() {
+        if ($('.productGroupItemSelect').filter(function() {
+            return $(this).val() === "0";
+        }).length < 2) {
+            addNewProductRow();
+        }
+    }
+
 
     $('.deleteProductButton').click(function() {
         deleteProductRow($(this));
@@ -58,5 +80,38 @@ export default function() {
 
         let jsonString = JSON.stringify(jsonObj);
         $('#js-products-in-group-input').val(jsonString);
+    }
+
+    let productPriceInput = $('#productPrice');
+    let productVatRateInput = $('#productVatRate');
+    let priceWithoutVatInput = $('#priceWithoutVat');
+
+    productPriceInput.change(function(){
+        calculatePriceWithoutVat();
+    });
+
+    productVatRateInput.change(function(){
+        calculatePriceWithoutVat();
+    });
+
+    setInterval(function () {
+        if (productPriceInput.is(':focus') || productVatRateInput.is(':focus')) {
+            calculatePriceWithoutVat();
+        }
+    }, 200)
+
+    function calculatePriceWithoutVat() {
+        let price = productPriceInput.val();
+        let vatRateValue = productVatRateInput.val();
+
+        let isPriceNumeric = $.isNumeric(price);
+
+        if (isPriceNumeric) {
+            if (!$.isNumeric(vatRateValue) || vatRateValue === 0) {
+                priceWithoutVatInput.val(price);
+            }
+            let priceWithoutVat = price * ((100 - vatRateValue) / 100);
+            priceWithoutVatInput.val(priceWithoutVat);
+        }
     }
 }

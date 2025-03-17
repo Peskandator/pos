@@ -53,7 +53,7 @@ class EditCategoryFormFactory
 
             $validationMsg = $this->codeValidator->isCategoryCodeValid($company, $values->code, $category->getCode());
             if ($validationMsg !== '') {
-                $form->addError($validationMsg);
+                $form['code']->addError($validationMsg);
                 $form->getPresenter()->flashMessage($validationMsg,FlashMessageType::ERROR);
             }
         };
