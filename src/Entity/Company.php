@@ -69,7 +69,7 @@ class Company
      */
     private Collection $orders;
     /**
-     * @ORM\Column(type="string", length=50, nullable=true)
+     * @ORM\Column(name="bank_account", type="string", length=50, nullable=true)
      */
     private ?string $bankAccount = null;
 

@@ -55,7 +55,9 @@
                                         <label for="paymentMethod">Způsob platby:</label>
                                         <select n:name="paymentMethod" class="form-select" id="paymentMethod">
                                             <option value="cash">Hotovost</option>
-                                            <option value="qr">QR Platba</option>
+                                            {if isset($bankAccount) && $bankAccount}
+                                                <option value="qr">QR Platba</option>
+                                            {/if}
                                         </select>
                                     </div>
 

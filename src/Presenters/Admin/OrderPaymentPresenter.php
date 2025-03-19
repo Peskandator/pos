@@ -11,6 +11,7 @@ use App\Order\ORM\OrderRepository;
 use App\Presenters\BaseCompanyPresenter;
 use Nette\Application\UI\Form;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Product\Services\QrCodeGenerator;
 
 final class OrderPaymentPresenter extends BaseCompanyPresenter
 {
@@ -60,30 +61,37 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $this->template->paidAmount = $paidAmount;
         $this->template->remainingAmount = $remainingAmount;
         $this->template->unpaidItems = $unpaidItems;
+        $this->template->bankAccount = $this->currentCompany->getBankAccount();
     }
 
     protected function createComponentPaymentForm(): Form
     {
         $form = new Form();
-
+    
         $unpaidItems = [];
         foreach ($this->template->order->getOrderItems() as $item) {
             if (!$item->isPaid()) {
                 $unpaidItems[$item->getId()] = $item->getProductName() . " (" . $item->getPriceIncludingVat() . " Kč)";
             }
         }
-
+    
         $form->addCheckboxList('items', 'Vyberte položky k platbě:', $unpaidItems);
-
-        $form->addSelect('paymentMethod', 'Způsob platby:', [
+    
+        $paymentMethods = [
             'cash' => 'Hotovost',
-            'qr' => 'QR Platba',
-        ])->setRequired();
-
+        ];
+    
+        if ($this->template->bankAccount) {
+            $paymentMethods['qr'] = 'QR Platba';
+        }
+    
+        $form->addSelect('paymentMethod', 'Způsob platby:', $paymentMethods)
+            ->setRequired();
+    
         $form->addSubmit('pay', 'Zaplatit');
-
+    
         $form->onSuccess[] = [$this, 'processPayment'];
-
+    
         return $form;
     }
 
@@ -132,6 +140,28 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
 
         $this->flashMessage("Platba byla úspěšně zpracována.", "success");
         $this->redirect("this");
+    }
+
+    public function handleGenerateQrCode(int $orderId, float $amount): void
+    {
+        $order = $this->orderRepository->find($orderId);
+    
+        if (!$order) {
+            $this->sendJson(['error' => 'Order not found']);
+            return;
+        }
+    
+        $company = $this->currentCompany;
+        $iban = $company->getBankAccount();
+    
+        $qrCodeGenerator = new QrCodeGenerator();
+        $qrCodeDataUri = $qrCodeGenerator->generate($iban, $amount, "Platba za objednavku: {$orderId}");
+    
+        $this->sendJson([
+            'qrCodeDataUri' => $qrCodeDataUri,
+            'amount' => $amount,
+            'iban' => $iban
+        ]);
     }
 
 }
