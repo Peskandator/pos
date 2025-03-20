@@ -10,6 +10,7 @@ use App\Entity\OrderItem;
 use App\Entity\Payment;
 use App\Order\ORM\OrderRepository;
 use App\Presenters\BaseCompanyPresenter;
+use Nette\Application\AbortException;
 use Nette\Application\UI\Form;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Product\Services\QrCodeGenerator;
@@ -65,6 +66,7 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $this->template->remainingAmount = $remainingAmount;
         $this->template->unpaidItems = $unpaidItems;
         $this->template->bankAccount = $this->currentCompany->getBankAccount();
+        $this->template->currentCompanyId = $this->currentCompany->getId();
     }
 
     protected function createComponentPaymentForm(): Form
@@ -147,26 +149,23 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $this->redirect("this");
     }
 
-    public function handleGenerateQrCode(int $orderId, float $amount): void
+    /**
+     * @throws AbortException
+     */
+    public function actionGenerateQrCode(int $orderId, int $currentCompanyId, float $amount): void
     {
-        $order = $this->orderRepository->find($orderId);
-    
-        if (!$order) {
-            $this->sendJson(['error' => 'Order not found']);
+        $amount = (float) $amount;
+        $company = $this->currentCompany;
+
+        if (!$company || !$company->getBankAccount()) {
+            $this->sendJson(['error' => 'No bank account set for the company']);
             return;
         }
-    
-        $company = $this->currentCompany;
-        $iban = $company->getBankAccount();
-    
+
         $qrCodeGenerator = new QrCodeGenerator();
-        $qrCodeDataUri = $qrCodeGenerator->generate($iban, $amount, "Platba za objednavku {$orderId}");
-    
-        $this->sendJson([
-            'qrCodeDataUri' => $qrCodeDataUri,
-            'amount' => $amount,
-            'iban' => $iban
-        ]);
+        $qrCodeData = $qrCodeGenerator->generate($company->getBankAccount(), $amount, "Platba za objednavku: #{$orderId}");
+
+        $this->sendJson(['qrCode' => $qrCodeData]);
     }
 
 }

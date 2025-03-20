@@ -31,12 +31,12 @@ class Payment
     private float $amount;
 
     /**
-     * @ORM\Column(name="paymentTime", type="datetime", nullable=false)
+     * @ORM\Column(name="payment_time", type="datetime", nullable=false)
      */
     private \DateTimeInterface $paymentTime;
 
     /**
-     * @ORM\Column(name="paymentMethod", type="string", length=50, nullable=false)
+     * @ORM\Column(name="payment_method", type="string", length=50, nullable=false)
      */
     private string $paymentMethod;
 

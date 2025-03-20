@@ -39,7 +39,7 @@
                                                             {if $item->isPaid()}
                                                                 <span class="paid-item">✔</span>
                                                             {else}
-                                                                <input type="checkbox" name="items[]" value="{$item->getId()}" />
+                                                                <input type="checkbox" name="items[]" value="{$item->getId()}" data-price="{$item->getPriceIncludingVat()}" />
                                                             {/if}
                                                             <span>{$item->getProductName()} - {$item->getQuantity()} x {$item->getPriceIncludingVat()} Kč</span>
                                                         </div>
@@ -61,6 +61,13 @@
                                         </select>
                                     </div>
 
+                                    <p><strong>Částka k úhradě:</strong> <span id="selectedAmount">0</span> Kč</p>
+
+                                    <div id="qrCodeContainer" style="display: none; margin-top: 20px;">
+                                        <h3>QR Platba</h3>
+                                        <img id="qrCodeImage" src="" alt="QR Code">
+                                    </div>
+
                                     <button type="submit" class="btn btn-primary">Zaplatit</button>
                                 {else}
                                     <p class="text-success">Objednávka je plně zaplacená.</p>
@@ -72,4 +79,74 @@
             </div>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var currentCompanyId = {$currentCompany->getId()};
+
+            $('#paymentMethod').on('change', function() {
+                var paymentMethod = $(this).val();
+
+                if (paymentMethod === 'qr') {
+                    var orderId = {$order->getId()};
+                    var selectedAmount = calculateSelectedAmount();
+
+                    if (selectedAmount <= 0) {
+                        alert("Prosím, vyberte položky k platbě.");
+                        return;
+                    }
+
+                    console.log("Amount to send:", selectedAmount);
+
+                    $.ajax({
+                        url: '/admin/order-payment/generate-qr-code',
+                        method: 'GET',
+                        data: {
+                            orderId: orderId,
+                            currentCompanyId: currentCompanyId,
+                            amount: parseFloat(selectedAmount).toFixed(2)
+                        },
+                        success: function(response) {
+                            console.log('QR code response:', response);
+
+                            if (response.qrCode) {
+                                $('#qrCodeContainer').show();
+
+                                if (response.qrCode.startsWith('data:image/png;base64,')) {
+                                    var img = new Image();
+                                    img.src = response.qrCode;
+
+                                    $('#qrCodeImage').remove();
+                                    img.id = 'qrCodeImage';
+                                    $('#qrCodeContainer').append(img);
+                                } else {
+                                    console.error("Base64 string není ve správném formátu.");
+                                    alert("Nastala chyba při generování QR kódu.");
+                                }
+                            } else {
+                                console.error("Nastala chyba při generování QR kódu: " + response.error);
+                                alert("Nastala chyba při generování QR kódu.");
+                            }
+                        },
+                        error: function() {
+                            alert("Nastala chyba při generování QR kódu.");
+                        }
+                    });
+
+                } else {
+                    $('#qrCodeContainer').hide();
+                }
+            });
+
+            function calculateSelectedAmount() {
+                var total = 0;
+                $('input[name="items[]"]:checked').each(function() {
+                    total += parseFloat($(this).data('price')) || 0;
+                });
+                return total;
+            }
+        });
+    </script>
+
 {/block}
