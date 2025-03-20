@@ -6,6 +6,7 @@ namespace App\Presenters\Admin;
 
 use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Entity\Order;
+use App\Entity\OrderItem;
 use App\Entity\Payment;
 use App\Order\ORM\OrderRepository;
 use App\Presenters\BaseCompanyPresenter;
@@ -48,6 +49,8 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
 
         $paidAmount = 0;
         $unpaidItems = [];
+
+        /** @var OrderItem $item */
         foreach ($order->getOrderItems() as $item) {
             if ($item->isPaid()) {
                 $paidAmount += $item->getPriceIncludingVat() * $item->getQuantity();
@@ -67,16 +70,16 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
     protected function createComponentPaymentForm(): Form
     {
         $form = new Form();
-    
+
         $unpaidItems = [];
         foreach ($this->template->order->getOrderItems() as $item) {
             if (!$item->isPaid()) {
                 $unpaidItems[$item->getId()] = $item->getProductName() . " (" . $item->getPriceIncludingVat() . " Kč)";
             }
         }
-    
+
         $form->addCheckboxList('items', 'Vyberte položky k platbě:', $unpaidItems);
-    
+
         $paymentMethods = [
             'cash' => 'Hotovost',
         ];
@@ -87,11 +90,11 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
     
         $form->addSelect('paymentMethod', 'Způsob platby:', $paymentMethods)
             ->setRequired();
-    
+
         $form->addSubmit('pay', 'Zaplatit');
-    
+
         $form->onSuccess[] = [$this, 'processPayment'];
-    
+
         return $form;
     }
 
@@ -100,6 +103,7 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $order = $this->template->order;
         $unpaidItemsList = [];
 
+        /** @var OrderItem $item */
         foreach ($order->getOrderItems() as $item) {
             if (!$item->isPaid()) {
                 $unpaidItemsList[$item->getId()] =
@@ -121,11 +125,12 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         }
 
         $totalToPay = 0;
+
+        /** @var OrderItem $item */
         foreach ($order->getOrderItems() as $item) {
             if (in_array($item->getId(), $selectedItems) && !$item->isPaid()) {
                 $item->markAsPaid();
                 $totalToPay += $item->getPriceIncludingVat() * $item->getQuantity();
-
             }
         }
 
@@ -155,7 +160,7 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $iban = $company->getBankAccount();
     
         $qrCodeGenerator = new QrCodeGenerator();
-        $qrCodeDataUri = $qrCodeGenerator->generate($iban, $amount, "Platba za objednavku: {$orderId}");
+        $qrCodeDataUri = $qrCodeGenerator->generate($iban, $amount, "Platba za objednavku {$orderId}");
     
         $this->sendJson([
             'qrCodeDataUri' => $qrCodeDataUri,
