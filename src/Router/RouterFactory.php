@@ -23,8 +23,6 @@ final class RouterFactory
         ]);
         $router->addRoute('<presenter>/<action>[/<id>]', 'Home:default');
 
-        $router->addRoute('admin/order-payment/generate-qr-code', 'Admin:OrderPayment:generateQrCode');
-
         return $router;
 	}
 }
