@@ -105,7 +105,7 @@
                         data: {
                             orderId: orderId,
                             currentCompanyId: currentCompanyId,
-                            amount: parseFloat(selectedAmount).toFixed(2)
+                            amount: selectedAmount
                         },
                         success: function(response) {
                             console.log('QR code response:', response);
@@ -119,6 +119,7 @@
 
                                     $('#qrCodeImage').remove();
                                     img.id = 'qrCodeImage';
+                                    img.className = 'w-50 h-50';
                                     $('#qrCodeContainer').append(img);
                                 } else {
                                     console.error("Base64 string není ve správném formátu.");

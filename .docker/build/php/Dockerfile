@@ -20,5 +20,7 @@ RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev
 RUN apt-get update && apt-get install -y libzip-dev && \
     docker-php-ext-install zip
 
+RUN docker-php-ext-install bcmath
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer self-update

@@ -149,16 +149,19 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $this->redirect("this");
     }
 
-    /**
-     * @throws AbortException
-     */
-    public function actionGenerateQrCode(int $orderId, int $currentCompanyId, float $amount): void
+    public function actionGenerateQrCode(int $orderId, int $currentCompanyId, string $amount): void
     {
+        if (!is_numeric($amount)) {
+            $this->sendJson(['error' => 'Nespravne mnozsvi']);
+            return;
+        }
+
         $amount = (float) $amount;
+
         $company = $this->currentCompany;
 
         if (!$company || !$company->getBankAccount()) {
-            $this->sendJson(['error' => 'No bank account set for the company']);
+            $this->sendJson(['error' => 'Firma nema nastaveny IBAN.']);
             return;
         }
 

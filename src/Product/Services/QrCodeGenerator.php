@@ -2,23 +2,20 @@
 
 namespace App\Product\Services;
 
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
-use Endroid\QrCode\Writer\Result\ResultInterface;
+use Defr\QRPlatba\QRPlatba;
 
 class QrCodeGenerator
 {
     public function generate(string $iban, float $amount, string $message): string
     {
-        $data = "SPD*1.0*ACC:{$iban}*AM:{$amount}*CC:CZK*MSG:{$message}";
+        $amount = (float) $amount;
 
-        $qrCode = new QrCode($data);
-        $qrCode->setSize(300);
-        $qrCode->setMargin(10);
+        $qrPlatba = new QRPlatba();
+        $qrPlatba->setIBAN($iban)
+            ->setAmount($amount)
+            ->setCurrency('CZK')
+            ->setMessage($message);
 
-        $writer = new PngWriter();
-        $result = $writer->write($qrCode);
-
-        return $result->getDataUri();
+        return $qrPlatba->getDataUri();
     }
 }
