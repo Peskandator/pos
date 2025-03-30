@@ -10,17 +10,20 @@
 
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card mb-3">
                     <div class="card-body">
                         {var $totalAmount = 0}
-
                         {foreach $order->getOrderItems() as $item}
                             {var $totalAmount = $totalAmount + ($item->getQuantity() * $item->getPriceIncludingVat())}
                         {/foreach}
 
                         <p><strong>Zaplaceno:</strong> {$paidAmount} Kč</p>
                         <p><strong>Zbývá zaplatit:</strong> {$remainingAmount = $totalAmount - $paidAmount} Kč</p>
+                    </div>
+                </div>
 
+                <div class="card mb-3">
+                    <div class="card-body">
                         <h3>Vyberte položky k platbě:</h3>
                         <form n:name="paymentForm">
                             <div class="form-errors" n:ifcontent>
@@ -39,7 +42,7 @@
                                                             {if $item->isPaid()}
                                                                 <span class="paid-item">✔</span>
                                                             {else}
-                                                                <input type="checkbox" name="items[]" value="{$item->getId()}" data-price="{$item->getPriceIncludingVat()}" />
+                                                                <input type="checkbox" class="item-checkbox" name="items[]" value="{$item->getId()}" data-price="{$item->getPriceIncludingVat()}" data-quantity="{$item->getQuantity()}" />
                                                             {/if}
                                                             <span>{$item->getProductName()} - {$item->getQuantity()} x {$item->getPriceIncludingVat()} Kč</span>
                                                         </div>
@@ -85,19 +88,27 @@
         $(document).ready(function() {
             var currentCompanyId = {$currentCompany->getId()};
 
-            $('#paymentMethod').on('change', function() {
-                var paymentMethod = $(this).val();
+            function calculateSelectedAmount() {
+                var total = 0;
+                $('input.item-checkbox:checked').each(function() {
+                    var price = parseFloat($(this).data('price')) || 0;
+                    var quantity = parseInt($(this).data('quantity')) || 1;
+                    total += price * quantity;
+                });
+                return total;
+            }
 
+            function updateQRCode() {
+                var paymentMethod = $('#paymentMethod').val();
                 if (paymentMethod === 'qr') {
                     var orderId = {$order->getId()};
                     var selectedAmount = calculateSelectedAmount();
+                    $('#selectedAmount').text(selectedAmount);
 
                     if (selectedAmount <= 0) {
-                        alert("Prosím, vyberte položky k platbě.");
+                        $('#qrCodeContainer').hide();
                         return;
                     }
-
-                    console.log("Amount to send:", selectedAmount);
 
                     $.ajax({
                         url: '/admin/order-payment/generate-qr-code',
@@ -108,25 +119,10 @@
                             amount: selectedAmount
                         },
                         success: function(response) {
-                            console.log('QR code response:', response);
-
                             if (response.qrCode) {
                                 $('#qrCodeContainer').show();
-
-                                if (response.qrCode.startsWith('data:image/png;base64,')) {
-                                    var img = new Image();
-                                    img.src = response.qrCode;
-
-                                    $('#qrCodeImage').remove();
-                                    img.id = 'qrCodeImage';
-                                    img.className = 'w-50 h-50';
-                                    $('#qrCodeContainer').append(img);
-                                } else {
-                                    console.error("Base64 string není ve správném formátu.");
-                                    alert("Nastala chyba při generování QR kódu.");
-                                }
+                                $('#qrCodeImage').attr('src', response.qrCode);
                             } else {
-                                console.error("Nastala chyba při generování QR kódu: " + response.error);
                                 alert("Nastala chyba při generování QR kódu.");
                             }
                         },
@@ -134,19 +130,19 @@
                             alert("Nastala chyba při generování QR kódu.");
                         }
                     });
-
                 } else {
                     $('#qrCodeContainer').hide();
                 }
+            }
+
+            $('.item-checkbox').on('change', function() {
+                $('#selectedAmount').text(calculateSelectedAmount());
+                updateQRCode();
             });
 
-            function calculateSelectedAmount() {
-                var total = 0;
-                $('input[name="items[]"]:checked').each(function() {
-                    total += parseFloat($(this).data('price')) || 0;
-                });
-                return total;
-            }
+            $('#paymentMethod').on('change', function() {
+                updateQRCode();
+            });
         });
     </script>
 
