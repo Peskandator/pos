@@ -18,6 +18,8 @@ use App\Presenters\BaseAdminPresenter;
 use App\User\ORM\UserRepository;
 use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
+use Iban\Validation\Iban;
+use Iban\Validation\Validator;
 
 final class CompaniesPresenter extends BaseAdminPresenter
 {
@@ -147,6 +149,17 @@ final class CompaniesPresenter extends BaseAdminPresenter
 
         $form->addSubmit('send', 'Vytvořit firmu');
 
+        $form->onValidate[] = function (Form $form, \stdClass $values) {
+            if (!empty($values->bank_account)) {
+                $validator = new Validator();
+                $iban = new Iban($values->bank_account);
+
+                if (!$validator->validate($iban)) {
+                    $form->addError('Zadaný IBAN není platný.');
+                }
+            }
+        };
+
         $form->onSuccess[] = function (Form $form, \stdClass $values) {
             $request = new CreateCompanyRequest(
                 $values->name,
@@ -207,6 +220,17 @@ final class CompaniesPresenter extends BaseAdminPresenter
             ->setDefaultValue($company->getStreet())
         ;
         $form->addSubmit('send', 'Uložit');
+
+        $form->onValidate[] = function (Form $form, \stdClass $values) {
+            if (!empty($values->bank_account)) {
+                $validator = new Validator();
+                $iban = new Iban($values->bank_account);
+
+                if (!$validator->validate($iban)) {
+                    $form->addError('Zadaný IBAN není platný.');
+                }
+            }
+        };
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) use ($company) {
             $request = new CreateCompanyRequest(
