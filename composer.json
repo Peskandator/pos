@@ -36,7 +36,7 @@
 		"ext-zip": "*",
 		"ext-gd": "*",
 		"phpoffice/phpspreadsheet": "4.0.0",
-		"endroid/qr-code": "^5.1"
+		"dfridrich/qr-platba": "^2"
     },
 	"autoload": {
 		"psr-4": {
