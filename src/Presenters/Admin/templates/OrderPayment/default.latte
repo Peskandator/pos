@@ -1,149 +1,344 @@
 {layout $adminlayoutPath}
 {import '../_partials/orderItemRow.latte'}
-
 {block modals}
 {/block}
-
 {block content}
     <div class="js-page-order">
         <h1>Platba objednávky č. {$order->getInventoryNumber()}</h1>
-
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-12">
-                <div class="card mb-3">
+                <div class="card">
                     <div class="card-body">
+                        <h2>Souhrn objednávky</h2>
                         {var $totalAmount = 0}
+                        {var $paidAmount = 0}
                         {foreach $order->getOrderItems() as $item}
                             {var $totalAmount = $totalAmount + ($item->getQuantity() * $item->getPriceIncludingVat())}
+                            {var $paidQty = 0}
+                            {foreach $item->getOrderItemPayments() as $payment}
+                                {var $paidQty = $paidQty + $payment->getPaidQuantity()}
+                            {/foreach}
+                            {var $paidAmount = $paidAmount + ($paidQty * $item->getPriceIncludingVat())}
                         {/foreach}
-
-                        <p><strong>Zaplaceno:</strong> {$paidAmount} Kč</p>
-                        <p><strong>Zbývá zaplatit:</strong> {$remainingAmount = $totalAmount - $paidAmount} Kč</p>
+                    <p><strong>Celková cena objednávky:</strong> {$totalAmount} Kč</p>
+                    <p><strong>Zaplaceno:</strong> {$paidAmount} Kč</p>
+                    {var $remainingAmount = $totalAmount - $paidAmount}
+                        <p><strong>Zbývá zaplatit:</strong> {$remainingAmount} Kč</p>
                     </div>
                 </div>
-
-                <div class="card mb-3">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 mb-3 d-flex flex-column gap-3">
+                <div class="card">
                     <div class="card-body">
                         <h3>Vyberte položky k platbě:</h3>
                         <form n:name="paymentForm">
                             <div class="form-errors" n:ifcontent>
                                 <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
                             </div>
-
                             <div class="px-2">
                                 <div class="mb-3">
-                                    <label for="orderItems">Položky objednávky:</label>
+                                    <label for="orderItems" class="form-label fs-5">Nezaplacené položky:</label>
                                     <div id="orderItemsBox">
                                         <div class="order-items">
-                                            <ul>
-                                                {foreach $order->getOrderItems() as $item}
-                                                    <li>
-                                                        <div class="item">
-                                                            {if $item->isPaid()}
-                                                                <span class="paid-item">✔</span>
-                                                            {else}
-                                                                <input type="checkbox" class="item-checkbox" name="items[]" value="{$item->getId()}" data-price="{$item->getPriceIncludingVat()}" data-quantity="{$item->getQuantity()}" />
-                                                            {/if}
-                                                            <span>{$item->getProductName()} - {$item->getQuantity()} x {$item->getPriceIncludingVat()} Kč</span>
-                                                        </div>
-                                                    </li>
+                                            {foreach $order->getOrderItems() as $item}
+                                                {var $paidQty = 0}
+                                                {foreach $item->getOrderItemPayments() as $payment}
+                                                    {var $paidQty = $paidQty + $payment->getPaidQuantity()}
                                                 {/foreach}
-                                            </ul>
+                                                {var $remainingQty = $item->getQuantity() - $paidQty}
+                                                {if $remainingQty > 0}
+                                                    <div class="item mb-3">
+                                                        <div class="form-check form-check-lg d-flex align-items-center gap-3">
+                                                            <input type="checkbox"
+                                                                   class="form-check-input item-checkbox"
+                                                                   style="width: 28px; height: 28px;"
+                                                                   name="items[]"
+                                                                   value="{$item->getId()}"
+                                                                   data-price="{$item->getPriceIncludingVat()}"
+                                                                   data-max="{$remainingQty}"
+                                                                   id="item-{$item->getId()}">
+                                                            <label class="form-check-label fs-5" for="item-{$item->getId()}">
+                                                                {$item->getProductName()} – {$remainingQty} × {$item->getPriceIncludingVat()} Kč
+                                                            </label>
+                                                        </div>
+                                                        <div class="item-quantity-wrapper mt-2 ms-5"
+                                                             style="display: none;"
+                                                             data-item-id="{$item->getId()}">
+                                                            <label class="me-2 fs-6">Počet:</label>
+                                                            <div class="input-group" style="width: 140px;">
+                                                                <button type="button" class="btn btn-outline-secondary btn-qty-minus" data-item-id="{$item->getId()}">−</button>
+                                                                <input type="number"
+                                                                       name="quantities[{$item->getId()}]"
+                                                                       id="quantities-{$item->getId()}"
+                                                                       min="1"
+                                                                       max="{$remainingQty}"
+                                                                       value="1"
+                                                                       class="form-control text-center fs-5">
+                                                                <button type="button" class="btn btn-outline-secondary btn-qty-plus" data-item-id="{$item->getId()}">+</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {/if}
+                                            {/foreach}
                                         </div>
                                     </div>
                                 </div>
-
                                 {if $remainingAmount > 0}
                                     <div class="mb-3">
-                                        <label for="paymentMethod">Způsob platby:</label>
-                                        <select n:name="paymentMethod" class="form-select" id="paymentMethod">
+                                        <label for="paymentMethod" class="form-label fs-5">Způsob platby:</label>
+                                        <select n:name="paymentMethod" class="form-select fs-5" id="paymentMethod" disabled>
                                             <option value="cash">Hotovost</option>
                                             {if isset($bankAccount) && $bankAccount}
                                                 <option value="qr">QR Platba</option>
                                             {/if}
                                         </select>
                                     </div>
-
-                                    <p><strong>Částka k úhradě:</strong> <span id="selectedAmount">0</span> Kč</p>
-
+                                    <p class="fs-5"><strong>Částka k úhradě:</strong> <span id="selectedAmount">0</span> Kč</p>
+                                    <input type="hidden" name="paymentForm-pay" value="1">
+                                    <button type="submit" class="btn btn-primary btn-lg">Zaplatit</button>
                                     <div id="qrCodeContainer" style="display: none; margin-top: 20px;">
                                         <h3>QR Platba</h3>
-                                        <img id="qrCodeImage" src="" alt="QR Code">
+                                        <img id="qrCodeImage" class="img-fluid" src="" alt="QR Code" style="max-width: 250px;">
                                     </div>
-
-                                    <button type="submit" class="btn btn-primary">Zaplatit</button>
                                 {else}
-                                    <p class="text-success">Objednávka je plně zaplacená.</p>
+                                    <p class="text-success fs-5">Objednávka je plně zaplacená.</p>
                                 {/if}
                             </div>
                         </form>
                     </div>
                 </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Zaplacené položky:</h3>
+                        <div id="paidOrderItems">
+                            {var $hasPaidItems = false}
+                        {foreach $order->getOrderItems() as $item}
+                                {var $totalPaid = 0}
+                                {var $paidQuantity = 0}
+                                {foreach $item->getOrderItemPayments() as $payment}
+                                    {var $paidQuantity = $paidQuantity + $payment->getPaidQuantity()}
+                                    {var $totalPaid = $totalPaid + ($payment->getPaidQuantity() * $item->getPriceIncludingVat())}
+                                {/foreach}
+                                {if $totalPaid > 0}
+                                    {var $hasPaidItems = true}
+                                    <div class="item">
+                                        <span class="paid-item">✔</span>
+                                        <span>
+                                        {$item->getProductName()} –
+                                            {$paidQuantity} × {$item->getPriceIncludingVat()} Kč
+                                    </span>
+                                        <span class="paid-amount">({$totalPaid} Kč)</span>
+                                    </div>
+                                {/if}
+                            {/foreach}
+                        {if !$hasPaidItems}
+                                <p class="text-muted">Zatím nebyly zaplacené žádné položky.</p>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            var currentCompanyId = {$currentCompany->getId()};
-
-            function calculateSelectedAmount() {
-                var total = 0;
-                $('input.item-checkbox:checked').each(function() {
-                    var price = parseFloat($(this).data('price')) || 0;
-                    var quantity = parseInt($(this).data('quantity')) || 1;
-                    total += price * quantity;
-                });
-                return total;
-            }
-
-            function updateQRCode() {
-                var paymentMethod = $('#paymentMethod').val();
-                if (paymentMethod === 'qr') {
-                    var orderId = {$order->getId()};
-                    var selectedAmount = calculateSelectedAmount();
-                    $('#selectedAmount').text(selectedAmount);
-
-                    if (selectedAmount <= 0) {
-                        $('#qrCodeContainer').hide();
-                        return;
+            <div class="col-lg-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Historie plateb:</h3>
+                        <div id="paymentHistory">
+                            {if count($order->getPayments()) > 0}
+                                {var $totalVat = 0}
+                                {var $totalWithoutVat = 0}
+                                {var $totalWithVat = 0}
+                                {var $currentIndex = 0}
+                                {foreach $order->getPayments() as $payment}
+                                    <div class="receipt mb-4" style="display: {if $currentIndex == 0}block{else}none{/if};">
+                                        <hr>
+                                        <div style="text-align: center;">
+                                            <strong>Společnost: {$order->getCompany()->getName()}</strong><br>
+                                            <strong>Platba č. {$payment->getId()} | Objednávka č. {$order->getInventoryNumber()}</strong>
+                                        </div>
+                                        <hr style="margin: 0.5rem 0;">
+                                        <div style="display: flex; justify-content: space-between; text-align: right;">
+                                            <strong>{$payment->getPaymentTime()->format('Y-m-d H:i')}</strong> &nbsp;
+                                            <span>
+                                            {if $payment->getPaymentMethod() === 'qr'}QR
+                                            {elseif $payment->getPaymentMethod() === 'cash'}Hotovost
+                                            {else}{$payment->getPaymentMethod()|capitalize}{/if}
+                                        </span>
+                                        </div>
+                                        <hr style="margin: 0.5rem 0;">
+                                        <p><strong>Položky:</strong></p>
+                                        {var $totalWithoutVat = 0}
+                                    {var $totalVat = 0}
+                                    {var $totalWithVat = 0}
+                                    {foreach $payment->getOrderItemPayments() as $paymentItem}
+                                            {var $item = $paymentItem->getOrderItem()}
+                                            {var $qty = $paymentItem->getPaidQuantity()}
+                                            {var $priceNoVat = $item->getPrice()}
+                                            {var $priceWithVat = $item->getPriceIncludingVat()}
+                                            {var $vatUnit = $priceWithVat - $priceNoVat}
+                                            {var $totalItemNoVat = $priceNoVat * $qty}
+                                            {var $totalItemVat = $vatUnit * $qty}
+                                            {var $totalItemWithVat = $priceWithVat * $qty}
+                                            {var $totalWithoutVat = $totalWithoutVat + $totalItemNoVat}
+                                            {var $totalVat = $totalVat + $totalItemVat}
+                                            {var $totalWithVat = $totalWithVat + $totalItemWithVat}
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <span>{$qty}× {$item->getProductName()}</span>
+                                                <span>{number_format($totalItemWithVat, 2, ',', ' ')} Kč</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <span>&nbsp;&nbsp;&nbsp;&nbsp;bez DPH:</span>
+                                                <span>{number_format($totalItemNoVat, 2, ',', ' ')} Kč</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                                <span>&nbsp;&nbsp;&nbsp;&nbsp;DPH:</span>
+                                                <span>{number_format($totalItemVat, 2, ',', ' ')} Kč</span>
+                                            </div>
+                                        {/foreach}
+                                        <hr style="margin: 0.5rem 0;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span>CELKEM BEZ DPH:</span>
+                                            <span>{number_format($totalWithoutVat, 2, ',', ' ')} Kč</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span>CELKEM DPH:</span>
+                                            <span>{number_format($totalVat, 2, ',', ' ')} Kč</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <strong>CELKEM:</strong>
+                                            <strong>{number_format($totalWithVat, 2, ',', ' ')} Kč</strong>
+                                        </div>
+                                    </div>
+                                    {var $currentIndex = $currentIndex + 1}
+                                {/foreach}
+                                <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+                                    <button id="prevReceiptBtn" class="btn btn-secondary" onclick="showPreviousReceipt()">&#8592; Předchozí</button>
+                                    <button id="nextReceiptBtn" class="btn btn-secondary" onclick="showNextReceipt()">Další &#8594;</button>
+                                </div>
+                            {else}
+                                <p class="text-muted">Žádné platby zatím nebyly zaznamenány.</p>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                const receipts = document.querySelectorAll('.receipt');
+                let currentIndex = receipts.length - 1;
+                function displayReceipt(index) {
+                    receipts.forEach((receipt, idx) => {
+                        receipt.style.display = (idx === index) ? 'block' : 'none';
+                    });
+                    document.getElementById('prevReceiptBtn').disabled = (index === 0);
+                    document.getElementById('nextReceiptBtn').disabled = (index === receipts.length - 1);
+                }
+                function showPreviousReceipt() {
+                    if (currentIndex > 0) {
+                        currentIndex--;
+                        displayReceipt(currentIndex);
                     }
-
-                    $.ajax({
-                        url: '/admin/order-payment/generate-qr-code',
-                        method: 'GET',
-                        data: {
-                            orderId: orderId,
-                            currentCompanyId: currentCompanyId,
-                            amount: selectedAmount
-                        },
-                        success: function(response) {
-                            if (response.qrCode) {
-                                $('#qrCodeContainer').show();
-                                $('#qrCodeImage').attr('src', response.qrCode);
-                            } else {
-                                alert("Nastala chyba při generování QR kódu.");
+                }
+                function showNextReceipt() {
+                    if (currentIndex < receipts.length - 1) {
+                        currentIndex++;
+                        displayReceipt(currentIndex);
+                    }
+                }
+                displayReceipt(currentIndex);
+            </script>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                    var currentCompanyId = {$currentCompany->getId()};
+                    function calculateSelectedAmount() {
+                        let total = 0;
+                        $('input.item-checkbox:checked').each(function() {
+                            const itemId = $(this).val();
+                            const price = parseFloat($(this).data('price')) || 0;
+                            const quantity = parseInt($('#quantities-' + itemId).val()) || 1;
+                            total += price * quantity;
+                        });
+                        return total.toFixed(2);
+                    }
+                    function updateQRCode() {
+                        var paymentMethod = $('#paymentMethod').val();
+                        if (paymentMethod === 'qr') {
+                            var orderId = {$order->getId()};
+                            var selectedAmount = calculateSelectedAmount();
+                            $('#selectedAmount').text(selectedAmount);
+                            if (selectedAmount <= 0) {
+                                $('#qrCodeContainer').hide();
+                                return;
                             }
-                        },
-                        error: function() {
-                            alert("Nastala chyba při generování QR kódu.");
+                            $.ajax({
+                                url: '/admin/order-payment/generate-qr-code',
+                                method: 'GET',
+                                data: {
+                                    orderId: orderId,
+                                    currentCompanyId: currentCompanyId,
+                                    amount: selectedAmount
+                                },
+                                success: function(response) {
+                                    if (response.qrCode) {
+                                        $('#qrCodeContainer').show();
+                                        $('#qrCodeImage').attr('src', response.qrCode);
+                                    } else {
+                                        alert("Nastala chyba při generování QR kódu.");
+                                    }
+                                },
+                                error: function() {
+                                    alert("Nastala chyba při generování QR kódu.");
+                                }
+                            });
+                        } else {
+                            $('#qrCodeContainer').hide();
+                        }
+                    }
+                    function bindItemQuantityHandlers() {
+                        $('.item-checkbox').each(function() {
+                            const itemId = $(this).val();
+                            const $quantityWrapper = $('.item-quantity-wrapper[data-item-id="' + itemId + '"]');
+                            if ($(this).is(':checked')) {
+                                $quantityWrapper.show();
+                            } else {
+                                $quantityWrapper.hide();
+                            }
+                        });
+                        $('#selectedAmount').text(calculateSelectedAmount());
+                        updateQRCode();
+                    }
+                    $('.item-checkbox').on('change', function() {
+                        bindItemQuantityHandlers();
+                        $('#paymentMethod').prop('disabled', !$('input.item-checkbox:checked').length);
+                    });
+                    $(document).on('change keyup', 'input[id^="quantities-"]', function() {
+                        $('#selectedAmount').text(calculateSelectedAmount());
+                        updateQRCode();
+                    });
+                    $('#paymentMethod').on('change', function() {
+                        updateQRCode();
+                    });
+                    $('.btn-qty-minus').on('click', function () {
+                        const itemId = $(this).data('item-id');
+                        const $input = $('#quantities-' + itemId);
+                        let val = parseInt($input.val());
+                        if (val > parseInt($input.attr('min'))) {
+                            $input.val(val - 1).trigger('change');
                         }
                     });
-                } else {
-                    $('#qrCodeContainer').hide();
-                }
-            }
-
-            $('.item-checkbox').on('change', function() {
-                $('#selectedAmount').text(calculateSelectedAmount());
-                updateQRCode();
-            });
-
-            $('#paymentMethod').on('change', function() {
-                updateQRCode();
-            });
-        });
-    </script>
-
+                    $('.btn-qty-plus').on('click', function () {
+                        const itemId = $(this).data('item-id');
+                        const $input = $('#quantities-' + itemId);
+                        let val = parseInt($input.val());
+                        const max = parseInt($input.attr('max'));
+                        if (val < max) {
+                            $input.val(val + 1).trigger('change');
+                        }
+                    });
+                    bindItemQuantityHandlers();
+                });
+            </script>
+        </div>
+    </div>
 {/block}
