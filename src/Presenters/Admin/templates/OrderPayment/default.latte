@@ -168,6 +168,7 @@
                     </div>
                 </div>
             </div>
+            
             <div class="col-lg-4 mb-3">
                 <div class="card">
                     <div class="card-header">
@@ -182,6 +183,7 @@
                                 {var $totalWithoutVat = 0}
                                 {var $totalWithVat = 0}
                                 {var $currentIndex = 0}
+                                {var $totalPayments = count($order->getPayments())}
                                 {foreach $order->getPayments() as $payment}
                                     <div class="receipt mb-4" style="display: {if $currentIndex == 0}block{else}none{/if};">
                                         <div style="text-align: center;">
@@ -192,17 +194,17 @@
                                         <div style="display: flex; justify-content: space-between; text-align: right;">
                                             <strong>{$payment->getPaymentTime()->format('Y-m-d H:i')}</strong> &nbsp;
                                             <span>
-                                            {if $payment->getPaymentMethod() === 'qr'}QR
-                                            {elseif $payment->getPaymentMethod() === 'cash'}Hotovost
-                                            {else}{$payment->getPaymentMethod()|capitalize}{/if}
-                                        </span>
+                                                {if $payment->getPaymentMethod() === 'qr'}QR
+                                                {elseif $payment->getPaymentMethod() === 'cash'}Hotovost
+                                                {else}{$payment->getPaymentMethod()|capitalize}{/if}
+                                            </span>
                                         </div>
                                         <hr style="margin: 0.5rem 0;">
                                         <p><strong>Položky:</strong></p>
                                         {var $totalWithoutVat = 0}
-                                    {var $totalVat = 0}
-                                    {var $totalWithVat = 0}
-                                    {foreach $payment->getOrderItemPayments() as $paymentItem}
+                                        {var $totalVat = 0}
+                                        {var $totalWithVat = 0}
+                                        {foreach $payment->getOrderItemPayments() as $paymentItem}
                                             {var $item = $paymentItem->getOrderItem()}
                                             {var $qty = $paymentItem->getPaidQuantity()}
                                             {var $priceNoVat = $item->getPrice()}
@@ -243,8 +245,9 @@
                                     </div>
                                     {var $currentIndex = $currentIndex + 1}
                                 {/foreach}
-                                <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
                                     <button id="prevReceiptBtn" class="btn btn-secondary" onclick="showPreviousReceipt()">&#8592; Předchozí</button>
+                                    <span id="pageIndicator" style="margin: 0 auto;">1 / {$totalPayments}</span>
                                     <button id="nextReceiptBtn" class="btn btn-secondary" onclick="showNextReceipt()">Další &#8594;</button>
                                 </div>
                             {else}
@@ -257,12 +260,17 @@
             <script>
                 const receipts = document.querySelectorAll('.receipt');
                 let currentIndex = receipts.length - 1;
+                function updatePageIndicator() {
+                    const pageIndicator = document.getElementById("pageIndicator");
+                    pageIndicator.textContent = (currentIndex + 1) + " / " + receipts.length;
+                }
                 function displayReceipt(index) {
                     receipts.forEach((receipt, idx) => {
                         receipt.style.display = (idx === index) ? 'block' : 'none';
                     });
                     document.getElementById('prevReceiptBtn').disabled = (index === 0);
                     document.getElementById('nextReceiptBtn').disabled = (index === receipts.length - 1);
+                    updatePageIndicator();
                 }
                 function showPreviousReceipt() {
                     if (currentIndex > 0) {
