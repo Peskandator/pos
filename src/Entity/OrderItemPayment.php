@@ -32,7 +32,7 @@ class OrderItemPayment
     /**
      * @ORM\Column(name="paid_quantity", type="integer", nullable=false)
      */
-    private int $paidQuantity;
+    private int $paidQuantity = 0;
 
     public function getId(): ?int
     {
