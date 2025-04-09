@@ -136,39 +136,65 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex my-2">
-                            <h3>Zaplacené položky</h3>
+                            <h3>Stav položek</h3>
                         </div>
                     </div>
                     <div class="card-body">
                         <div id="paidOrderItems">
                             {var $hasPaidItems = false}
-                            {foreach $order->getOrderItems() as $item}
-                                    {var $totalPaid = 0}
-                                    {var $paidQuantity = 0}
-                                    {foreach $item->getOrderItemPayments() as $payment}
-                                        {var $paidQuantity = $paidQuantity + $payment->getPaidQuantity()}
-                                        {var $totalPaid = $totalPaid + ($payment->getPaidQuantity() * $item->getPriceIncludingVat())}
+                            <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                                <table class="table table-bordered table-sm js-table mb-0" style="table-layout: auto; width: 100%;">
+                                    <thead class="bg-primary text-white">
+                                    <tr>
+                                        <th style="white-space: normal;">Položka</th>
+                                        <th style="white-space: normal;">Zaplaceno / Celkem (ks)</th>
+                                        <th style="white-space: normal;">Cena / ks</th>
+                                        <th style="white-space: normal;">Zaplaceno / Celkem (Kč)</th>
+                                        <th style="white-space: normal;">Stav</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {foreach $order->getOrderItems() as $item}
+                                        {var $totalPaid = 0}
+                                        {var $paidQuantity = 0}
+                                        {foreach $item->getOrderItemPayments() as $payment}
+                                            {var $paidQuantity = $paidQuantity + $payment->getPaidQuantity()}
+                                            {var $totalPaid = $totalPaid + ($payment->getPaidQuantity() * $item->getPriceIncludingVat())}
+                                        {/foreach}
+                                        {if $paidQuantity > 0}
+                                            {var $hasPaidItems = true}
+                                            {var $totalDue = $item->getQuantity() * $item->getPriceIncludingVat()}
+                                            <tr>
+                                                <td>{$item->getProductName()}</td>
+                                                <td>{$paidQuantity} / {$item->getQuantity()}</td>
+                                                <td>{number_format($item->getPriceIncludingVat(), 2, ',', ' ')} Kč</td>
+                                                <td>
+                                                    {number_format($totalPaid, 2, ',', ' ')} Kč /
+                                                    {number_format($totalDue, 2, ',', ' ')} Kč
+                                                </td>
+                                                <td class="text-center">
+                                                    {if $paidQuantity >= $item->getQuantity()}
+                                                        <span class="text-success">✔</span>
+                                                    {else}
+                                                        <span class="text-danger">❌</span>
+                                                    {/if}
+                                                </td>
+                                            </tr>
+                                        {/if}
                                     {/foreach}
-                                    {if $totalPaid > 0}
-                                        {var $hasPaidItems = true}
-                                        <div class="item">
-                                            <span class="paid-item">✔</span>
-                                            <span>
-                                            {$item->getProductName()} –
-                                                {$paidQuantity} × {$item->getPriceIncludingVat()} Kč
-                                        </span>
-                                            <span class="paid-amount">({$totalPaid} Kč)</span>
-                                        </div>
+                                    {if !$hasPaidItems}
+                                        <tr>
+                                            <td colspan="5" class="text-muted text-center">Zatím nebyly zaplacené žádné položky.</td>
+                                        </tr>
                                     {/if}
-                            {/foreach}
-                            {if !$hasPaidItems}
-                                <p class="text-muted">Zatím nebyly zaplacené žádné položky.</p>
-                            {/if}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-lg-4 mb-3">
                 <div class="card">
                     <div class="card-header">
