@@ -68,7 +68,10 @@ class Company
      * @ORM\OneToMany(targetEntity="Order", mappedBy="company")
      */
     private Collection $orders;
-
+    /**
+     * @ORM\Column(name="bank_account", type="string", length=50, nullable=true)
+     */
+    private ?string $bankAccount = null;
 
     public function __construct(
         CreateCompanyRequest $request,
@@ -87,6 +90,7 @@ class Company
     {
         $this->name = $request->name;
         $this->companyId = $request->companyId;
+        $this->bankAccount = $request->bankAccount;
         $this->country = $request->country;
         $this->city = $request->city;
         $this->zipCode = $request->zipCode;
@@ -258,4 +262,10 @@ class Company
 
         return $productGroups;
     }
+
+    public function getBankAccount(): ?string
+    {
+        return $this->bankAccount;
+    }
+
 }

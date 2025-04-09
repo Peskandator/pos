@@ -7,6 +7,7 @@ class CreateCompanyRequest
     public function __construct(
         public string $name,
         public string $companyId,
+        public string $bankAccount,
         public string $country,
         public string $city,
         public string $zipCode,

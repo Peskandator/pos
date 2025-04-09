@@ -18,6 +18,8 @@ use App\Presenters\BaseAdminPresenter;
 use App\User\ORM\UserRepository;
 use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
+use Iban\Validation\Iban;
+use Iban\Validation\Validator;
 
 final class CompaniesPresenter extends BaseAdminPresenter
 {
@@ -123,6 +125,11 @@ final class CompaniesPresenter extends BaseAdminPresenter
         $form
             ->addText('company_id', 'IČO')
         ;
+
+        $form
+            ->addText('bank_account', 'Číslo bankovního účtu (IBAN)')
+        ;
+
         $form
             ->addText('country', 'Stát')
             ->setRequired()
@@ -142,10 +149,22 @@ final class CompaniesPresenter extends BaseAdminPresenter
 
         $form->addSubmit('send', 'Vytvořit firmu');
 
+        $form->onValidate[] = function (Form $form, \stdClass $values) {
+            if (!empty($values->bank_account)) {
+                $validator = new Validator();
+                $iban = new Iban($values->bank_account);
+
+                if (!$validator->validate($iban)) {
+                    $form->addError('Zadaný IBAN není platný.');
+                }
+            }
+        };
+
         $form->onSuccess[] = function (Form $form, \stdClass $values) {
             $request = new CreateCompanyRequest(
                 $values->name,
                 $values->company_id,
+                $values->bank_account,
                 $values->country,
                 $values->city,
                 $values->zip_code,
@@ -177,6 +196,10 @@ final class CompaniesPresenter extends BaseAdminPresenter
             ->setDefaultValue($company->getCompanyId())
         ;
         $form
+            ->addText('bank_account', 'Číslo bankovního účtu (IBAN)')
+            ->setDefaultValue($company->getBankAccount())
+        ;
+        $form
             ->addText('country', 'Stát')
             ->setRequired()
             ->setDefaultValue($company->getCountry())
@@ -198,10 +221,22 @@ final class CompaniesPresenter extends BaseAdminPresenter
         ;
         $form->addSubmit('send', 'Uložit');
 
+        $form->onValidate[] = function (Form $form, \stdClass $values) {
+            if (!empty($values->bank_account)) {
+                $validator = new Validator();
+                $iban = new Iban($values->bank_account);
+
+                if (!$validator->validate($iban)) {
+                    $form->addError('Zadaný IBAN není platný.');
+                }
+            }
+        };
+
         $form->onSuccess[] = function (Form $form, \stdClass $values) use ($company) {
             $request = new CreateCompanyRequest(
                 $values->name,
                 $values->company_id,
+                $values->bank_account,
                 $values->country,
                 $values->city,
                 $values->zip_code,
