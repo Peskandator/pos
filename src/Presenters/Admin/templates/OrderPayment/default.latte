@@ -192,36 +192,35 @@
                                     {foreach $order->getOrderItems() as $item}
                                         {var $totalPaid = 0}
                                         {var $paidQuantity = 0}
+
                                         {foreach $item->getOrderItemPayments() as $payment}
                                             {var $paidQuantity = $paidQuantity + $payment->getPaidQuantity()}
                                             {var $totalPaid = $totalPaid + ($payment->getPaidQuantity() * $item->getPriceIncludingVat())}
                                         {/foreach}
+
+                                        {var $totalDue = $item->getQuantity() * $item->getPriceIncludingVat()}
+
                                         {if $paidQuantity > 0}
                                             {var $hasPaidItems = true}
-                                            {var $totalDue = $item->getQuantity() * $item->getPriceIncludingVat()}
-                                            <tr>
-                                                <td>{$item->getProductName()}</td>
-                                                <td>{$paidQuantity} / {$item->getQuantity()}</td>
-                                                <td>{number_format($item->getPriceIncludingVat(), 2, ',', ' ')} Kč</td>
-                                                <td>
-                                                    {number_format($totalPaid, 2, ',', ' ')} Kč /
-                                                    {number_format($totalDue, 2, ',', ' ')} Kč
-                                                </td>
-                                                <td class="text-center">
-                                                    {if $paidQuantity >= $item->getQuantity()}
-                                                        <span class="text-success">✔</span>
-                                                    {else}
-                                                        <span class="text-danger">❌</span>
-                                                    {/if}
-                                                </td>
-                                            </tr>
                                         {/if}
-                                    {/foreach}
-                                    {if !$hasPaidItems}
+
                                         <tr>
-                                            <td colspan="5" class="text-muted text-center">Zatím nebyly zaplacené žádné položky.</td>
+                                            <td>{$item->getProductName()}</td>
+                                            <td>{$paidQuantity} / {$item->getQuantity()}</td>
+                                            <td>{number_format($item->getPriceIncludingVat(), 2, ',', ' ')} Kč</td>
+                                            <td>
+                                                {number_format($totalPaid, 2, ',', ' ')} Kč /
+                                                {number_format($totalDue, 2, ',', ' ')} Kč
+                                            </td>
+                                            <td class="text-center">
+                                                {if $paidQuantity >= $item->getQuantity()}
+                                                    <span class="text-success">✔</span>
+                                                {else}
+                                                    <span class="text-danger">❌</span>
+                                                {/if}
+                                            </td>
                                         </tr>
-                                    {/if}
+                                    {/foreach}
                                     </tbody>
                                 </table>
                             </div>
