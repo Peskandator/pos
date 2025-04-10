@@ -1,6 +1,45 @@
 {layout $adminlayoutPath}
 {import '../_partials/orderItemRow.latte'}
 {block modals}
+    <div class="modal fade" id="confirmPaymentModal" tabindex="-1" aria-labelledby="confirmPaymentLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="confirmPaymentLabel">Potvrďte platbu</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4>Výběr položek k platbě:</h4>
+                    <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                        <table class="table table-bordered table-sm mb-0" style="table-layout: auto; width: 100%;">
+                            <thead class="bg-primary text-white">
+                            <tr>
+                                <th style="white-space: normal;">Položka</th>
+                                <th style="white-space: normal;">Množství</th>
+                                <th style="white-space: normal;">Cena / ks</th>
+                                <th style="white-space: normal;">Celkem</th>
+                            </tr>
+                            </thead>
+                            <tbody id="confirmPaymentItems">
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr>
+                    <p><strong>Způsob platby:</strong> <span id="confirmPaymentMethod"></span></p>
+
+                    <div id="confirmQrCodeContainer" class="text-center" style="display: none;">
+                        <img id="confirmQrCodeImage" class="img-fluid" src="" alt="QR Code" style="max-width: 250px;">
+                    </div>
+                    <p><strong>Celková částka k úhradě:</strong> <span id="selectedAmountModal">0</span> Kč</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zpět</button>
+                    <button type="button" class="btn btn-primary" id="confirmPaymentModalSubmit">Potvrdit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {/block}
 
 {block content}
@@ -121,10 +160,6 @@
                                     <p class="fs-5"><strong>Částka k úhradě:</strong> <span id="selectedAmount">0</span> Kč</p>
                                     <input type="hidden" name="paymentForm-pay" value="1">
                                     <button type="submit" class="btn btn-primary btn-lg">Zaplatit</button>
-                                    <div id="qrCodeContainer" style="display: none; margin-top: 20px;">
-                                        <h3>QR Platba</h3>
-                                        <img id="qrCodeImage" class="img-fluid" src="" alt="QR Code" style="max-width: 250px;">
-                                    </div>
                                 {else}
                                     <p class="text-success fs-5">Objednávka je plně zaplacená.</p>
                                 {/if}
@@ -318,6 +353,25 @@
                     var currentCompanyId = {$currentCompany->getId()};
                     var orderId = {$order->getId()};
 
+                    function calculateSelectedAmount() {
+                        var total = 0;
+                        $("input[id^='quantities-']").each(function() {
+                            var price = parseFloat($(this).data("price")) || 0;
+                            var quantity = parseInt($(this).val()) || 0;
+                            total += price * quantity;
+                        });
+                        return total.toFixed(2);
+                    }
+
+                    function calculateSelectedQuantity() {
+                        var totalQuantity = 0;
+                        $("input[id^='quantities-']").each(function() {
+                            var quantity = parseInt($(this).val()) || 0;
+                            totalQuantity += quantity;
+                        });
+                        return totalQuantity;
+                    }
+
                     function updateQRCode() {
                         var paymentMethod = $("#paymentMethod").val();
                         if (paymentMethod === "qr") {
@@ -352,33 +406,8 @@
                         }
                     }
 
-                    function calculateSelectedAmount() {
-                        var total = 0;
-
-                        $("input[id^='quantities-']").each(function() {
-                            var price = parseFloat($(this).data("price")) || 0;
-                            var quantity = parseInt($(this).val()) || 0;
-                            total += price * quantity;
-                        });
-
-                        $("#selectedAmount").text(total.toFixed(2));
-                        return total.toFixed(2);
-                    }
-
-                    function calculateSelectedQuantity() {
-                        var totalQuantity = 0;
-
-                        $("input[id^='quantities-']").each(function() {
-                            var quantity = parseInt($(this).val()) || 0;
-                            totalQuantity += quantity;
-                        });
-
-                        return totalQuantity;
-                    }
-
                     function updatePaymentButtonState() {
                         var selectedQuantity = calculateSelectedQuantity();
-
                         if (selectedQuantity > 0) {
                             $("#paymentMethod").prop("disabled", false);
                             $("button[type='submit']").prop("disabled", false);
@@ -388,8 +417,9 @@
                         }
                     }
 
-                    $(document).on("change keyup", "input[id^='quantities-']", function() {
-                        calculateSelectedAmount();
+                    $(document).on("input", "input[id^='quantities-']", function() {
+                        var selectedAmount = calculateSelectedAmount();
+                        $("#selectedAmount").text(selectedAmount);
                         updatePaymentButtonState();
                         updateQRCode();
                     });
@@ -399,18 +429,12 @@
                         var inputElement = $("#quantities-" + itemId);
                         var currentValue = parseInt(inputElement.val()) || 0;
                         var newValue = $(this).hasClass("btn-qty-plus") ? currentValue + 1 : currentValue - 1;
-
                         var maxQuantity = parseInt(inputElement.attr("max"));
                         var minQuantity = parseInt(inputElement.attr("min"));
                         if (newValue >= minQuantity && newValue <= maxQuantity) {
                             inputElement.val(newValue);
-                            inputElement.trigger("change");
+                            inputElement.trigger("input");
                         }
-                    });
-
-                    $("input[id^='quantities-']").on("change", function() {
-                        calculateSelectedAmount();
-                        updatePaymentButtonState();
                     });
 
                     $("#paymentMethod").on("change", function() {
@@ -418,9 +442,78 @@
                     });
 
                     updateQRCode();
-
                     $("button[type='submit']").prop("disabled", true);
                     $("#paymentMethod").prop("disabled", true);
+
+                    $("form").on("submit", function(e) {
+                        e.preventDefault();
+                        const $tableBody = $("#confirmPaymentItems");
+                        $tableBody.empty();
+                        let totalToPay = 0;
+                        let selected = false;
+
+                        $("input[id^='quantities-']").each(function() {
+                            const quantity = parseInt($(this).val()) || 0;
+                            if (quantity > 0) {
+                                selected = true;
+                                const price = parseFloat($(this).data("price")) || 0;
+                                const total = quantity * price;
+                                const itemId = $(this).attr("id").split("-")[1];
+                                const itemName = $(this).closest("tr").find("td:nth-child(2)").text();
+
+                                $tableBody.append(`
+                                    <tr>
+                                        <td>${ itemName }</td>
+                                        <td>${ quantity }</td>
+                                        <td>${ price.toFixed(2) } Kč</td>
+                                        <td>${ total.toFixed(2) } Kč</td>
+                                    </tr>
+                                `);
+
+                                totalToPay += total;
+                            }
+                        });
+
+                        if (!selected) {
+                            alert("Musíte vybrat alespoň jednu položku k platbě.");
+                            return;
+                        }
+
+                        const paymentMethodText = $("#paymentMethod option:selected").text();
+                        $("#confirmPaymentMethod").text(paymentMethodText);
+                        $("#selectedAmountModal").text(totalToPay.toFixed(2));
+
+                        const paymentMethodValue = $("#paymentMethod").val();
+                        if (paymentMethodValue === "qr") {
+                            $.ajax({
+                                url: "/admin/order-payment/generate-qr-code",
+                                method: "GET",
+                                data: {
+                                    orderId: orderId,
+                                    currentCompanyId: currentCompanyId,
+                                    amount: totalToPay.toFixed(2)
+                                },
+                                success: function(response) {
+                                    if (response.qrCode) {
+                                        $("#confirmQrCodeImage").attr("src", response.qrCode);
+                                        $("#confirmQrCodeContainer").show();
+                                    }
+                                },
+                                error: function() {
+                                    alert("Chyba při načítání QR kódu.");
+                                }
+                            });
+                        } else {
+                            $("#confirmQrCodeContainer").hide();
+                        }
+
+                        const modal = new bootstrap.Modal(document.getElementById("confirmPaymentModal"));
+                        modal.show();
+                    });
+
+                    $("#confirmPaymentModalSubmit").on("click", function () {
+                        $("form").off("submit").submit();
+                    });
                 });
             </script>
         </div>
