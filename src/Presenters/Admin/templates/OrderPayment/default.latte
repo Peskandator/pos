@@ -321,31 +321,45 @@
             <script>
                 const receipts = document.querySelectorAll('.receipt');
                 let currentIndex = receipts.length - 1;
+
                 function updatePageIndicator() {
                     const pageIndicator = document.getElementById("pageIndicator");
                     pageIndicator.textContent = (currentIndex + 1) + " / " + receipts.length;
                 }
+
                 function displayReceipt(index) {
                     receipts.forEach((receipt, idx) => {
                         receipt.style.display = (idx === index) ? 'block' : 'none';
                     });
-                    document.getElementById('prevReceiptBtn').disabled = (index === 0);
-                    document.getElementById('nextReceiptBtn').disabled = (index === receipts.length - 1);
+
+                    const prevButton = document.getElementById('prevReceiptBtn');
+                    const nextButton = document.getElementById('nextReceiptBtn');
+
+                    if (prevButton && nextButton) {
+                        prevButton.disabled = (index === 0);
+                        nextButton.disabled = (index === receipts.length - 1);
+                    }
+
                     updatePageIndicator();
                 }
+
                 function showPreviousReceipt() {
                     if (currentIndex > 0) {
                         currentIndex--;
                         displayReceipt(currentIndex);
                     }
                 }
+
                 function showNextReceipt() {
                     if (currentIndex < receipts.length - 1) {
                         currentIndex++;
                         displayReceipt(currentIndex);
                     }
                 }
-                displayReceipt(currentIndex);
+
+                if (receipts.length > 0) {
+                    displayReceipt(currentIndex);
+                }
             </script>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
