@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 use App\Entity\DiningTable;
+use App\Entity\Order;
 use App\Entity\Product;
 use App\Entity\Category;
 use App\Entity\ProductInGroup;
@@ -42,7 +43,7 @@ class XlsxExporter
     }
 
 
-    public function createProductDataForExport(array $products): array
+    public function createProductsDataForExport(array $products): array
     {
         $header = [
             'Inv. číslo',
@@ -83,7 +84,7 @@ class XlsxExporter
         return $rows;
     }
 
-    public function createCategoryDataForExport(array $categories): array
+    public function createCategoriesDataForExport(array $categories): array
     {
         $header = [
             'Kód',
@@ -104,8 +105,7 @@ class XlsxExporter
         return $rows;
     }
 
-
-    public function createTableDataForExport(array $tables): array
+    public function createTablesDataForExport(array $tables): array
     {
         $header = [
             'Číslo stolu',
@@ -146,5 +146,36 @@ class XlsxExporter
         }
 
         return $groupedProductsText;
+    }
+
+    public function createOrdersDataForExport(array $orders): array
+    {
+        $header = [
+            'Inventární číslo',
+            'Vytvořeno',
+            'Produkty',
+            'Popis',
+            'Poslední změna',
+            'Stůl - číslo',
+            'Stůl - popis',
+        ];
+        $rows = [];
+        $rows[] = $header;
+
+        /**
+         * @var Order $order
+         */
+        foreach ($orders as $order) {
+            $row = [];
+            $row[] = $order->getInventoryNumber();
+            $row[] = $order->getCreationDate()->format('j. n. Y');
+            $row[] = $order->getOrderItemsText(200);
+            $row[] = $order->getDescription();
+            $row[] = $order->getUpdateDate()->format('j. n. Y');
+            $row[] = $order->getDiningTable()?->getNumber();
+            $row[] = $order->getDiningTable()?->getDescription();
+            $rows[] = $row;
+        }
+        return $rows;
     }
 }

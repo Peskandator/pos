@@ -121,8 +121,17 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
     public function processPayment(Form $form, \stdClass $values): void
     {
         $order = $this->template->order;
-        $selectedItems = $values->items;
+        $selectedItems = [];
         $quantities = $this->getHttpRequest()->getPost('quantities') ?? [];
+
+        foreach ($order->getOrderItems() as $item) {
+            $itemId = $item->getId();
+            $requestedQuantity = isset($quantities[$itemId]) ? (int)$quantities[$itemId] : 0;
+
+            if ($requestedQuantity > 0) {
+                $selectedItems[] = $itemId;
+            }
+        }
 
         if (empty($selectedItems)) {
             $this->flashMessage("Musíte vybrat alespoň jednu položku k platbě.", "danger");

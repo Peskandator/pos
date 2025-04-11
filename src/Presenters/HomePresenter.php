@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Presenters;
+use App\User\ORM\UserRepository;
 use App\Utils\FlashMessageType;
+use Doctrine\ORM\EntityManagerInterface;
 use Nette\Application\UI\Form;
 use Nette\Security\AuthenticationException;
 use Nette\Security\Authenticator;
@@ -11,17 +13,14 @@ use Nette\Security\User;
 
 final class HomePresenter extends BasePresenter
 {
-    private User $userManager;
-    private Authenticator $authenticator;
-
     public function __construct(
-        User $userManager,
-        Authenticator $authenticator
+        private readonly User $userManager,
+        private readonly Authenticator $authenticator,
+        private readonly UserRepository $userRepository,
+        private readonly EntityManagerInterface $entityManager,
     )
     {
         parent::__construct();
-        $this->userManager = $userManager;
-        $this->authenticator = $authenticator;
     }
 
     public function actionDefault(): void
@@ -68,6 +67,12 @@ final class HomePresenter extends BasePresenter
                 }
                 $form->addError('Účet se zadanou e-mailovou adresou neexistuje.');
                 return;
+            }
+
+            $user = $this->userRepository->findByEmail($values->email);
+            if ($user instanceof \App\Entity\User) {
+                $user->setLastLogonDate();
+                $this->entityManager->flush();
             }
 
             $this->flashMessage('Přihlášení proběhlo úspěšně.', FlashMessageType::SUCCESS);

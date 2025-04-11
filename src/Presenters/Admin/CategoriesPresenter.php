@@ -29,7 +29,7 @@ final class CategoriesPresenter extends BaseCompanyPresenter
     {
         $this->getComponent('breadcrumb')->addItem(
             new BreadcrumbItem(
-                'Správa produktů',
+                'Číselníky',
                 null)
         );
         $this->getComponent('breadcrumb')->addItem(

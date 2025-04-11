@@ -27,7 +27,7 @@ final class ProductsPresenter extends BaseCompanyPresenter
     {
         $this->getComponent('breadcrumb')->addItem(
             new BreadcrumbItem(
-                'Správa produktů',
+                'Číselníky',
                 null)
         );
         $this->getComponent('breadcrumb')->addItem(

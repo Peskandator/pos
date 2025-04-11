@@ -23,7 +23,6 @@ use Iban\Validation\Validator;
 
 final class CompaniesPresenter extends BaseAdminPresenter
 {
-
     public function __construct(
         private readonly CreateCompanyAction $createCompanyAction,
         private readonly EditCompanyAction $editCompanyAction,
@@ -97,8 +96,8 @@ final class CompaniesPresenter extends BaseAdminPresenter
         );
         $this->getComponent('breadcrumb')->addItem(
             new BreadcrumbItem(
-                $editedCompany->getName(),
-                $this->lazyLink(':Admin:Companies:edit', $editedCompany->getId()))
+                $editedCompany?->getName(),
+                $this->lazyLink(':Admin:Companies:edit', $editedCompany?->getId()))
         );
         $this->getComponent('breadcrumb')->addItem(
             new BreadcrumbItem(
@@ -109,7 +108,7 @@ final class CompaniesPresenter extends BaseAdminPresenter
 
         $currentUser = $this->getCurrentUser();
         $this->template->company = $editedCompany;
-        $this->template->companyUsers = $editedCompany->getCompanyUsers();
+        $this->template->companyUsers = $editedCompany?->getCompanyUsers();
         $this->template->signedUser = $currentUser;
         $this->template->isCompanyAdmin = $currentUser->isCompanyAdmin($editedCompany);
         $this->template->userRolesTranslations = CompanyUserRoles::getAllRolesWithTransAssoc();

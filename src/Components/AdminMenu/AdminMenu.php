@@ -80,8 +80,14 @@ class AdminMenu extends Control
 
         $productManagementItems = $this->buildProductManagementItems();
         $menuItems[] = $this->createMenuSection(
-            'Správa produktů',
+            'Číselníky',
             $productManagementItems
+        );
+
+        $statisticItems = $this->buildStatisticsItems();
+        $menuItems[] = $this->createMenuSection(
+            'Statistika',
+            $statisticItems
         );
 
         return $menuItems;
@@ -116,6 +122,18 @@ class AdminMenu extends Control
         $items[] = $this->createMenuItem(
             'Stoly',
             $this->getPresenter()->lazyLink(':Admin:DiningTables:default'),
+            [],
+            $this->getCurrentLinkCallable()
+        );
+
+        return $items;
+    }
+
+    private function buildStatisticsItems(): array
+    {
+        $items[] = $this->createMenuItem(
+            'Statistika',
+            $this->getPresenter()->lazyLink(':Admin:Statistics:default'),
             [],
             $this->getCurrentLinkCallable()
         );
