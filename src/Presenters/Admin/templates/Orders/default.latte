@@ -30,14 +30,21 @@
         <input n:name="id" class="js-delete-record-id">
     </form>
 
+    <div class="row mb-3">
+        <div class="col-12">
+            <a n:href=":Admin:Orders:createNew" class="btn btn-wide btn-primary" style="margin-left: auto">
+                <i class="fa-solid fa-plus"></i>
+                Nová objednávka
+            </a>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="d-flex my-2">
-                        <h4>Seznam objednávek</h4>
-                        <a n:href=":Admin:Orders:createNew" class="btn btn-primary" style="margin-left: auto">Přidat</a>
-                    </div>
+                    Seznam objednávek
+                    <a n:href=":Admin:Export:orders" class="btn btn-success btn-sm float-end">Export do XLSX</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive px-3 py-3">
@@ -58,7 +65,7 @@
                                     <td>{$order->getInventoryNumber()}</td>
                                     <td>{$order->getDiningTable()?->getNumber()}</td>
                                     <td>{$order->getDescription()}</td>
-                                    <td>{$order->getOrderItemsText()}</td>
+                                    <td>{$order->getOrderItemsText(40)}</td>
                                     <td>{$order->getCreationDate()|date:'j. m. Y'}</td>
                                     <td>
                                         <div class="d-flex">
@@ -86,5 +93,4 @@
             </div>
         </div>
     </div>
-</div>
 {/block}

@@ -130,6 +130,11 @@ class User
         return $this->lastLogonDate;
     }
 
+    public function setLastLogonDate(): void
+    {
+        $this->lastLogonDate = new \DateTimeImmutable();
+    }
+
     public function setRegistrationDate(DateTimeInterface $registrationDate): void
     {
         $this->registrationDate = $registrationDate;
@@ -140,8 +145,12 @@ class User
         return $this->companyUsers;
     }
 
-    public function isCompanyAdmin(Company $company): bool
+    public function isCompanyAdmin(?Company $company): bool
     {
+        if (!$company instanceof Company) {
+            return false;
+        }
+
         if ($this->getCompanyUser($company)) {
             return $this->getCompanyUser($company)->isAdmin();
         }
@@ -167,10 +176,6 @@ class User
     public function isCompanyUser(Company $company): bool
     {
         $companyUser = $this->getCompanyUser($company);
-        if ($companyUser !== null) {
-            return true;
-        }
-
-        return false;
+        return $companyUser !== null;
     }
 }

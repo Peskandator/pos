@@ -108,7 +108,7 @@ class Order
         $orderItems->add($orderItem);
     }
 
-    public function getOrderItemsText(): string
+    public function getOrderItemsText(int $length): string
     {
         $text = '';
         $orderItems = $this->getOrderItems();
@@ -125,8 +125,8 @@ class Order
             }
         }
 
-        if (strlen($text) > 25) {
-            $text = mb_substr($text, 0, 23) . '..';
+        if (mb_strlen($text) > $length) {
+            $text = mb_substr($text, 0, $length - 3) . '...';
         }
 
         return $text;
@@ -185,6 +185,7 @@ class Order
     public function calculateTotalAmount(): float
     {
         $total = 0;
+        /** @var OrderItem $item */
         foreach ($this->orderItems as $item) {
             $total += $item->getPrice();
         }
@@ -194,11 +195,10 @@ class Order
     public function calculateTotalAmountIncludingVat(): float
     {
         $total = 0;
+        /** @var OrderItem $item */
         foreach ($this->orderItems as $item) {
             $total += $item->getPriceIncludingVat();
         }
         return $total;
     }
-
-
 }

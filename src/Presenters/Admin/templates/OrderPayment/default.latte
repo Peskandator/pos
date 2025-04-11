@@ -2,14 +2,15 @@
 {import '../_partials/orderItemRow.latte'}
 {block modals}
 {/block}
+
 {block content}
     <div class="js-page-order">
         <h1>Platba objednávky č. {$order->getInventoryNumber()}</h1>
         <div class="row mb-3">
-            <div class="col-12">
+            <div class="col-md-6 col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h2>Souhrn objednávky</h2>
+                        <h2 class="mb-3">Souhrn objednávky</h2>
                         {var $totalAmount = 0}
                         {var $paidAmount = 0}
                         {foreach $order->getOrderItems() as $item}
@@ -20,10 +21,20 @@
                             {/foreach}
                             {var $paidAmount = $paidAmount + ($paidQty * $item->getPriceIncludingVat())}
                         {/foreach}
-                    <p><strong>Celková cena objednávky:</strong> {$totalAmount} Kč</p>
-                    <p><strong>Zaplaceno:</strong> {$paidAmount} Kč</p>
-                    {var $remainingAmount = $totalAmount - $paidAmount}
-                        <p><strong>Zbývá zaplatit:</strong> {$remainingAmount} Kč</p>
+
+                        <div class="widget-content">
+                            <div class="widget-content-left">Celková cena objednávky:</div>
+                            <div class="widget-content-right"><h5><b>{$totalAmount|price}</b></h5></div>
+                        </div>
+                        <div class="widget-content">
+                            <div class="widget-content-left">Zaplaceno:</div>
+                            <div class="widget-content-right"><h5><b>{$paidAmount|price}</b></h5></div>
+                        </div>
+                        <div class="widget-content">
+                            {var $remainingAmount = $totalAmount - $paidAmount}
+                            <div class="widget-content-left">Zbývá zaplatit:</div>
+                            <div class="widget-content-right"><h5><b>{$remainingAmount|price}</b></h5></div>
+                        </div>
                     </div>
                 </div>
             </div>
