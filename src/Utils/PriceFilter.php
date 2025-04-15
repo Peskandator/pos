@@ -9,7 +9,13 @@ class PriceFilter
     public function __invoke(?float $number): string
     {
         if ($number !== null) {
-            return str_replace('.', ',', strval($number)) . ' Kč';
+            if (floor($number) === $number) {
+                $formattedNumber = number_format($number, 0, ',', ' ');
+            } else {
+                $formattedNumber = number_format($number, 2, ',', ' ');
+            }
+
+            return $formattedNumber . ' Kč';
         }
         return '';
     }

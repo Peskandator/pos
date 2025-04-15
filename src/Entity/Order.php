@@ -173,13 +173,31 @@ class Order
         return $this->payments;
     }
 
-    public function calculateTotalAmount(): float
+    public function getTotalPrice(): float
     {
-        $total = 0;
-        /** @var OrderItem $item */
-        foreach ($this->orderItems as $item) {
-            $total += $item->getPrice();
+        $totalAmount = 0;
+
+        foreach ($this->getOrderItems() as $item) {
+            $totalAmount += $item->getQuantity() * $item->getPrice();
         }
-        return $total;
+
+        return $totalAmount;
+    }
+
+    public function getTotalPaidAmount(): float
+    {
+        $totalPaidAmount = 0;
+
+        /** @var OrderItem $item */
+        foreach ($this->getOrderItems() as $item) {
+            $totalPaidAmount += $item->getPaidAmount();
+        }
+
+        return $totalPaidAmount;
+    }
+
+    public function getRemainingAmountToPay(): float
+    {
+        return $this->getTotalPrice() - $this->getTotalPaidAmount();
     }
 }
