@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace App\Presenters\Admin;
 use App\Components\Breadcrumb\BreadcrumbItem;
-use App\Entity\Order;
-use App\Order\ORM\OrderRepository;
 use App\Presenters\BaseCompanyPresenter;
 use App\Order\Forms\OrderFormFactory;
 use Nette\Application\UI\Form;
 
 final class EditOrderPresenter extends BaseCompanyPresenter
 {
-
     public function __construct(
         private readonly OrderFormFactory $orderFormFactory,
-        private readonly OrderRepository $orderRepository,
     )
     {
         parent::__construct();
@@ -23,7 +19,7 @@ final class EditOrderPresenter extends BaseCompanyPresenter
 
     public function actionDefault(int $orderId): void
     {
-        $order = $this->orderRepository->find($orderId);
+        $order = $this->findOrderById($orderId);
 
         $this->getComponent('breadcrumb')->addItem(
             new BreadcrumbItem(

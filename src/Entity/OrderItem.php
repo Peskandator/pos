@@ -23,6 +23,22 @@ class OrderItem
      */
     private int $quantity;
     /**
+     * @ORM\Column(name="price", type="float", nullable=true)
+     */
+    private ?float $price;
+    /**
+     * @ORM\Column(name="vat_rate", type="integer", nullable=true)
+     */
+    private ?int $vatRate;
+    /**
+     * @ORM\Column(name="is_group", type="boolean")
+     */
+    private bool $isGroup;
+    /**
+     * @ORM\OneToMany(targetEntity="ProductInOrderItemGroup", mappedBy="group", cascade={"persist", "remove"})
+     */
+    private Collection $productsInGroup;
+    /**
      * @ORM\ManyToOne(targetEntity="Product")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
      */
@@ -44,11 +60,16 @@ class OrderItem
     public function __construct(
         Order $order,
         Product $product,
-        int $quantity
+        int $quantity,
     ){
         $this->order = $order;
         $this->product = $product;
         $this->quantity = $quantity;
+        $this->price = $product->getPrice();
+        $this->vatRate = $product->getVatRate();
+        $this->isGroup = $product->isGroup();
+
+        $this->productsInGroup = new ArrayCollection();
         $this->orderItemPayments = new ArrayCollection();
     }
 
@@ -105,40 +126,45 @@ class OrderItem
         return $this->orderItemPayments;
     }
 
-    public function addOrderItemPayment(OrderItemPayment $orderItemPayment): self
-    {
-        if (!$this->orderItemPayments->contains($orderItemPayment)) {
-            $this->orderItemPayments->add($orderItemPayment);
-            $orderItemPayment->setOrderItem($this);
-        }
-        return $this;
-    }
-
-    public function removeOrderItemPayment(OrderItemPayment $orderItemPayment): self
-    {
-        if ($this->orderItemPayments->removeElement($orderItemPayment)) {
-            if ($orderItemPayment->getOrderItem() === $this) {
-                $orderItemPayment->setOrderItem(null);
-            }
-        }
-        return $this;
-    }
-
     public function getPrice(): float
     {
-        return $this->product->getPrice();
-    }
-
-    public function getPriceIncludingVat(): float
-    {
-        $price = $this->getPrice();
-        $vatRate = $this->product->getVatRate();
-
-        return $price + ($price * ($vatRate / 100));
+        return $this->price;
     }
 
     public function getProductName(): string
     {
         return $this->product->getName();
     }
+
+    public function isGroup(): bool
+    {
+        return $this->isGroup;
+    }
+
+    public function getProductsInGroup(): Collection
+    {
+        return $this->productsInGroup;
+    }
+
+    public function setProductsInGroup(Collection $productsInGroup): void
+    {
+        $this->productsInGroup = $productsInGroup;
+    }
+
+    public function getPriceWithoutVat(): ?float
+    {
+        $vatRate = $this->getVatRate();
+        $price = $this->getPrice();
+        if ($vatRate === 0 || $vatRate === null) {
+            return $price;
+        }
+
+        return $price * ((100 - $vatRate) / 100);
+    }
+
+    public function getVatRate(): ?int
+    {
+        return $this->vatRate;
+    }
+
 }

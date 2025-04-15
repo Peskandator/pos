@@ -11,10 +11,10 @@
                 {var $isActive = $section->isActive()}
                 {var $items = $section->getItems()}
                 <li class="mb-1">
-                    <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#menu-item-{$counter}" aria-expanded="{if $isActive}true{else}false{/if}">
+                    <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#menu-item-{$counter}" aria-expanded="true">
                         {$section->getText()}
                     </button>
-                    <div class="collapse{if $isActive} show{/if}" id="menu-item-{$counter}">
+                    <div class="collapse show" id="menu-item-{$counter}">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                             {foreach $items as $item}
                                 <li><a href="{$item->getLink()}" class="link-body-emphasis d-inline-flex text-decoration-none rounded {if $item->isActive()}item-active{/if}">{$item->getText()}</a></li>

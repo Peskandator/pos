@@ -173,31 +173,12 @@ class Order
         return $this->payments;
     }
 
-    public function addPayment(Payment $payment): self
-    {
-        if (!$this->payments->contains($payment)) {
-            $this->payments->add($payment);
-            $payment->setOrder($this);
-        }
-        return $this;
-    }
-
     public function calculateTotalAmount(): float
     {
         $total = 0;
         /** @var OrderItem $item */
         foreach ($this->orderItems as $item) {
             $total += $item->getPrice();
-        }
-        return $total;
-    }
-
-    public function calculateTotalAmountIncludingVat(): float
-    {
-        $total = 0;
-        /** @var OrderItem $item */
-        foreach ($this->orderItems as $item) {
-            $total += $item->getPriceIncludingVat();
         }
         return $total;
     }
