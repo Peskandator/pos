@@ -10,29 +10,24 @@ use App\Entity\Payment;
 use App\Entity\OrderItemPayment;
 use App\Presenters\BaseCompanyPresenter;
 use App\Utils\FlashMessageType;
+use App\Utils\PriceFilter;
 use Nette\Application\UI\Form;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Product\Services\QrCodeGenerator;
 
 final class OrderPaymentPresenter extends BaseCompanyPresenter
 {
-    private EntityManagerInterface $entityManager;
 
     public function __construct(
-        EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly PriceFilter $priceFilter,
     ) {
         parent::__construct();
-        $this->entityManager = $entityManager;
     }
 
     public function actionDefault(int $orderId): void
     {
-        $order = $this->orderRepository->find($orderId);
-
-        if (!$order) {
-            $this->flashMessage("Objednávka nebyla nalezena.", "danger");
-            $this->redirect(":Admin:Orders:default");
-        }
+        $order = $this->findOrderById($orderId);
 
         $this->getComponent("breadcrumb")->addItem(
             new BreadcrumbItem(
@@ -44,23 +39,10 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
             new BreadcrumbItem((string) $order->getInventoryNumber(), null)
         );
 
-        $paidAmount = 0;
-        $unpaidItems = [];
-
-        /** @var OrderItem $item */
-        foreach ($order->getOrderItems() as $item) {
-            if ($item->isPaid()) {
-                $paidAmount += $item->getPrice() * $item->getQuantity();
-            } else {
-                $unpaidItems[] = $item;
-            }
-        }
-        $remainingAmount = $order->calculateTotalAmount() - $paidAmount;
-
         $this->template->order = $order;
-        $this->template->paidAmount = $paidAmount;
-        $this->template->remainingAmount = $remainingAmount;
-        $this->template->unpaidItems = $unpaidItems;
+        $this->template->totalPrice = $order->getTotalPrice();
+        $this->template->paidAmount = $order->getTotalPaidAmount();
+        $this->template->remainingAmount = $order->getRemainingAmountToPay();
         $this->template->bankAccount = $this->currentCompany->getBankAccount();
         $this->template->currentCompanyId = $this->currentCompany->getId();
     }
@@ -74,7 +56,10 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         /** @var OrderItem $item */
         foreach ($this->template->order->getOrderItems() as $item) {
             if (!$item->isPaid()) {
-                $unpaidItems[$item->getId()] = $item->getProductName() . " (" . $item->getPrice() . " Kč)";
+                $unpaidItems[$item->getId()] =
+                    $item->getProductName()
+                    . " (" . $this->priceFilter->__invoke($item->getPrice())
+                    . ")";
             }
         }
 
@@ -83,7 +68,6 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $paymentMethods = [
             'cash' => 'Hotovost',
         ];
-    
         if ($this->template->bankAccount) {
             $paymentMethods['qr'] = 'QR Platba';
         }
@@ -132,7 +116,7 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
             if (in_array($itemId, $selectedItems, true)) {
                 $requestedQuantity = isset($quantities[$itemId]) ? (int)$quantities[$itemId] : 0;
 
-                if ($requestedQuantity <= 0 || $requestedQuantity > $item->getQuantity() - $this->getPaidQuantityForItem($item)) {
+                if ($requestedQuantity <= 0 || $requestedQuantity > $item->getQuantity() - $item->getPaidQuantity()) {
                     continue;
                 }
 
@@ -158,15 +142,6 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
             }
         }
 
-        /** @var OrderItem $item */
-        foreach ($order->getOrderItems() as $item) {
-            $totalPaidQuantity = $this->getPaidQuantityForItem($item);
-
-            if ($totalPaidQuantity >= $item->getQuantity()) {
-                $item->markAsPaid();
-            }
-        }
-
         if ($totalToPay <= 0) {
             $this->flashMessage("Neplatná částka k úhradě.", FlashMessageType::ERROR);
             return;
@@ -179,18 +154,6 @@ final class OrderPaymentPresenter extends BaseCompanyPresenter
         $this->flashMessage("Platba byla úspěšně zpracována.", FlashMessageType::SUCCESS);
         $this->redirect("this");
     }
-
-    private function getPaidQuantityForItem(OrderItem $item): int
-    {
-        $totalPaidQuantity = 0;
-
-        /** @var OrderItemPayment $payment */
-        foreach ($item->getOrderItemPayments() as $payment) {
-            $totalPaidQuantity += $payment->getPaidQuantity();
-        }
-        return $totalPaidQuantity;
-    }
-
 
     public function actionGenerateQrCode(int $orderId, int $currentCompanyId, string $amount): void
     {

@@ -132,7 +132,7 @@ class Product
             return $price;
         }
 
-        return $price * ((100 - $vatRate) / 100);
+        return $price / (1 + $vatRate / 100);
     }
 
     public function getVatRate(): ?int

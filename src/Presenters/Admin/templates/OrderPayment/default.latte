@@ -52,27 +52,15 @@
                         Souhrn objednávky
                     </div>
                     <div class="card-body">
-                        {var $totalAmount = 0}
-                        {var $paidAmount = 0}
-                        {foreach $order->getOrderItems() as $item}
-                            {var $totalAmount = $totalAmount + ($item->getQuantity() * $item->getPrice())}
-                            {var $paidQty = 0}
-                            {foreach $item->getOrderItemPayments() as $payment}
-                                {var $paidQty = $paidQty + $payment->getPaidQuantity()}
-                            {/foreach}
-                            {var $paidAmount = $paidAmount + ($paidQty * $item->getPrice())}
-                        {/foreach}
-
                         <div class="widget-content">
                             <div class="widget-content-left">Celková cena objednávky:</div>
-                            <div class="widget-content-right"><h5><b>{$totalAmount|price}</b></h5></div>
+                            <div class="widget-content-right"><h5><b>{$totalPrice|price}</b></h5></div>
                         </div>
                         <div class="widget-content">
                             <div class="widget-content-left">Zaplaceno:</div>
                             <div class="widget-content-right"><h5><b>{$paidAmount|price}</b></h5></div>
                         </div>
                         <div class="widget-content">
-                            {var $remainingAmount = $totalAmount - $paidAmount}
                             <div class="widget-content-left">Zbývá zaplatit:</div>
                             <div class="widget-content-right"><h5><b>{$remainingAmount|price}</b></h5></div>
                         </div>
@@ -107,12 +95,8 @@
                                                     </thead>
                                                     <tbody>
                                                     {foreach $order->getOrderItems() as $item}
-                                                        {var $paidQty = 0}
-                                                        {foreach $item->getOrderItemPayments() as $payment}
-                                                            {var $paidQty = $paidQty + $payment->getPaidQuantity()}
-                                                        {/foreach}
-                                                        {var $remainingQty = $item->getQuantity() - $paidQty}
-                                                        {if $remainingQty > 0}
+                                                        {var $remainingQuantity = $item->getRemainingQuantityToPay()}
+                                                        {if $remainingQuantity > 0}
                                                             <tr>
                                                                 <td class="align-middle">
                                                                     <div class="input-group" style="min-width: 120px; max-width: 200px;">
@@ -122,7 +106,7 @@
                                                                                name="quantities[{$item->getId()}]"
                                                                                id="quantities-{$item->getId()}"
                                                                                min="0"
-                                                                               max="{$remainingQty}"
+                                                                               max="{$remainingQuantity}"
                                                                                value="0"
                                                                                class="form-control text-center fs-5 quantity-to-pay-input"
                                                                                data-price="{$item->getPrice()}"
@@ -134,8 +118,8 @@
                                                                     </div>
                                                                 </td>
                                                                 <td class="items-to-pay-cell">{$item->getProductName()}</td>
-                                                                <td class="items-to-pay-cell">{$remainingQty}</td>
-                                                                <td class="items-to-pay-cell">{$item->getPrice()} Kč</td>
+                                                                <td class="items-to-pay-cell">{$remainingQuantity}</td>
+                                                                <td class="items-to-pay-cell">{$item->getPrice()|price}</td>
                                                             </tr>
                                                         {/if}
                                                     {/foreach}
@@ -172,7 +156,6 @@
                     </div>
                     <div class="card-body">
                         <div id="paidOrderItems">
-                            {var $hasPaidItems = false}
                             <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
                                 <table class="table table-bordered table-sm js-table mb-0" style="table-layout: auto; width: 100%;">
                                     <thead class="bg-primary text-white">
@@ -186,30 +169,16 @@
                                     </thead>
                                     <tbody>
                                     {foreach $order->getOrderItems() as $item}
-                                        {var $totalPaid = 0}
-                                        {var $paidQuantity = 0}
-
-                                        {foreach $item->getOrderItemPayments() as $payment}
-                                            {var $paidQuantity = $paidQuantity + $payment->getPaidQuantity()}
-                                            {var $totalPaid = $totalPaid + ($payment->getPaidQuantity() * $item->getPrice())}
-                                        {/foreach}
-
-                                        {var $totalDue = $item->getQuantity() * $item->getPrice()}
-
-                                        {if $paidQuantity > 0}
-                                            {var $hasPaidItems = true}
-                                        {/if}
-
                                         <tr>
                                             <td>{$item->getProductName()}</td>
-                                            <td>{$paidQuantity} / {$item->getQuantity()}</td>
+                                            <td>{$item->getPaidQuantity()} / {$item->getQuantity()}</td>
                                             <td>{$item->getPrice()|price}</td>
                                             <td>
-                                                {$totalPaid|price} /
-                                                {$totalDue|price}
+                                                {$item->getPaidAmount()|price} /
+                                                {$item->getTotalPrice()|price}
                                             </td>
                                             <td class="text-center">
-                                                {if $paidQuantity >= $item->getQuantity()}
+                                                {if $item->isPaid()}
                                                     <span class="text-success">✔</span>
                                                 {else}
                                                     <span class="text-danger">❌</span>
@@ -272,7 +241,7 @@
                                             {var $totalWithVat = $totalWithVat + $totalItemWithVat}
                                             <div style="display: flex; justify-content: space-between;">
                                                 <span>{$qty}× {$item->getProductName()}</span>
-                                                <span>{$totalItemWithVat|price}</span>
+                                                        <span>{$totalItemWithVat|price}</span>
                                             </div>
                                             <div style="display: flex; justify-content: space-between;">
                                                 <span>&nbsp;&nbsp;&nbsp;&nbsp;bez DPH:</span>

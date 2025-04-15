@@ -12,6 +12,13 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class XlsxExporter
 {
+    public function __construct(
+        private readonly PriceFilter $priceFilter,
+    )
+    {
+    }
+
+
     public function export(array $data, string $fileName): void
     {
         $spreadsheet = new Spreadsheet();
@@ -68,9 +75,9 @@ class XlsxExporter
 
             $row[] = $product->getInventoryNumber();
             $row[] = $product->getName();
-            $row[] = $product->getPrice() . ' Kč';
+            $row[] = $this->priceFilter->__invoke($product->getPrice());
             $row[] = $product->getVatRatePercentage();
-            $row[] = $product->getPriceWithoutVat();
+            $row[] = $this->priceFilter->__invoke($product->getPriceWithoutVat());
             $row[] = $product->getManufacturer();
 
             $category = $product->getCategory();

@@ -52,10 +52,6 @@ class OrderItem
      * @ORM\OneToMany(targetEntity="App\Entity\OrderItemPayment", mappedBy="orderItem", cascade={"persist", "remove"})
      */
     private Collection $orderItemPayments;
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private bool $isPaid = false;
 
     public function __construct(
         Order $order,
@@ -113,12 +109,38 @@ class OrderItem
 
     public function isPaid(): bool
     {
-        return $this->isPaid;
+        return $this->getPaidQuantity() >= $this->getQuantity();
     }
 
-    public function markAsPaid(): void
+    public function getPaidQuantity(): int
     {
-        $this->isPaid = true;
+        $paidQuantity = 0;
+        /** @var OrderItemPayment $orderItemPayment */
+        foreach ($this->getOrderItemPayments() as $orderItemPayment) {
+            $paidQuantity += $orderItemPayment->getPaidQuantity();
+        }
+
+        return $paidQuantity;
+    }
+
+    public function getRemainingQuantityToPay(): int
+    {
+        $remainingQuantity = $this->getQuantity() - $this->getPaidQuantity();
+        if ($remainingQuantity < 0) {
+            return 0;
+        }
+
+        return $remainingQuantity;
+    }
+
+    public function getTotalPrice(): float
+    {
+        return $this->getQuantity() * $this->getPrice();
+    }
+
+    public function getPaidAmount(): float
+    {
+        return $this->getPaidQuantity() * $this->getPrice();
     }
 
     public function getOrderItemPayments(): Collection
@@ -159,12 +181,11 @@ class OrderItem
             return $price;
         }
 
-        return $price * ((100 - $vatRate) / 100);
+        return $price / (1 + $vatRate / 100);
     }
 
     public function getVatRate(): ?int
     {
         return $this->vatRate;
     }
-
 }
