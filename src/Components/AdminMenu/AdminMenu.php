@@ -102,6 +102,13 @@ class AdminMenu extends Control
             $this->getCurrentLinkCallable()
         );
 
+        $items[] = $this->createMenuItem(
+            'Přidat objednávku',
+            $this->getPresenter()->lazyLink(':Admin:Orders:createNew'),
+            [],
+            $this->getCurrentLinkCallable()
+        );
+
         return $items;
     }
 

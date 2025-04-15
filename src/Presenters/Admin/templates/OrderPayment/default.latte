@@ -49,20 +49,18 @@
             <div class="col-md-6 col-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="d-flex my-2">
-                            <h3>Souhrn objednávky</h3>
-                        </div>
+                        Souhrn objednávky
                     </div>
                     <div class="card-body">
                         {var $totalAmount = 0}
                         {var $paidAmount = 0}
                         {foreach $order->getOrderItems() as $item}
-                            {var $totalAmount = $totalAmount + ($item->getQuantity() * $item->getPriceIncludingVat())}
+                            {var $totalAmount = $totalAmount + ($item->getQuantity() * $item->getPrice())}
                             {var $paidQty = 0}
                             {foreach $item->getOrderItemPayments() as $payment}
                                 {var $paidQty = $paidQty + $payment->getPaidQuantity()}
                             {/foreach}
-                            {var $paidAmount = $paidAmount + ($paidQty * $item->getPriceIncludingVat())}
+                            {var $paidAmount = $paidAmount + ($paidQty * $item->getPrice())}
                         {/foreach}
 
                         <div class="widget-content">
@@ -86,9 +84,7 @@
             <div class="col-lg-8 mb-3 d-flex flex-column gap-3">
                 <div class="card">
                     <div class="card-header">
-                        <div class="d-flex my-2">
-                            <h4>Položky k platbě</h4>
-                        </div>
+                        Položky k platbě
                     </div>
                     <div class="card-body">
                         <form n:name="paymentForm">
@@ -128,16 +124,18 @@
                                                                                min="0"
                                                                                max="{$remainingQty}"
                                                                                value="0"
-                                                                               class="form-control text-center fs-5"
-                                                                               data-price="{$item->getPriceIncludingVat()}">
+                                                                               class="form-control text-center fs-5 quantity-to-pay-input"
+                                                                               data-price="{$item->getPrice()}"
+                                                                        >
                                                                         <button type="button"
                                                                                 class="btn btn-outline-secondary btn-qty-plus"
-                                                                                data-item-id="{$item->getId()}">+</button>
+                                                                                data-item-id="{$item->getId()}">+
+                                                                        </button>
                                                                     </div>
                                                                 </td>
-                                                                <td class="align-middle">{$item->getProductName()}</td>
-                                                                <td class="align-middle">{$remainingQty}</td>
-                                                                <td class="align-middle">{$item->getPriceIncludingVat()} Kč</td>
+                                                                <td class="items-to-pay-cell">{$item->getProductName()}</td>
+                                                                <td class="items-to-pay-cell">{$remainingQty}</td>
+                                                                <td class="items-to-pay-cell">{$item->getPrice()} Kč</td>
                                                             </tr>
                                                         {/if}
                                                     {/foreach}
@@ -170,9 +168,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <div class="d-flex my-2">
-                            <h3>Stav položek</h3>
-                        </div>
+                        Stav položek
                     </div>
                     <div class="card-body">
                         <div id="paidOrderItems">
@@ -195,10 +191,10 @@
 
                                         {foreach $item->getOrderItemPayments() as $payment}
                                             {var $paidQuantity = $paidQuantity + $payment->getPaidQuantity()}
-                                            {var $totalPaid = $totalPaid + ($payment->getPaidQuantity() * $item->getPriceIncludingVat())}
+                                            {var $totalPaid = $totalPaid + ($payment->getPaidQuantity() * $item->getPrice())}
                                         {/foreach}
 
-                                        {var $totalDue = $item->getQuantity() * $item->getPriceIncludingVat()}
+                                        {var $totalDue = $item->getQuantity() * $item->getPrice()}
 
                                         {if $paidQuantity > 0}
                                             {var $hasPaidItems = true}
@@ -207,10 +203,10 @@
                                         <tr>
                                             <td>{$item->getProductName()}</td>
                                             <td>{$paidQuantity} / {$item->getQuantity()}</td>
-                                            <td>{number_format($item->getPriceIncludingVat(), 2, ',', ' ')} Kč</td>
+                                            <td>{$item->getPrice()|price}</td>
                                             <td>
-                                                {number_format($totalPaid, 2, ',', ' ')} Kč /
-                                                {number_format($totalDue, 2, ',', ' ')} Kč
+                                                {$totalPaid|price} /
+                                                {$totalDue|price}
                                             </td>
                                             <td class="text-center">
                                                 {if $paidQuantity >= $item->getQuantity()}
@@ -232,9 +228,7 @@
             <div class="col-lg-4 mb-3">
                 <div class="card">
                     <div class="card-header">
-                        <div class="d-flex my-2">
-                            <h4>Historie plateb</h4>
-                        </div>
+                        Historie plateb
                     </div>
                     <div class="card-body">
                         <div id="paymentHistory">
@@ -252,7 +246,7 @@
                                         </div>
                                         <hr style="margin: 0.5rem 0;">
                                         <div style="display: flex; justify-content: space-between; text-align: right;">
-                                            <strong>{$payment->getPaymentTime()->format('Y-m-d H:i')}</strong> &nbsp;
+                                            <strong>{$payment->getPaymentTime()->format('j. n. Y H:i')}</strong> &nbsp;
                                             <span>
                                                 {if $payment->getPaymentMethod() === 'qr'}QR
                                                 {elseif $payment->getPaymentMethod() === 'cash'}Hotovost
@@ -267,8 +261,8 @@
                                         {foreach $payment->getOrderItemPayments() as $paymentItem}
                                             {var $item = $paymentItem->getOrderItem()}
                                             {var $qty = $paymentItem->getPaidQuantity()}
-                                            {var $priceNoVat = $item->getPrice()}
-                                            {var $priceWithVat = $item->getPriceIncludingVat()}
+                                            {var $priceNoVat = $item->getPriceWithoutVat()}
+                                            {var $priceWithVat = $item->getPrice()}
                                             {var $vatUnit = $priceWithVat - $priceNoVat}
                                             {var $totalItemNoVat = $priceNoVat * $qty}
                                             {var $totalItemVat = $vatUnit * $qty}
@@ -278,29 +272,29 @@
                                             {var $totalWithVat = $totalWithVat + $totalItemWithVat}
                                             <div style="display: flex; justify-content: space-between;">
                                                 <span>{$qty}× {$item->getProductName()}</span>
-                                                <span>{number_format($totalItemWithVat, 2, ',', ' ')} Kč</span>
+                                                <span>{$totalItemWithVat|price}</span>
                                             </div>
                                             <div style="display: flex; justify-content: space-between;">
                                                 <span>&nbsp;&nbsp;&nbsp;&nbsp;bez DPH:</span>
-                                                <span>{number_format($totalItemNoVat, 2, ',', ' ')} Kč</span>
+                                                <span>{$totalItemNoVat|price}</span>
                                             </div>
                                             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                                                 <span>&nbsp;&nbsp;&nbsp;&nbsp;DPH:</span>
-                                                <span>{number_format($totalItemVat, 2, ',', ' ')} Kč</span>
+                                                <span>{$totalItemVat|price}</span>
                                             </div>
                                         {/foreach}
                                         <hr style="margin: 0.5rem 0;">
                                         <div style="display: flex; justify-content: space-between;">
                                             <span>CELKEM BEZ DPH:</span>
-                                            <span>{number_format($totalWithoutVat, 2, ',', ' ')} Kč</span>
+                                            <span>{$totalWithoutVat|price}</span>
                                         </div>
                                         <div style="display: flex; justify-content: space-between;">
                                             <span>CELKEM DPH:</span>
-                                            <span>{number_format($totalVat, 2, ',', ' ')} Kč</span>
+                                            <span>{$totalVat|price}</span>
                                         </div>
                                         <div style="display: flex; justify-content: space-between;">
                                             <strong>CELKEM:</strong>
-                                            <strong>{number_format($totalWithVat, 2, ',', ' ')} Kč</strong>
+                                            <strong>{$totalWithVat|price}</strong>
                                         </div>
                                     </div>
                                     {var $currentIndex = $currentIndex + 1}

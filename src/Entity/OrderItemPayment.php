@@ -34,6 +34,14 @@ class OrderItemPayment
      */
     private int $paidQuantity = 0;
 
+    public function __construct(
+        OrderItem $orderItem,
+        Payment $payment,
+    ){
+        $this->orderItem = $orderItem;
+        $this->payment = $payment;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

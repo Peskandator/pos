@@ -18,7 +18,6 @@ final class OrdersPresenter extends BaseCompanyPresenter
 
     public function __construct(
         private readonly OrderFormFactory  $orderFormFactory,
-        private readonly OrderRepository   $orderRepository,
         private readonly DeleteOrderAction $deleteOrderAction,
     )
     {

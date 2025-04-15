@@ -9,6 +9,7 @@ use App\Components\Breadcrumb\Breadcrumb;
 use App\Components\Breadcrumb\BreadcrumbFactoryInterface;
 use App\Entity\Company;
 use App\Entity\User;
+use App\Order\ORM\OrderRepository;
 use App\Product\ORM\ProductRepository;
 use App\Utils\CurrentUser;
 use App\Utils\FlashMessageType;
@@ -22,6 +23,7 @@ abstract class BaseAdminPresenter extends Presenter
     public int $currentCompanyId;
     protected CompanyRepository $companyRepository;
     protected ProductRepository $productRepository;
+    protected OrderRepository $orderRepository;
     private CurrentUser $currentUser;
     private AdminMenuFactoryInterface $adminMenuFactory;
     private BreadcrumbFactoryInterface $breadcrumbFactory;
@@ -31,9 +33,11 @@ abstract class BaseAdminPresenter extends Presenter
     public function injectBaseDeps(
         CompanyRepository $companyRepository,
         ProductRepository $productRepository,
+        OrderRepository $orderRepository,
     ) {
         $this->companyRepository = $companyRepository;
         $this->productRepository = $productRepository;
+        $this->orderRepository = $orderRepository;
     }
 
     public function injectAdminMenuFactory(

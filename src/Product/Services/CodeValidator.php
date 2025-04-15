@@ -16,11 +16,7 @@ class CodeValidator
 
     public function validateCode(int $code): bool
     {
-        if ($code < 1 || $code > 999) {
-            return false;
-        }
-
-        return true;
+        return !($code < 1 || $code > 999);
     }
 
     public function isCategoryCodeValid(Company $company, ?int $code, ?int $currentCode = null): string
@@ -33,7 +29,6 @@ class CodeValidator
             return 'Kód musí být v rozmezí 7-999';
         }
 
-        // TODO: get all categories? to not have duplicate code with deleted?
         $categories = $company->getCategories();
         /**
          * @var Category $category
@@ -57,7 +52,6 @@ class CodeValidator
             return 'Kód musí být v rozmezí 1-999';
         }
 
-        // TODO: get all tables? to not have duplicate code with deleted?
         $tables = $company->getDiningTables();
         /**
          * @var DiningTable $table

@@ -14,7 +14,6 @@ class ExportPresenter extends BaseCompanyPresenter
         private readonly XlsxExporter       $xlsxExporter,
         private readonly CategoryRepository $categoryRepository,
         private readonly DiningTableRepository    $tableRepository,
-        private readonly OrderRepository    $orderRepository
     )
     {
         parent::__construct();
