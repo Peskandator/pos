@@ -177,8 +177,9 @@ class Order
     {
         $totalAmount = 0;
 
+        /** @var OrderItem $item */
         foreach ($this->getOrderItems() as $item) {
-            $totalAmount += $item->getQuantity() * $item->getPrice();
+            $totalAmount += $item->getTotalPrice();
         }
 
         return $totalAmount;
