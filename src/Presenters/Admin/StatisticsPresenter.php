@@ -7,6 +7,7 @@ use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Presenters\BaseCompanyPresenter;
+use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
 
 final class StatisticsPresenter extends BaseCompanyPresenter
@@ -53,12 +54,12 @@ final class StatisticsPresenter extends BaseCompanyPresenter
             );
 
             if ($isFiltered && ($start > $end)) {
-                $this->flashMessage('Počáteční datum nemůže být větší než koncové.', 'danger');
+                $this->flashMessage('Počáteční datum nemůže být větší než koncové.', FlashMessageType::ERROR);
                 return;
             }
 
         } catch (\Exception $e) {
-            $this->flashMessage('Neplatný formát datumu.', 'danger');
+            $this->flashMessage('Neplatný formát datumu.', FlashMessageType::ERROR);
             return;
         }
 
