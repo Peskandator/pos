@@ -3,21 +3,219 @@
 {block modals}
 {/block}
 
+{block scripts}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{$basePath}/assets/js/statistics.js"></script>
+{/block}
+
 {block content}
     <div class="js-page-statistics">
         <h1>Statistika</h1>
+
         <div class="row">
             <div class="col-12">
-                <div class="card">
+
+                <div class="card mb-4">
                     <div class="card-header">
-                        <div class="d-flex">
-                            Statistika produktů
-                        </div>
+                        <div class="d-flex">Výběr dat</div>
                     </div>
                     <div class="card-body">
-                        TODO
+                        {form filterForm}
+                            <form n:name="filterForm">
+                                <div class="row g-4 justify-content-center align-items-stretch">
+
+                                    <!-- Sloupec 1: Day/Month/Year filtr -->
+                                    <div class="col-lg-5 px-lg-0">
+                                        <div class="border p-3 rounded shadow-sm bg-light h-100">
+                                            <h5 class="text-primary mb-3">Filtr podle dne, měsíce a roku</h5>
+
+                                            <div class="row g-2 mb-2">
+                                                <label class="fw-bold">Od</label>
+                                                <div class="col-4">
+                                                    <select class="form-select" name="fromDay">
+                                                        <option value="">Den</option>
+                                                        {for $i = 1; $i <= 31; $i++}
+                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('fromDay')">{$i}</option>
+                                                        {/for}
+                                                    </select>
+                                                </div>
+                                                <div class="col-4">
+                                                    <select class="form-select" name="fromMonth">
+                                                        <option value="">Měsíc</option>
+                                                        {for $i = 1; $i <= 12; $i++}
+                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('fromMonth')">{$i}</option>
+                                                        {/for}
+                                                    </select>
+                                                </div>
+                                                <div class="col-4">
+                                                    <select class="form-select" name="fromYear">
+                                                        <option value="">Rok</option>
+                                                        {for $i = 2020; $i <= date('Y'); $i++}
+                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('fromYear')">{$i}</option>
+                                                        {/for}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="row g-2">
+                                                <label class="fw-bold">Do</label>
+                                                <div class="col-4">
+                                                    <select class="form-select" name="toDay">
+                                                        <option value="">Den</option>
+                                                        {for $i = 1; $i <= 31; $i++}
+                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('toDay')">{$i}</option>
+                                                        {/for}
+                                                    </select>
+                                                </div>
+                                                <div class="col-4">
+                                                    <select class="form-select" name="toMonth">
+                                                        <option value="">Měsíc</option>
+                                                        {for $i = 1; $i <= 12; $i++}
+                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('toMonth')">{$i}</option>
+                                                        {/for}
+                                                    </select>
+                                                </div>
+                                                <div class="col-4">
+                                                    <select class="form-select" name="toYear">
+                                                        <option value="">Rok</option>
+                                                        {for $i = 2020; $i <= date('Y'); $i++}
+                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('toYear')">{$i}</option>
+                                                        {/for}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- NEBO rozdelovac -->
+                                    <div class="col-auto d-flex justify-content-center align-items-center px-4">
+                                        <span class="text-muted fw-semibold small text-uppercase">nebo</span>
+                                    </div>
+
+                                    <!-- Sloupec 2: Vyber datumu -->
+                                    <div class="col-lg-5 px-lg-0">
+                                        <div class="border p-3 rounded shadow-sm bg-light h-100">
+                                            <h5 class="text-primary mb-3">Vyberte konkrétní datum</h5>
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Od</label>
+                                                <input type="date" id="fromDate" name="fromDate" class="form-control"n:attr="value => $presenter->getParameter('fromDate')">
+                                            </div>
+                                            <div>
+                                                <label class="form-label fw-bold">Do</label>
+                                                <input type="date" id="toDate" name="toDate" class="form-control"n:attr="value => $presenter->getParameter('toDate')">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">Zobrazit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        {/form}
                     </div>
                 </div>
+
+                <!-- Tabulka - shrnuti produktu -->
+                <div class="card mb-4">
+                    <div class="card-header">Výsledky</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm js-table">
+                                <thead class="bg-primary text-white">
+                                <tr>
+                                    <th>Produkt</th>
+                                    <th>Počet kusů</th>
+                                    <th>Cena / ks</th>
+                                    <th>Celkem</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {ifset $products}
+                                {foreach $products as $product}
+                                    <tr>
+                                        <td>{$product['product']->getName()}</td>
+                                        <td>{$product['quantity']}</td>
+                                        <td>{$product['unitPrice']|price}</td>
+                                        <td>{$product['totalPrice']|price}</td>
+                                    </tr>
+
+                                {/foreach}
+                                {else}
+                                    <tr><td colspan="4">Žádné produkty k zobrazení.</td></tr>
+                                {/ifset}
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Celkem</td>
+                                    <td>{($totalPriceForYear)|price}</td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Grafy -->
+                {if $products}
+                    <div class="row g-4">
+                        <!-- Sloupcovy graf -->
+                        <div class="col-12 col-lg-8">
+                            <div class="card mb-4 h-100">
+                                <div class="card-header">Graf tržeb</div>
+                                <div class="card-body d-flex justify-content-center align-items-center" style="min-height: 300px;">
+                                    <canvas
+                                            id="salesChart"
+                                            width="400"
+                                            height="200"
+                                            data-labels={$salesLabels|noescape}
+                                            data-values={$salesValues|noescape}
+                                            data-start="{$start->format('Y-m-d')}"
+                                            data-end="{$end->format('Y-m-d')}">
+                                    </canvas>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Kolacove grafy -->
+                        <div class="col-12 col-lg-4">
+                            <div class="d-flex flex-column h-100">
+                                <div class="card mb-4 flex-fill">
+                                    <div class="card-header">Podíl prodaných produktů</div>
+                                    <div class="card-body">
+                                        <canvas
+                                                id="productDistributionChart"
+                                                data-labels={$productLabels|noescape}
+                                                data-values={$productQuantities|noescape}
+                                                style="max-height: 250px;">
+                                        </canvas>
+                                    </div>
+                                </div>
+
+                                <div class="card flex-fill">
+                                    <div class="card-header">Podíl tržeb podle produktu</div>
+                                    <div class="card-body">
+                                        <canvas
+                                                id="productRevenueChart"
+                                                data-labels={$productRevenueLabels|noescape}
+                                                data-values={$productRevenueValues|noescape}
+                                                style="max-height: 250px;">
+                                        </canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                {else}
+                    <p class="text-muted text-center my-3">
+                        Žádné tržby v tomto období.
+                    </p>
+                {/if}
+
             </div>
         </div>
     </div>
