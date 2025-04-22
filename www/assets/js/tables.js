@@ -59,9 +59,9 @@ $(document).ready(function() {
             scrollX: false,
             responsive: false,
             columnDefs: [
-                {type: 'num', targets: [0, 1, 4]},
+                {type: 'num', targets: [0, 1, 4, 5]},
                 {type: 'czech', targets: "_all"},
-                {orderable: false, targets: -1}
+                {orderable: false, targets: [-1, 3]}
             ],
             paging: true
         }

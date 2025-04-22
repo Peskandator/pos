@@ -69,8 +69,7 @@
                                     <td>{$order->getDescription()}</td>
                                     <td>{$order->getOrderItemsText(40)}</td>
                                     <td data-sort="{$order->getCreationDate()->getTimestamp()}">{$order->getCreationDate()|date:'j. m. Y'}</td>
-                                    <td>{$order->getCreationDate()|date:'j. m. Y'}</td>
-                                    <td>{$order->getTotalPrice()|price}</td>
+                                    <td data-sort="{$order->getTotalPrice()}">{$order->getTotalPrice()|price}</td>
                                     <td>
                                         {if $order->isPaid()}
                                             <span class="text-success" title="Zaplaceno">✔</span>
