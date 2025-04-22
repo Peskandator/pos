@@ -78,7 +78,7 @@
                     <div class="card-header">Výsledky</div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-sm js-table">
+                            <table class="table table-bordered table-sm js-table-products-filtered">
                                 <thead class="bg-primary text-white">
                                 <tr>
                                     <th>Inv. č.</th>
@@ -95,10 +95,9 @@
                                             <td>{$product['product']->getInventoryNumber()}</td>
                                             <td>{$product['product']->getName()}</td>
                                             <td>{$product['quantity']}</td>
-                                            <td>{$product['unitPrice']|price}</td>
-                                            <td>{$product['totalPrice']|price}</td>
+                                            <td data-sort="{$product['unitPrice']}">{$product['unitPrice']|price}</td>
+                                            <td data-sort="{$product['totalPrice']}">{$product['totalPrice']|price}</td>
                                         </tr>
-
                                     {/foreach}
                                 {else}
                                     <tr><td colspan="4">Žádné produkty k zobrazení.</td></tr>
@@ -186,7 +185,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-sm js-table">
+                        <table class="table table-bordered table-sm js-table-orders-filtered">
                             <thead class="bg-primary text-white">
                             <tr>
                                 <th>Inv. č.</th>
@@ -205,10 +204,10 @@
                                     <td>{$order->getInventoryNumber()}</td>
                                     <td>{$order->getDescription() ?? '-'}</td>
                                     <td>{$order->getOrderItemsText(40)}</td>
-                                    <td>{$order->getCreationDate()|date:'j. m. Y'}</td>
-                                    <td>{$order->getTotalPrice()|price}</td>
-                                    <td>{$order->getTotalPaidAmount()|price}</td>
-                                    <td>{$order->getRemainingAmountToPay()|price}</td>
+                                    <td data-sort="{$order->getCreationDate()->getTimestamp()}">{$order->getCreationDate()|date:'j. m. Y'}</td>
+                                    <td data-sort="{$order->getTotalPrice()}">{$order->getTotalPrice()|price}</td>
+                                    <td data-sort="{$order->getTotalPaidAmount()}">{$order->getTotalPaidAmount()|price}</td>
+                                    <td data-sort="{$order->getRemainingAmountToPay()}">{$order->getRemainingAmountToPay()|price}</td>
                                     <td>
                                         <div class="d-flex">
                                             <a n:href=":Admin:OrderPayment:default, $order->getId()" class="me-2">

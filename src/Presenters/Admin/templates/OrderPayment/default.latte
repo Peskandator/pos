@@ -84,14 +84,14 @@
                                     <div id="orderItemsBox">
                                         <div class="order-items">
                                             <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                                                <table class="table table-bordered mb-3 js-table" style="table-layout: auto; width: 100%;">
+                                                <table class="table table-bordered mb-3 js-table-payment-items" style="table-layout: auto; width: 100%;">
                                                     <thead class="bg-primary text-white">
-                                                    <tr>
-                                                        <th style="min-width: 150px; max-width: 200px; word-wrap: break-word; white-space: normal;">Množství k platbě</th>
-                                                        <th style="word-wrap: break-word; white-space: normal;">Produkt</th>
-                                                        <th style="word-wrap: break-word; white-space: normal;">Nezaplacené množství</th>
-                                                        <th style="word-wrap: break-word; white-space: normal;">Cena</th>
-                                                    </tr>
+                                                        <tr>
+                                                            <th style="min-width: 150px; max-width: 200px; word-wrap: break-word; white-space: normal;">Množství k platbě</th>
+                                                            <th style="word-wrap: break-word; white-space: normal;">Produkt</th>
+                                                            <th style="word-wrap: break-word; white-space: normal;">Nezaplacené množství</th>
+                                                            <th style="word-wrap: break-word; white-space: normal;">Cena</th>
+                                                        </tr>
                                                     </thead>
                                                     <tbody>
                                                     {foreach $order->getOrderItems() as $item}
@@ -119,7 +119,7 @@
                                                                 </td>
                                                                 <td class="items-to-pay-cell">{$item->getProductName()}</td>
                                                                 <td class="items-to-pay-cell">{$remainingQuantity}</td>
-                                                                <td class="items-to-pay-cell">{$item->getPrice()|price}</td>
+                                                                <td class="items-to-pay-cell" data-sort="{$item->getPrice()}">{$item->getPrice()|price}</td>
                                                             </tr>
                                                         {/if}
                                                     {/foreach}
@@ -157,7 +157,7 @@
                     <div class="card-body">
                         <div id="paidOrderItems">
                             <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                                <table class="table table-bordered table-sm js-table mb-0" style="table-layout: auto; width: 100%;">
+                                <table class="table table-bordered table-sm js-table-order-item-states mb-0" style="table-layout: auto; width: 100%;">
                                     <thead class="bg-primary text-white">
                                     <tr>
                                         <th style="white-space: normal;">Položka</th>
@@ -171,9 +171,9 @@
                                     {foreach $order->getOrderItems() as $item}
                                         <tr>
                                             <td>{$item->getProductName()}</td>
-                                            <td>{$item->getPaidQuantity()} / {$item->getQuantity()}</td>
-                                            <td>{$item->getPrice()|price}</td>
-                                            <td>
+                                            <td data-sort="{$item->getQuantity()}">{$item->getPaidQuantity()} / {$item->getQuantity()}</td>
+                                            <td data-sort="{$item->getPrice()}">{$item->getPrice()|price}</td>
+                                            <td data-sort="{$item->getTotalPrice()}">
                                                 {$item->getPaidAmount()|price} /
                                                 {$item->getTotalPrice()|price}
                                             </td>

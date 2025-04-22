@@ -42,7 +42,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive px-3 py-3">
-                            <table class="table table-bordered js-table">
+                            <table class="table table-bordered js-table-products">
                                 <thead>
                                 <tr>
                                     <th>Inv. číslo</th>
@@ -65,10 +65,10 @@
                                         <td>
                                             {$product->getName()}
                                         </td>
-                                        <td>
+                                        <td data-sort="{$product->getPrice()}">
                                             {$product->getPrice()|price}
                                         </td>
-                                        <td>
+                                        <td data-sort="{$product->getVatRate()}">
                                             {$product->getVatRatePercentage()}
                                         </td>
                                         <td>
