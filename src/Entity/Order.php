@@ -185,6 +185,18 @@ class Order
         return $totalAmount;
     }
 
+    public function getTotalPriceWithoutVat(): float
+    {
+        $totalAmount = 0;
+
+        /** @var OrderItem $item */
+        foreach ($this->getOrderItems() as $item) {
+            $totalAmount += $item->getTotalPriceWithoutVat();
+        }
+
+        return $totalAmount;
+    }
+
     public function getTotalPaidAmount(): float
     {
         $totalPaidAmount = 0;
@@ -200,5 +212,10 @@ class Order
     public function getRemainingAmountToPay(): float
     {
         return $this->getTotalPrice() - $this->getTotalPaidAmount();
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->getRemainingAmountToPay() <= 0;
     }
 }

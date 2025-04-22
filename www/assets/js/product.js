@@ -86,6 +86,9 @@ export default function() {
     let productVatRateInput = $('#productVatRate');
     let priceWithoutVatInput = $('#priceWithoutVat');
 
+
+    calculatePriceWithoutVat();
+
     productPriceInput.change(function(){
         calculatePriceWithoutVat();
     });
@@ -110,7 +113,8 @@ export default function() {
             if (!$.isNumeric(vatRateValue) || vatRateValue === 0) {
                 priceWithoutVatInput.val(price);
             }
-            let priceWithoutVat = price * ((100 - vatRateValue) / 100);
+
+            let priceWithoutVat = price / (1 + vatRateValue / 100);
             priceWithoutVatInput.val(priceWithoutVat);
         }
     }

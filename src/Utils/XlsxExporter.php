@@ -161,10 +161,14 @@ class XlsxExporter
             'Inventární číslo',
             'Vytvořeno',
             'Produkty',
+            'Cena bez DPH',
+            'Cena',
+            'Zaplaceno',
             'Popis',
             'Poslední změna',
             'Stůl - číslo',
             'Stůl - popis',
+            'Stav',
         ];
         $rows = [];
         $rows[] = $header;
@@ -177,10 +181,14 @@ class XlsxExporter
             $row[] = $order->getInventoryNumber();
             $row[] = $order->getCreationDate()->format('j. n. Y');
             $row[] = $order->getOrderItemsText(200);
+            $row[] = $this->priceFilter->__invoke($order->getTotalPriceWithoutVat());
+            $row[] = $this->priceFilter->__invoke($order->getTotalPrice());
+            $row[] = $this->priceFilter->__invoke($order->getTotalPaidAmount());
             $row[] = $order->getDescription();
             $row[] = $order->getUpdateDate()->format('j. n. Y');
             $row[] = $order->getDiningTable()?->getNumber();
             $row[] = $order->getDiningTable()?->getDescription();
+            $row[] = $order->isPaid() ? "Zaplaceno" : "Nezaplaceno";
             $rows[] = $row;
         }
         return $rows;
