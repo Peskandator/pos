@@ -8,3 +8,4 @@ services:
     - App\Order\Action\CreateOrderItemAction
 
     - App\Order\Services\OrderItemHelper
+    - App\Order\Services\OrdersFilter

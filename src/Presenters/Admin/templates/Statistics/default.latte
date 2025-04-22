@@ -55,11 +55,11 @@
 
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">Od</label>
-                                                <input type="date" id="fromDate" name="fromDate" class="form-control"n:attr="value => $presenter->getParameter('fromDate')">
+                                                <input type="date" id="fromDate" n:name="fromDate" class="form-control">
                                             </div>
                                             <div>
                                                 <label class="form-label fw-bold">Do</label>
-                                                <input type="date" id="toDate" name="toDate" class="form-control"n:attr="value => $presenter->getParameter('toDate')">
+                                                <input type="date" id="toDate" n:name="toDate" class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -81,6 +81,7 @@
                             <table class="table table-bordered table-sm js-table">
                                 <thead class="bg-primary text-white">
                                 <tr>
+                                    <th>Inv. č.</th>
                                     <th>Produkt</th>
                                     <th>Počet kusů</th>
                                     <th>Cena / ks</th>
@@ -89,15 +90,16 @@
                                 </thead>
                                 <tbody>
                                 {ifset $products}
-                                {foreach $products as $product}
-                                    <tr>
-                                        <td>{$product['product']->getName()}</td>
-                                        <td>{$product['quantity']}</td>
-                                        <td>{$product['unitPrice']|price}</td>
-                                        <td>{$product['totalPrice']|price}</td>
-                                    </tr>
+                                    {foreach $products as $product}
+                                        <tr>
+                                            <td>{$product['product']->getInventoryNumber()}</td>
+                                            <td>{$product['product']->getName()}</td>
+                                            <td>{$product['quantity']}</td>
+                                            <td>{$product['unitPrice']|price}</td>
+                                            <td>{$product['totalPrice']|price}</td>
+                                        </tr>
 
-                                {/foreach}
+                                    {/foreach}
                                 {else}
                                     <tr><td colspan="4">Žádné produkty k zobrazení.</td></tr>
                                 {/ifset}
@@ -105,7 +107,7 @@
                                 <tfoot>
                                 <tr>
                                     <td colspan="3" class="text-end fw-bold">Celkem</td>
-                                    <td>{($totalPriceForYear)|price}</td>
+                                    <td><b>{($totalPriceForYear)|price}</b></td>
                                 </tr>
                                 </tfoot>
                             </table>
@@ -180,7 +182,7 @@
             <div class="card mt-4">
                 <div class="card-header">
                     Seznam objednávek v období
-                    <a n:href=":Admin:Export:orders" class="btn btn-success btn-sm float-end">Export do XLSX</a>
+                    <a n:href=":Admin:Export:orders, $filteredOrdersIds" class="btn btn-success btn-sm float-end">Export do XLSX</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

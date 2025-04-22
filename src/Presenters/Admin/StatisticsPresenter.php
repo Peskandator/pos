@@ -6,13 +6,16 @@ namespace App\Presenters\Admin;
 use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Entity\Order;
 use App\Entity\OrderItem;
+use App\Order\Services\OrdersFilter;
 use App\Presenters\BaseCompanyPresenter;
 use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
 
 final class StatisticsPresenter extends BaseCompanyPresenter
 {
-    public function __construct()
+    public function __construct(
+        private readonly OrdersFilter $ordersFilter,
+    )
     {
         parent::__construct();
     }
@@ -55,16 +58,20 @@ final class StatisticsPresenter extends BaseCompanyPresenter
 
             if ($isFiltered && ($start > $end)) {
                 $this->flashMessage('Počáteční datum nemůže být větší než koncové.', FlashMessageType::ERROR);
+                $this->redirect('this');
                 return;
             }
 
         } catch (\Exception $e) {
             $this->flashMessage('Neplatný formát datumu.', FlashMessageType::ERROR);
+            $this->redirect('this');
             return;
         }
 
-        $orders = $this->getOrdersInRange($start, $end);
+        $orders = $this->ordersFilter->getOrdersInRange($this->currentCompany, $start, $end);
+
         $this->template->filteredOrders = $orders;
+        $this->template->filteredOrdersIds = json_encode($this->getFilteredOrdersIds($orders));
 
         // bdump($start->format('Y-m-d H:i:s'), 'Start Date');
         // bdump($end->format('Y-m-d H:i:s'), 'End Date');
@@ -167,7 +174,6 @@ final class StatisticsPresenter extends BaseCompanyPresenter
     protected function createComponentFilterForm(): Form
     {
         $form = new Form;
-        $form->setMethod('GET');
 
         $orders = $this->currentCompany->getOrders()->toArray();
         $years = [];
@@ -178,14 +184,14 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         }
 
         ksort($years);
-        // bdump($years, 'Years extracted from orders'); // 👈 Add this
         $yearOptions = $years;
 
-        $form->addSelect('fromDay', 'Den od', array_combine(range(1, 31), range(1, 31)))->setPrompt('Den');
-        $form->addSelect('fromMonth', 'Měsíc od', array_combine(range(1, 12), range(1, 12)))->setPrompt('Měsíc');
-        $form->addSelect('fromYear', 'Rok od', $yearOptions)->setPrompt('Rok');
+        $form->addSelect('fromDay', 'Den', array_combine(range(1, 31), range(1, 31)))->setPrompt('Den');
+        $form->addSelect('fromMonth', 'Měsíc', array_combine(range(1, 12), range(1, 12)))->setPrompt('Měsíc');
+        $form->addSelect('fromYear', 'Rok', $yearOptions)->setPrompt('Rok');
 
         $form->addText('fromDate', 'Od')->setHtmlType('date');
+        $form->addText('toDate', 'Od')->setHtmlType('date');
 
         $form->addSubmit('send', 'Zobrazit');
 
@@ -198,53 +204,87 @@ final class StatisticsPresenter extends BaseCompanyPresenter
             unset($params['toYear']);
         }
 
-        foreach (['from', 'to'] as $prefix) {
-            $dayKey = "{$prefix}Day";
-            $monthKey = "{$prefix}Month";
-            $yearKey = "{$prefix}Year";
+        if (
+            isset($params['fromDay'], $params['fromMonth'], $params['fromYear']) &&
+            is_numeric($params['fromDay']) && is_numeric($params['fromMonth']) && is_numeric($params['fromYear'])
+        ) {
+            $y = (int) $params['fromYear'];
+            $m = (int) $params['fromMonth'];
+            $d = (int) $params['fromDay'];
 
-            if (
-                isset($params[$dayKey], $params[$monthKey], $params[$yearKey]) &&
-                is_numeric($params[$dayKey]) && is_numeric($params[$monthKey]) && is_numeric($params[$yearKey])
-            ) {
-                $y = (int) $params[$yearKey];
-                $m = (int) $params[$monthKey];
-                $d = (int) $params[$dayKey];
+            if ($m >= 1 && $m <= 12) {
+                $lastDay = cal_days_in_month(CAL_GREGORIAN, $m, $y);
 
-                if ($m >= 1 && $m <= 12) {
-                    $lastDay = cal_days_in_month(CAL_GREGORIAN, $m, $y);
-                    // bdump($lastDay, "Last day of $m/$y");
-
-                    if ($d > $lastDay) {
-                        $params[$dayKey] = $lastDay;
-                    }
+                if ($d > $lastDay) {
+                    $params['fromDay'] = $lastDay;
                 }
             }
         }
 
         $form->setDefaults($params);
 
-        $form->onValidate[] = function (Form $form): void {
-            $values = $form->getValues('array');
-            foreach (['from', 'to'] as $prefix) {
-                $dayKey = "{$prefix}Day";
-                $monthKey = "{$prefix}Month";
-                $yearKey = "{$prefix}Year";
+        $form->onValidate[] = function (Form $form, \stdClass $values): void {
+            $fromDate = $values->fromDate;
+            $toDate = $values->toDate;
 
-                $y = (int) ($values[$yearKey] ?? 0);
-                $m = (int) ($values[$monthKey] ?? 0);
-                $d = (int) ($values[$dayKey] ?? 0);
+            $fromDateTime = null;
+            $toDateTime = null;
 
-                if ($y && $m && $d && !checkdate($m, $d, $y)) {
-                    $lastDay = cal_days_in_month(CAL_GREGORIAN, $m, $y);
-                    if ($form[$dayKey] instanceof \Nette\Forms\Controls\SelectBox) {
-                        $form[$dayKey]->setValue($lastDay);
-                    }
+            $today = new \DateTimeImmutable('today');
+
+            if ($fromDate) {
+                $fromDateTime = new \DateTimeImmutable($fromDate . ' 00:00:00');
+
+                if ($fromDateTime->getTimestamp() > $today->getTimestamp()) {
+                    $msg = 'Počáteční datum nemůže být v budoucnosti.';
+                    $this->flashMessage($msg, FlashMessageType::ERROR);
+                    $form['fromDate']->addError($msg);
                 }
+            }
+
+            if ($toDate) {
+                $toDateTime = new \DateTimeImmutable($toDate . ' 23:59:59');
+            }
+
+            if ($fromDateTime && $toDateTime && $fromDateTime > $toDateTime) {
+                $msg = 'Počáteční datum nemůže být větší než koncové.';
+                $this->flashMessage($msg, FlashMessageType::ERROR);
+                $form['fromDate']->addError($msg);
+                return;
+            }
+
+            if (($fromDate || $toDate) && ($values->fromDay || $values->fromMonth || $values->fromYear)) {
+                $msg = 'Nelze filtrovat podle datumu a období zároveň. Vyplňte prosím jen jeden filtr.';
+                $this->flashMessage($msg, FlashMessageType::ERROR);
+                $form->addError($msg);
             }
         };
 
-        $form->onSubmit[] = function () {};
+
+        $form->onSuccess[] = function (Form $form, \stdClass $values) {
+            $y = (int) ($values->fromYear ?? 0);
+            $m = (int) ($values->fromMonth ?? 0);
+            $d = (int) ($values->fromDay ?? 0);
+
+            $fromDay = $values->fromDay;
+
+            if ($y && $m && $d && !checkdate($m, $d, $y)) {
+                $lastDayInMonth = cal_days_in_month(CAL_GREGORIAN, $m, $y);
+                $fromDay = $lastDayInMonth;
+            }
+
+            $this->flashMessage('Výsledky byly vyfiltrovány.', FlashMessageType::SUCCESS);
+
+            $this->redirect('this',
+                [
+                    'fromDay' => $fromDay,
+                    'fromMonth' => $values->fromMonth,
+                    'fromYear' => $values->fromYear,
+                    'fromDate' => $values->fromDate,
+                    'toDate' => $values->toDate,
+                ]
+            );
+        };
 
         return $form;
     }
@@ -262,12 +302,12 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         $now = new \DateTimeImmutable();
         $isFiltered = ($fromDate !== null && $fromDate !== '') ||
             ($toDate !== null && $toDate !== '') ||
-            ($fromDay !== null && $fromDay !== '') ||
-            ($fromMonth !== null && $fromMonth !== '') ||
-            ($fromYear !== null && $fromYear !== '') ||
-            ($toDay !== null && $toDay !== '') ||
-            ($toMonth !== null && $toMonth !== '') ||
-            ($toYear !== null && $toYear !== '');
+            ($fromDay !== null) ||
+            ($fromMonth !== null) ||
+            ($fromYear !== null) ||
+            ($toDay !== null) ||
+            ($toMonth !== null) ||
+            ($toYear !== null);
 
 
         if ($fromDate && $toDate) {
@@ -303,27 +343,10 @@ final class StatisticsPresenter extends BaseCompanyPresenter
             ];
         }
 
-
         $monday = $now->modify('monday last week')->setTime(0, 0);
         $sunday = $now->modify('sunday this week')->setTime(23, 59, 59);
 
         return [$monday, $sunday, false];
-    }
-
-    private function getOrdersInRange(\DateTimeInterface $start, \DateTimeInterface $end): array
-    {
-        $filteredOrders = [];
-
-        /** @var Order $order */
-        foreach ($this->currentCompany->getOrders() as $order) {
-            $createdAt = $order->getCreationDate();
-
-            if ($createdAt >= $start && $createdAt <= $end) {
-                $filteredOrders[] = $order;
-            }
-        }
-
-        return $filteredOrders;
     }
 
     private function getTotalPriceForYear(array $orders): float
@@ -366,5 +389,16 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         }
 
         return $products;
+    }
+
+    private function getFilteredOrdersIds(array $orders): array
+    {
+        $ids = [];
+        /** @var Order $order */
+        foreach ($orders as $order) {
+            $ids[] = $order->getId();
+        }
+
+        return $ids;
     }
 }

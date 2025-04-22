@@ -2,11 +2,12 @@
 
 namespace App\Presenters\Admin;
 
-use App\Order\ORM\OrderRepository;
+use App\Order\Services\OrdersFilter;
 use App\Presenters\BaseCompanyPresenter;
 use App\Utils\XlsxExporter;
 use App\Product\ORM\CategoryRepository;
 use App\Product\ORM\DiningTableRepository;
+use Nette\Utils\Json;
 
 class ExportPresenter extends BaseCompanyPresenter
 {
@@ -47,10 +48,22 @@ class ExportPresenter extends BaseCompanyPresenter
         $this->terminate();
     }
 
-    public function actionOrders(): void
+    public function actionOrders
+    (
+        string $filteredOrdersJson = ''
+    ): void
     {
-        $table = $this->orderRepository->findAll();
-        $rows = $this->xlsxExporter->createOrdersDataForExport($table);
+        $orders = $this->orderRepository->findAll();
+
+        if ($filteredOrdersJson !== '') {
+            $ordersIds = Json::decode($filteredOrdersJson, Json::FORCE_ARRAY);
+            $orders = [];
+            foreach ($ordersIds as $orderId) {
+                $orders[] = $this->orderRepository->find($orderId);
+            }
+        }
+
+        $rows = $this->xlsxExporter->createOrdersDataForExport($orders);
 
         $this->xlsxExporter->export($rows, 'Objednávky');
         $this->terminate();
