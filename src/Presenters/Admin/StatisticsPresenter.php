@@ -64,6 +64,7 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         }
 
         $orders = $this->getOrdersInRange($start, $end);
+        $this->template->filteredOrders = $orders;
 
         // bdump($start->format('Y-m-d H:i:s'), 'Start Date');
         // bdump($end->format('Y-m-d H:i:s'), 'End Date');

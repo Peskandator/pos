@@ -218,5 +218,55 @@
 
             </div>
         </div>
+
+        <!-- List objednavek -->
+        {ifset $filteredOrders}
+            <div class="card mt-4">
+                <div class="card-header">
+                    Seznam objednávek v období
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm js-table">
+                            <thead class="bg-primary text-white">
+                            <tr>
+                                <th>Inv. č.</th>
+                                <th>Popis</th>
+                                <th>Produkty</th>
+                                <th>Vytvořeno</th>
+                                <th>Celková cena</th>
+                                <th>Zaplaceno</th>
+                                <th>Zbývá</th>
+                                <th>Akce</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {foreach $filteredOrders as $order}
+                                <tr>
+                                    <td>{$order->getInventoryNumber()}</td>
+                                    <td>{$order->getDescription() ?? '-'}</td>
+                                    <td>{$order->getOrderItemsText(40)}</td>
+                                    <td>{$order->getCreationDate()|date:'j. m. Y'}</td>
+                                    <td>{$order->getTotalPrice()|price}</td>
+                                    <td>{$order->getTotalPaidAmount()|price}</td>
+                                    <td>{$order->getRemainingAmountToPay()|price}</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <a n:href=":Admin:OrderPayment:default, $order->getId()" class="me-2">
+                                                <i class="fas fa-credit-card text-success icon" title="Zaplatit"></i>
+                                            </a>
+                                            <a n:href=":Admin:EditOrder:default, $order->getId()">
+                                                <i class="fas fa-pencil-alt text-primary icon" title="Upravit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {/ifset}
     </div>
 {/block}
