@@ -309,14 +309,12 @@ final class StatisticsPresenter extends BaseCompanyPresenter
     {
         $filteredOrders = [];
 
+        /** @var Order $order */
         foreach ($this->currentCompany->getOrders() as $order) {
-            foreach ($order->getPayments() as $payment) {
-                $paymentTime = $payment->getPaymentTime();
+            $createdAt = $order->getCreationDate();
 
-                if ($paymentTime >= $start && $paymentTime <= $end) {
-                    $filteredOrders[] = $order;
-                    break;
-                }
+            if ($createdAt >= $start && $createdAt <= $end) {
+                $filteredOrders[] = $order;
             }
         }
 
@@ -326,6 +324,7 @@ final class StatisticsPresenter extends BaseCompanyPresenter
     private function getTotalPriceForYear(array $orders): float
     {
         $totalPrice = 0;
+        /** @var Order $order */
         foreach ($orders as $order) {
             $totalPrice += $order->getTotalPrice();
         }
