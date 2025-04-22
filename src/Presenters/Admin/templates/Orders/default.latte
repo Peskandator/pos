@@ -56,6 +56,8 @@
                                     <th>Popis</th>
                                     <th>Produkty</th>
                                     <th>Vytvořeno</th>
+                                    <th>Cena</th>
+                                    <th>Stav</th>
                                     <th>Akce</th>
                                 </tr>
                             </thead>
@@ -67,6 +69,14 @@
                                     <td>{$order->getDescription()}</td>
                                     <td>{$order->getOrderItemsText(40)}</td>
                                     <td>{$order->getCreationDate()|date:'j. m. Y'}</td>
+                                    <td>{$order->getTotalPrice()|price}</td>
+                                    <td>
+                                        {if $order->isPaid()}
+                                            <span class="text-success" title="Zaplaceno">✔</span>
+                                        {else}
+                                            <span class="text-danger" title="Nezaplaceno">❌</span>
+                                        {/if}
+                                    </td>
                                     <td>
                                         <div class="d-flex">
                                             <a n:href=":Admin:OrderPayment:default, $order->getId()" class="me-2">

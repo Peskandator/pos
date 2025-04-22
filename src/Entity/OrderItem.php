@@ -184,6 +184,11 @@ class OrderItem
         return $price / (1 + $vatRate / 100);
     }
 
+    public function getTotalPriceWithoutVat(): ?float
+    {
+        return $this->getQuantity() * $this->getPriceWithoutVat();
+    }
+
     public function getVatRate(): ?int
     {
         return $this->vatRate;
