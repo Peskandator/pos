@@ -19,7 +19,8 @@ final class RouterFactory
         $router->addRoute('admin','Admin:Dashboard:default');
         $router->addRoute('admin/<presenter>/<action>', [
             'module' => 'Admin',
-            'presenter' => 'Admin:Dashboard:default'
+            'presenter' => 'Dashboard',
+            'action' => 'default'
         ]);
         $router->addRoute('<presenter>/<action>[/<id>]', 'Home:default');
 
