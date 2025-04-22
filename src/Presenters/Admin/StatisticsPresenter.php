@@ -169,19 +169,23 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         $form = new Form;
         $form->setMethod('GET');
 
-        $years = range(2020, (int) date('Y'));
-        $yearOptions = array_combine($years, $years);
+        $orders = $this->currentCompany->getOrders()->toArray();
+        $years = [];
+
+        foreach ($orders as $order) {
+            $year = (int) $order->getCreationDate()->format('Y');
+            $years[$year] = $year;
+        }
+
+        ksort($years);
+        // bdump($years, 'Years extracted from orders'); // 👈 Add this
+        $yearOptions = $years;
 
         $form->addSelect('fromDay', 'Den od', array_combine(range(1, 31), range(1, 31)))->setPrompt('Den');
         $form->addSelect('fromMonth', 'Měsíc od', array_combine(range(1, 12), range(1, 12)))->setPrompt('Měsíc');
         $form->addSelect('fromYear', 'Rok od', $yearOptions)->setPrompt('Rok');
 
-        $form->addSelect('toDay', 'Den do', array_combine(range(1, 31), range(1, 31)))->setPrompt('Den');
-        $form->addSelect('toMonth', 'Měsíc do', array_combine(range(1, 12), range(1, 12)))->setPrompt('Měsíc');
-        $form->addSelect('toYear', 'Rok do', $yearOptions)->setPrompt('Rok');
-
         $form->addText('fromDate', 'Od')->setHtmlType('date');
-        $form->addText('toDate', 'Do')->setHtmlType('date');
 
         $form->addSubmit('send', 'Zobrazit');
 

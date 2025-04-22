@@ -25,63 +25,19 @@
                                 <div class="row g-4 justify-content-center align-items-stretch">
 
                                     <!-- Sloupec 1: Day/Month/Year filtr -->
-                                    <div class="col-lg-5 px-lg-0">
-                                        <div class="border p-3 rounded shadow-sm bg-light h-100">
+                                    <div class="col-lg-5 px-lg-0 d-flex align-items-center">
+                                        <div class="border p-3 rounded shadow-sm bg-light w-100">
                                             <h5 class="text-primary mb-3">Filtr podle dne, měsíce a roku</h5>
-
                                             <div class="row g-2 mb-2">
-                                                <label class="fw-bold">Od</label>
+                                                <label class="fw-bold">Období</label>
                                                 <div class="col-4">
-                                                    <select class="form-select" name="fromDay">
-                                                        <option value="">Den</option>
-                                                        {for $i = 1; $i <= 31; $i++}
-                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('fromDay')">{$i}</option>
-                                                        {/for}
-                                                    </select>
+                                                    <select class="form-select" n:name="fromDay"></select>
                                                 </div>
                                                 <div class="col-4">
-                                                    <select class="form-select" name="fromMonth">
-                                                        <option value="">Měsíc</option>
-                                                        {for $i = 1; $i <= 12; $i++}
-                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('fromMonth')">{$i}</option>
-                                                        {/for}
-                                                    </select>
+                                                    <select class="form-select" n:name="fromMonth"></select>
                                                 </div>
                                                 <div class="col-4">
-                                                    <select class="form-select" name="fromYear">
-                                                        <option value="">Rok</option>
-                                                        {for $i = 2020; $i <= date('Y'); $i++}
-                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('fromYear')">{$i}</option>
-                                                        {/for}
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div class="row g-2">
-                                                <label class="fw-bold">Do</label>
-                                                <div class="col-4">
-                                                    <select class="form-select" name="toDay">
-                                                        <option value="">Den</option>
-                                                        {for $i = 1; $i <= 31; $i++}
-                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('toDay')">{$i}</option>
-                                                        {/for}
-                                                    </select>
-                                                </div>
-                                                <div class="col-4">
-                                                    <select class="form-select" name="toMonth">
-                                                        <option value="">Měsíc</option>
-                                                        {for $i = 1; $i <= 12; $i++}
-                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('toMonth')">{$i}</option>
-                                                        {/for}
-                                                    </select>
-                                                </div>
-                                                <div class="col-4">
-                                                    <select class="form-select" name="toYear">
-                                                        <option value="">Rok</option>
-                                                        {for $i = 2020; $i <= date('Y'); $i++}
-                                                            <option value="{$i}" n:attr="selected => $i == $presenter->getParameter('toYear')">{$i}</option>
-                                                        {/for}
-                                                    </select>
+                                                    <select class="form-select" n:name="fromYear"></select>
                                                 </div>
                                             </div>
                                         </div>
@@ -224,6 +180,7 @@
             <div class="card mt-4">
                 <div class="card-header">
                     Seznam objednávek v období
+                    <a n:href=":Admin:Export:orders" class="btn btn-success btn-sm float-end">Export do XLSX</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
