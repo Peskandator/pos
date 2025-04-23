@@ -2,71 +2,75 @@
 
 {block content}
 
-    <h1>DASHBOARD</h1>
+    <h1 class="mb-4">DASHBOARD</h1>
 
-    <div class="card">
+    <div class="card shadow-sm">
         <div class="card-body mx-2">
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="row">
-                        <div class="col-sm-12 col-md-4 mb-3 mt-3">
-                            <button class="btn-icon-vertical mb-3 btn-transition dashboard-button btn btn-outline-dark"
-                                    onclick="window.location.href = {link :Admin:Profile:default};">
-                                <i class="fa fa-user btn-icon-wrapper"></i>
-                                Profil
-                            </button>
-                        </div>
+            <div class="row g-3">
 
-                        <div class="col-sm-12 col-md-4 mb-3 mt-3">
-                            <button class="btn-icon-vertical mb-3 btn-transition dashboard-button btn btn-outline-dark"
-                                    onclick="window.location.href = {link :Admin:Orders:default};">
-                                <i class="fa fa-receipt btn-icon-wrapper"></i>
-                                Objednávky
-                            </button>
-                        </div>
-
-                        <div class="col-sm-12 col-md-4 mb-3 mt-3">
-                            <button class="btn-icon-vertical mb-3 btn-transition dashboard-button btn btn-outline-dark"
-                                    onclick="window.location.href = {link :Admin:Products:default};">
-                                <i class="fa fa-boxes btn-icon-wrapper"></i>
-                                Produkty
-                            </button>
-                        </div>
-
-                        <div class="col-sm-12 col-md-4 mb-3 mt-3">
-                            <button class="btn-icon-vertical mb-3 btn-transition dashboard-button btn btn-outline-dark"
-                                    onclick="window.location.href = {link :Admin:Categories:default};">
-                                <i class="fa fa-tags btn-icon-wrapper"></i>
-                                Kategorie
-                            </button>
-                        </div>
-
-                        <div class="col-sm-12 col-md-4 mb-3 mt-3">
-                            <button class="btn-icon-vertical mb-3 btn-transition dashboard-button btn btn-outline-dark"
-                                    onclick="window.location.href = {link :Admin:DiningTables:default};">
-                                <i class="fa fa-chair btn-icon-wrapper"></i>
-                                Stoly
-                            </button>
-                        </div>
-
-                        <div class="col-sm-12 col-md-4 mb-3 mt-3">
-                            <button class="btn-icon-vertical mb-3 btn-transition dashboard-button btn btn-outline-dark"
-                                    onclick="window.location.href = {link :Admin:Companies:default};">
-                                <i class="fa fa-building btn-icon-wrapper"></i>
-                                Firmy
-                            </button>
-                        </div>
-
-                        <div class="col-sm-12 col-md-4 mb-3 mt-3">
-                            <button class="btn-icon-vertical mb-3 btn-transition dashboard-button btn btn-outline-dark"
-                                    onclick="window.location.href = {link :Admin:Statistics:default};">
-                                <i class="fa fa-chart-pie btn-icon-wrapper"></i>
-                                Statistika
-                            </button>
-                        </div>
-
-                    </div>
+                <div class="col-sm-12 col-md-4">
+                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                            style="min-height: 140px;"
+                            onclick="window.location.href = {link :Admin:Profile:default};">
+                        <i class="fa fa-user fa-2x mb-2"></i>
+                        <span class="fw-semibold">Profil</span>
+                    </button>
                 </div>
+
+                <div class="col-sm-12 col-md-4">
+                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                            style="min-height: 140px;"
+                            onclick="window.location.href = {link :Admin:Orders:default};">
+                        <i class="fa fa-receipt fa-2x mb-2"></i>
+                        <span class="fw-semibold">Objednávky</span>
+                    </button>
+                </div>
+
+                <div class="col-sm-12 col-md-4">
+                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                            style="min-height: 140px;"
+                            onclick="window.location.href = {link :Admin:Products:default};">
+                        <i class="fa fa-boxes fa-2x mb-2"></i>
+                        <span class="fw-semibold">Produkty</span>
+                    </button>
+                </div>
+
+                <div class="col-sm-12 col-md-4">
+                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                            style="min-height: 140px;"
+                            onclick="window.location.href = {link :Admin:Categories:default};">
+                        <i class="fa fa-tags fa-2x mb-2"></i>
+                        <span class="fw-semibold">Kategorie</span>
+                    </button>
+                </div>
+
+                <div class="col-sm-12 col-md-4">
+                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                            style="min-height: 140px;"
+                            onclick="window.location.href = {link :Admin:DiningTables:default};">
+                        <i class="fa fa-chair fa-2x mb-2"></i>
+                        <span class="fw-semibold">Stoly</span>
+                    </button>
+                </div>
+
+                <div class="col-sm-12 col-md-4">
+                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                            style="min-height: 140px;"
+                            onclick="window.location.href = {link :Admin:Companies:default};">
+                        <i class="fa fa-building fa-2x mb-2"></i>
+                        <span class="fw-semibold">Firmy</span>
+                    </button>
+                </div>
+
+                <div class="col-sm-12 col-md-4">
+                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                            style="min-height: 140px;"
+                            onclick="window.location.href = {link :Admin:Statistics:default};">
+                        <i class="fa fa-chart-pie fa-2x mb-2"></i>
+                        <span class="fw-semibold">Statistika</span>
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>
