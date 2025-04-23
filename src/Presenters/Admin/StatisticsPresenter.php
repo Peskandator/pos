@@ -223,7 +223,9 @@ final class StatisticsPresenter extends BaseCompanyPresenter
             $d = (int) $params['fromDay'];
 
             if ($m >= 1 && $m <= 12) {
-                $lastDay = cal_days_in_month(CAL_GREGORIAN, $m, $y);
+                $lastDay = (int)(new \DateTimeImmutable("$y-$m-01"))
+                    ->modify('last day of this month')
+                    ->format('j');
 
                 if ($d > $lastDay) {
                     $params['fromDay'] = $lastDay;
@@ -271,28 +273,27 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         };
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) {
-            $y = (int) ($values->fromYear ?? 0);
-            $m = (int) ($values->fromMonth ?? 0);
-            $d = (int) ($values->fromDay ?? 0);
+            $today = new \DateTimeImmutable();
 
-            $fromDay = $values->fromDay;
+            $y = (int) ($values->fromYear ?: $today->format('Y'));
+            $m = (int) ($values->fromMonth ?: $today->format('n'));
+            $d = (int) ($values->fromDay ?: 1);
 
-            if ($y && $m && $d && !checkdate($m, $d, $y)) {
-                $lastDayInMonth = cal_days_in_month(CAL_GREGORIAN, $m, $y);
-                $fromDay = $lastDayInMonth;
-            }
+            $lastDayInMonth = (int)(new \DateTimeImmutable("$y-$m-01"))
+                ->modify('last day of this month')
+                ->format('j');
+
+            $clampedDay = min($d, $lastDayInMonth);
 
             $this->flashMessage('Výsledky byly vyfiltrovány.', FlashMessageType::SUCCESS);
 
-            $this->redirect('this',
-                [
-                    'fromDay' => $fromDay,
-                    'fromMonth' => $values->fromMonth,
-                    'fromYear' => $values->fromYear,
-                    'fromDate' => $values->fromDate,
-                    'toDate' => $values->toDate,
-                ]
-            );
+            $this->redirect('this', [
+                'fromDay' => $clampedDay,
+                'fromMonth' => $values->fromMonth,
+                'fromYear' => $values->fromYear,
+                'fromDate' => $values->fromDate,
+                'toDate' => $values->toDate,
+            ]);
         };
 
         return $form;

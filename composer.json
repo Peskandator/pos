@@ -36,8 +36,7 @@
 		"ext-zip": "*",
 		"ext-gd": "*",
 		"phpoffice/phpspreadsheet": "4.0.0",
-		"dfridrich/qr-platba": "^2",
-      	"ext-calendar": "*"
+		"dfridrich/qr-platba": "^2"
     },
 	"autoload": {
 		"psr-4": {
