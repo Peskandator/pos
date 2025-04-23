@@ -32,13 +32,6 @@ final class StatisticsPresenter extends BaseCompanyPresenter
     ): void {
         $this->getComponent('breadcrumb')->addItem(new BreadcrumbItem('Statistika', null));
 
-        $now = new \DateTimeImmutable();
-
-        if ($fromDay && !$fromMonth) $fromMonth = (string) $now->format('n');
-        if ($fromDay && !$fromYear) $fromYear = (string) $now->format('Y');
-        if ($toDay && !$toMonth) $toMonth = (string) $now->format('n');
-        if ($toDay && !$toYear) $toYear = (string) $now->format('Y');
-
         $fromDay = $this->parseNullableInt($fromDay);
         $fromMonth = $this->parseNullableInt($fromMonth);
         $fromYear = $this->parseNullableInt($fromYear);
@@ -50,7 +43,7 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         $this->template->totalPriceForYear = 0;
 
         try {
-            [$start, $end, $isFiltered] = $this->getDateRange(
+            [$start, $end, $isFiltered, $scale] = $this->getDateRange(
                 $fromDay, $fromMonth, $fromYear,
                 $toDay, $toMonth, $toYear,
                 $fromDate, $toDate
@@ -73,25 +66,18 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         $this->template->filteredOrders = $orders;
         $this->template->filteredOrdersIds = json_encode($this->getFilteredOrdersIds($orders));
 
-        // bdump($start->format('Y-m-d H:i:s'), 'Start Date');
-        // bdump($end->format('Y-m-d H:i:s'), 'End Date');
-        // bdump(count($orders), 'Orders Found');
-
         $this->template->products = $this->getAggregatedProductData($orders);
         $this->template->totalPriceForYear = $this->getTotalPriceForYear($orders);
         $this->template->start = $start;
         $this->template->end = $end;
 
-        $dataForChart = $this->getSalesChartData($orders, $start, $end);
+        $dataForChart = $this->getSalesChartData($orders, $start, $end, $scale);
         $this->template->salesLabels = json_encode($dataForChart['labels']);
         $this->template->salesValues = json_encode($dataForChart['values']);
+        $this->template->salesScale = $scale;
         $this->template->currentCompanyId = $this->currentCompanyId;
 
         $distribution = $this->getProductDistribution($orders);
-        // bdump($distribution, 'Distribution for donut chart');
-        // bdump(array_keys($distribution), 'Product labels');
-        // bdump(array_values($distribution), 'Product values');
-
         $this->template->productLabels = json_encode(array_keys($distribution), JSON_UNESCAPED_UNICODE);
         $this->template->productQuantities = json_encode(array_values($distribution));
 
@@ -100,41 +86,65 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         $this->template->productRevenueValues = json_encode(array_values($revenueDistribution));
     }
 
-    private function getSalesChartData(array $orders, \DateTimeImmutable $start, \DateTimeImmutable $end): array
+    private function getSalesChartData(array $orders, \DateTimeImmutable $start, \DateTimeImmutable $end, string $scale): array
     {
-        $dailyTotals = [];
-        $period = new \DatePeriod($start, new \DateInterval('P1D'), $end->modify('+1 day'));
-        foreach ($period as $date) {
-            $dailyTotals[$date->format('Y-m-d')] = 0.0;
+        $intervalSpec = match ($scale) {
+            'hour' => 'PT1H',
+            'month' => 'P1M',
+            default => 'P1D',
+        };
+
+        $format = match ($scale) {
+            'hour' => 'H:00',
+            'month' => 'Y-m',
+            default => 'Y-m-d',
+        };
+
+        $totals = [];
+
+        $period = $this->getInclusiveDatePeriod($start, $end, new \DateInterval($intervalSpec));
+        foreach ($period as $point) {
+            $label = $point->format($format);
+            $totals[$label] = 0.0;
         }
 
         /** @var Order $order */
         foreach ($orders as $order) {
-            $dateKey = $order->getCreationDate()->format('Y-m-d');
+            $label = match ($scale) {
+                'hour' => $order->getCreationDate()
+                    ->setTime((int) $order->getCreationDate()->format('H'), 0)
+                    ->format('H:00'),
 
-            if (!isset($dailyTotals[$dateKey])) {
+                'month' => $order->getCreationDate()->format('Y-m'),
+                default => $order->getCreationDate()->format('Y-m-d'),
+            };
+
+
+            if (!isset($totals[$label])) {
                 continue;
             }
 
             /** @var OrderItem $orderItem */
             foreach ($order->getOrderItems() as $item) {
-                $quantity = $item->getQuantity();
-                $price = $item->getPrice();
-
-                $total = $quantity * $price;
-
-                $dailyTotals[$dateKey] += $total;
+                $totals[$label] += $item->getQuantity() * $item->getPrice();
             }
         }
 
-        ksort($dailyTotals);
-
-        // bdump($dailyTotals, 'Daily Totals Raw (Date => Kč)');
+        ksort($totals);
 
         return [
-            'labels' => array_keys($dailyTotals),
-            'values' => array_values($dailyTotals),
+            'labels' => array_keys($totals),
+            'values' => array_values($totals),
         ];
+    }
+
+    private function getInclusiveDatePeriod(\DateTimeImmutable $start, \DateTimeImmutable $end, \DateInterval $interval): \Generator
+    {
+        $current = $start;
+        while ($current <= $end) {
+            yield $current;
+            $current = $current->add($interval);
+        }
     }
 
     private function getProductDistribution(array $orders): array
@@ -235,11 +245,11 @@ final class StatisticsPresenter extends BaseCompanyPresenter
             if ($fromDate) {
                 $fromDateTime = new \DateTimeImmutable($fromDate . ' 00:00:00');
 
-                if ($fromDateTime->getTimestamp() > $today->getTimestamp()) {
-                    $msg = 'Počáteční datum nemůže být v budoucnosti.';
-                    $this->flashMessage($msg, FlashMessageType::ERROR);
-                    $form['fromDate']->addError($msg);
-                }
+//                if ($fromDateTime->getTimestamp() > $today->getTimestamp()) {
+//                    $msg = 'Počáteční datum nemůže být v budoucnosti.';
+//                    $this->flashMessage($msg, FlashMessageType::ERROR);
+//                    $form['fromDate']->addError($msg);
+//                }
             }
 
             if ($toDate) {
@@ -259,7 +269,6 @@ final class StatisticsPresenter extends BaseCompanyPresenter
                 $form->addError($msg);
             }
         };
-
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) {
             $y = (int) ($values->fromYear ?? 0);
@@ -300,6 +309,8 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         ?string $fromDate, ?string $toDate
     ): array {
         $now = new \DateTimeImmutable();
+        $today = $now->setTime(0, 0);
+
         $isFiltered = ($fromDate !== null && $fromDate !== '') ||
             ($toDate !== null && $toDate !== '') ||
             ($fromDay !== null) ||
@@ -309,13 +320,65 @@ final class StatisticsPresenter extends BaseCompanyPresenter
             ($toMonth !== null) ||
             ($toYear !== null);
 
-
         if ($fromDate && $toDate) {
-            return [
-                new \DateTimeImmutable($fromDate . ' 00:00:00'),
-                new \DateTimeImmutable($toDate . ' 23:59:59'),
-                true
-            ];
+            $start = new \DateTimeImmutable($fromDate . ' 00:00:00');
+            $end = new \DateTimeImmutable($toDate . ' 23:59:59');
+            return [$start, $end, true, $this->determineScale($start, $end)];
+        }
+
+        if ($fromDay && $fromMonth && $fromYear) {
+            $start = new \DateTimeImmutable("$fromYear-$fromMonth-$fromDay 00:00:00");
+            $end = new \DateTimeImmutable("$fromYear-$fromMonth-$fromDay 23:59:59");
+            [$start, $end] = $this->adjustFutureRange($start, $end, $today);
+            return [$start, $end, true, $this->determineScale($start, $end)];
+        }
+
+        if ($fromDay && !$fromMonth && !$fromYear) {
+            $target = $today->setDate((int)$today->format('Y'), (int)$today->format('n'), $fromDay);
+            if ($target > $today) {
+                $target = $target->modify('-1 year');
+            }
+            $start = $target->setTime(0, 0);
+            $end = $target->setTime(23, 59, 59);
+            return [$start, $end, true, $this->determineScale($start, $end)];
+        }
+
+        if ($fromMonth && !$fromDay && !$fromYear) {
+            $year = (int)$now->format('Y');
+            $start = new \DateTimeImmutable("$year-$fromMonth-01 00:00:00");
+            $end = $start->modify('last day of this month')->setTime(23, 59, 59);
+            [$start, $end] = $this->adjustFutureRange($start, $end, $today);
+            return [$start, $end, true, $this->determineScale($start, $end)];
+        }
+
+        if ($fromYear && !$fromDay && !$fromMonth) {
+            $start = new \DateTimeImmutable("$fromYear-01-01 00:00:00");
+            $end = new \DateTimeImmutable("$fromYear-12-31 23:59:59");
+            [$start, $end] = $this->adjustFutureRange($start, $end, $today);
+            return [$start, $end, true, $this->determineScale($start, $end)];
+        }
+
+        if ($fromDay && $fromMonth && !$fromYear) {
+            $year = (int)$now->format('Y');
+            $start = new \DateTimeImmutable("$year-$fromMonth-$fromDay 00:00:00");
+            $end = new \DateTimeImmutable("$year-$fromMonth-$fromDay 23:59:59");
+            [$start, $end] = $this->adjustFutureRange($start, $end, $today);
+            return [$start, $end, true, $this->determineScale($start, $end)];
+        }
+
+        if ($fromDay && !$fromMonth && $fromYear) {
+            $month = (int)$now->format('n');
+            $start = new \DateTimeImmutable("$fromYear-$month-$fromDay 00:00:00");
+            $end = new \DateTimeImmutable("$fromYear-$month-$fromDay 23:59:59");
+            [$start, $end] = $this->adjustFutureRange($start, $end, $today);
+            return [$start, $end, true, $this->determineScale($start, $end)];
+        }
+
+        if ($fromMonth && $fromYear && !$fromDay) {
+            $start = new \DateTimeImmutable("$fromYear-$fromMonth-01 00:00:00");
+            $end = $start->modify('last day of this month')->setTime(23, 59, 59);
+            [$start, $end] = $this->adjustFutureRange($start, $end, $today);
+            return [$start, $end, true, $this->determineScale($start, $end)];
         }
 
         if ($isFiltered) {
@@ -326,27 +389,44 @@ final class StatisticsPresenter extends BaseCompanyPresenter
             $fromDay = $fromDay ?? 1;
 
             $lastDayOfFromMonth = (new \DateTimeImmutable("$fromYear-$fromMonth-01"))
-                ->modify('last day of this month')
-                ->format('d');
+                ->modify('last day of this month')->format('d');
             $fromDay = min($fromDay, (int)$lastDayOfFromMonth);
 
             $lastDayOfToMonth = (new \DateTimeImmutable("$toYear-$toMonth-01"))
-                ->modify('last day of this month')
-                ->format('d');
-            $toDay = $toDay ?? (int) $lastDayOfToMonth;
-            $toDay = min($toDay, (int) $lastDayOfToMonth);
+                ->modify('last day of this month')->format('d');
+            $toDay = $toDay ?? (int)$lastDayOfToMonth;
+            $toDay = min($toDay, (int)$lastDayOfToMonth);
 
-            return [
-                new \DateTimeImmutable("$fromYear-$fromMonth-$fromDay 00:00:00"),
-                new \DateTimeImmutable("$toYear-$toMonth-$toDay 23:59:59"),
-                true
-            ];
+            $start = new \DateTimeImmutable("$fromYear-$fromMonth-$fromDay 00:00:00");
+            $end = new \DateTimeImmutable("$toYear-$toMonth-$toDay 23:59:59");
+            [$start, $end] = $this->adjustFutureRange($start, $end, $today);
+            return [$start, $end, true, $this->determineScale($start, $end)];
         }
 
-        $monday = $now->modify('monday last week')->setTime(0, 0);
-        $sunday = $now->modify('sunday this week')->setTime(23, 59, 59);
+        $start = $now->modify('monday this week')->setTime(0, 0);
+        $end = $now->modify('sunday this week')->setTime(23, 59, 59);
+        return [$start, $end, false, $this->determineScale($start, $end)];
+    }
 
-        return [$monday, $sunday, false];
+    private function adjustFutureRange(\DateTimeImmutable $start, \DateTimeImmutable $end, \DateTimeImmutable $today): array
+    {
+        if ($start > $today) {
+            $start = $start->modify('-1 year');
+            $end = $end->modify('-1 year');
+        }
+
+        return [$start, $end];
+    }
+
+    private function determineScale(\DateTimeImmutable $start, \DateTimeImmutable $end): string
+    {
+        $days = $end->diff($start)->days;
+
+        return match (true) {
+            $days === 0 => 'hour',
+            $days <= 31 => 'day',
+            default => 'month',
+        };
     }
 
     private function getTotalPriceForYear(array $orders): float

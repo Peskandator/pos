@@ -100,7 +100,7 @@ final class OrdersPresenter extends BaseCompanyPresenter
     {
         $orders = $this->currentCompany->getOrders();
 
-        $highest = 1;
+        $highest = 0;
 
         /** @var Order $order */
         foreach ($orders as $order) {
