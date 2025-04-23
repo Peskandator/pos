@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App;
 
 use Nette\Bootstrap\Configurator;
-
+use Nette\Neon\Neon;
+use Nette\Utils\FileSystem;
 
 class Bootstrap
 {
@@ -15,7 +16,6 @@ class Bootstrap
 		$appDir = dirname(__DIR__);
 
         $root = dirname(__DIR__);
-        $configurator->setDebugMode(true);
         $configurator->addParameters($parameters = [
             'rootDir' => $root,
             'publicDir' => $root . '/www',
@@ -26,6 +26,10 @@ class Bootstrap
         ]);
 
 		//$configurator->setDebugMode('secret@23.75.345.200'); // enable for your remote IP
+
+        $confNeon = Neon::decode(FileSystem::read($appDir . '/config/local.neon'));
+        $debugMode = $confNeon['parameters']['debugMode'] ?? false;
+        $configurator->setDebugMode($debugMode);
 
         $configurator->enableTracy($parameters['logDir']);
         $configurator->setTimeZone('Europe/Prague');
