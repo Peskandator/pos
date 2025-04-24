@@ -273,27 +273,40 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         };
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) {
-            $today = new \DateTimeImmutable();
+            $params = [];
 
-            $y = (int) ($values->fromYear ?: $today->format('Y'));
-            $m = (int) ($values->fromMonth ?: $today->format('n'));
-            $d = (int) ($values->fromDay ?: 1);
+            if ($values->fromDay) {
+                $params['fromDay'] = (int)$values->fromDay;
+            } else {
+                $params['fromDay'] = null;
+            }
 
-            $lastDayInMonth = (int)(new \DateTimeImmutable("$y-$m-01"))
-                ->modify('last day of this month')
-                ->format('j');
+            if ($values->fromMonth) {
+                $params['fromMonth'] = (int)$values->fromMonth;
+            } else {
+                $params['fromMonth'] = null;
+            }
 
-            $clampedDay = min($d, $lastDayInMonth);
+            if ($values->fromYear) {
+                $params['fromYear'] = (int)$values->fromYear;
+            } else {
+                $params['fromYear'] = null;
+            }
+
+            if ($values->fromDate) {
+                $params['fromDate'] = $values->fromDate;
+            } else {
+                $params['fromDate'] = null;
+            }
+
+            if ($values->toDate) {
+                $params['toDate'] = $values->toDate;
+            } else {
+                $params['toDate'] = null;
+            }
 
             $this->flashMessage('Výsledky byly vyfiltrovány.', FlashMessageType::SUCCESS);
-
-            $this->redirect('this', [
-                'fromDay' => $clampedDay,
-                'fromMonth' => $values->fromMonth,
-                'fromYear' => $values->fromYear,
-                'fromDate' => $values->fromDate,
-                'toDate' => $values->toDate,
-            ]);
+            $this->redirect('this', $params);
         };
 
         return $form;
