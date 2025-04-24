@@ -8,50 +8,61 @@
         <div class="card-body mx-2">
             <div class="row g-3">
 
-                <div class="col-sm-12 col-md-4">
-                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
-                            style="min-height: 140px;"
-                            onclick="window.location.href = {link :Admin:Profile:default};">
-                        <i class="fa fa-user fa-2x mb-2"></i>
-                        <span class="fw-semibold">Profil</span>
-                    </button>
-                </div>
+            <div class="col-sm-12 col-md-4">
+                        <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                                style="min-height: 140px;"
+                                onclick="window.location.href = {link :Admin:Profile:default};">
+                            <i class="fa fa-user fa-2x mb-2"></i>
+                            <span class="fw-semibold">Profil</span>
+                        </button>
+            </div>
 
-                <div class="col-sm-12 col-md-4">
-                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
-                            style="min-height: 140px;"
-                            onclick="window.location.href = {link :Admin:Orders:default};">
-                        <i class="fa fa-receipt fa-2x mb-2"></i>
-                        <span class="fw-semibold">Objednávky</span>
-                    </button>
-                </div>
+            {ifset $currentCompany}
+                    <div class="col-sm-12 col-md-4">
+                        <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                                style="min-height: 140px;"
+                                onclick="window.location.href = {link :Admin:Orders:default};">
+                            <i class="fa fa-receipt fa-2x mb-2"></i>
+                            <span class="fw-semibold">Objednávky</span>
+                        </button>
+                    </div>
 
-                <div class="col-sm-12 col-md-4">
-                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
-                            style="min-height: 140px;"
-                            onclick="window.location.href = {link :Admin:Products:default};">
-                        <i class="fa fa-boxes fa-2x mb-2"></i>
-                        <span class="fw-semibold">Produkty</span>
-                    </button>
-                </div>
+                    <div class="col-sm-12 col-md-4">
+                        <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                                style="min-height: 140px;"
+                                onclick="window.location.href = {link :Admin:Products:default};">
+                            <i class="fa fa-boxes fa-2x mb-2"></i>
+                            <span class="fw-semibold">Produkty</span>
+                        </button>
+                    </div>
 
-                <div class="col-sm-12 col-md-4">
-                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
-                            style="min-height: 140px;"
-                            onclick="window.location.href = {link :Admin:Categories:default};">
-                        <i class="fa fa-tags fa-2x mb-2"></i>
-                        <span class="fw-semibold">Kategorie</span>
-                    </button>
-                </div>
+                    <div class="col-sm-12 col-md-4">
+                        <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                                style="min-height: 140px;"
+                                onclick="window.location.href = {link :Admin:Categories:default};">
+                            <i class="fa fa-tags fa-2x mb-2"></i>
+                            <span class="fw-semibold">Kategorie</span>
+                        </button>
+                    </div>
 
-                <div class="col-sm-12 col-md-4">
-                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
-                            style="min-height: 140px;"
-                            onclick="window.location.href = {link :Admin:DiningTables:default};">
-                        <i class="fa fa-chair fa-2x mb-2"></i>
-                        <span class="fw-semibold">Stoly</span>
-                    </button>
-                </div>
+                    <div class="col-sm-12 col-md-4">
+                        <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                                style="min-height: 140px;"
+                                onclick="window.location.href = {link :Admin:DiningTables:default};">
+                            <i class="fa fa-chair fa-2x mb-2"></i>
+                            <span class="fw-semibold">Stoly</span>
+                        </button>
+                    </div>
+
+                    <div class="col-sm-12 col-md-4">
+                        <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
+                                style="min-height: 140px;"
+                                onclick="window.location.href = {link :Admin:Statistics:default};">
+                            <i class="fa fa-chart-pie fa-2x mb-2"></i>
+                            <span class="fw-semibold">Statistika</span>
+                        </button>
+                    </div>
+                {/ifset}
 
                 <div class="col-sm-12 col-md-4">
                     <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
@@ -59,15 +70,6 @@
                             onclick="window.location.href = {link :Admin:Companies:default};">
                         <i class="fa fa-building fa-2x mb-2"></i>
                         <span class="fw-semibold">Firmy</span>
-                    </button>
-                </div>
-
-                <div class="col-sm-12 col-md-4">
-                    <button class="btn btn-outline-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4"
-                            style="min-height: 140px;"
-                            onclick="window.location.href = {link :Admin:Statistics:default};">
-                        <i class="fa fa-chart-pie fa-2x mb-2"></i>
-                        <span class="fw-semibold">Statistika</span>
                     </button>
                 </div>
 
