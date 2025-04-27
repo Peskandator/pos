@@ -2,6 +2,7 @@
 
 namespace App\Product\Forms;
 
+use App\Company\Enums\CompanyUserRoles;
 use App\Entity\Company;
 use App\Product\Action\EditDiningTableAction;
 use App\Product\ORM\DiningTableRepository;
@@ -38,6 +39,8 @@ class EditDiningTableFormFactory
         $form->addSubmit('send', 'Upravit');
 
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company) {
+            $form->getPresenter()->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+
             $table = $this->tableRepository->find($values->id);
             if ($table === null) {
                 $errMsg = 'Stůl nebyl nalezen.';

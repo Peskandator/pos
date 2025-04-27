@@ -2,6 +2,7 @@
 
 namespace App\Product\Forms;
 
+use App\Company\Enums\CompanyUserRoles;
 use App\Entity\Company;
 use App\Product\Action\AddDiningTableAction;
 use App\Product\Services\CodeValidator;
@@ -32,6 +33,8 @@ class AddDiningTableFormFactory
         $form->addSubmit('send', 'Přidat');
 
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company) {
+            $form->getPresenter()->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+
             $validationMsg = $this->codeValidator->isDiningTableNumberValid($company, $values->number);
             if ($validationMsg !== '') {
                 $form['number']->addError($validationMsg);
