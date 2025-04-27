@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Presenters\Admin;
 
+use App\Company\Enums\CompanyUserRoles;
 use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Entity\Order;
 use App\Order\Forms\OrderFormFactory;
-use App\Order\ORM\OrderRepository;
 use App\Presenters\BaseCompanyPresenter;
 use App\Product\Action\DeleteOrderAction;
 use App\Utils\FlashMessageType;
@@ -26,6 +26,8 @@ final class OrdersPresenter extends BaseCompanyPresenter
 
     public function actionDefault(): void
     {
+        $permittedRoles = $this->checkPermissionsForUser(CompanyUserRoles::getAllRoles());
+
         $this->getComponent('breadcrumb')->addItem(
             new BreadcrumbItem(
                 'Objednávky',
@@ -33,6 +35,7 @@ final class OrdersPresenter extends BaseCompanyPresenter
         );
 
         $this->template->orders = $this->currentCompany->getOrders();
+        $this->template->isEditor = in_array(CompanyUserRoles::EDTIOR, $permittedRoles, true);
     }
 
     public function actionCreateNew(): void

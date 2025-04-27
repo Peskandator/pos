@@ -2,6 +2,8 @@
 
 namespace App\Product\Forms;
 
+use App\Company\Enums\CompanyUserRoles;
+use App\Entity\Category;
 use App\Entity\Company;
 use App\Product\Action\EditCategoryAction;
 use App\Product\ORM\CategoryRepository;
@@ -39,6 +41,8 @@ class EditCategoryFormFactory
         $form->addSubmit('send', 'Upravit');
 
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company) {
+            $form->getPresenter()->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+
             $category = $this->categoryRepository->find($values->id);
             if ($category === null) {
                 $errMsg = 'Kategorie nebyla nalezena.';
@@ -59,6 +63,7 @@ class EditCategoryFormFactory
         };
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) use ($company) {
+            /** @var Category $category */
             $category = $this->categoryRepository->find($values->id);
             $this->editCategoryAction->__invoke($category, $values->code, $values->name);
             $form->getPresenter()->flashMessage('Kategorie byla upravena.', FlashMessageType::SUCCESS);

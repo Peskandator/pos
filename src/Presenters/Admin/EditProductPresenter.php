@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Presenters\Admin;
+use App\Company\Enums\CompanyUserRoles;
 use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Presenters\BaseCompanyPresenter;
 use App\Product\Forms\ProductFormFactory;
@@ -20,6 +21,8 @@ final class EditProductPresenter extends BaseCompanyPresenter
 
     public function actionDefault(int $productId): void
     {
+        $permittedRoles = $this->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+
         $product = $this->findProductById($productId);
 
         $this->getComponent('breadcrumb')->addItem(

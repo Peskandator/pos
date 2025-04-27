@@ -3,11 +3,12 @@
 declare(strict_types=1);
 
 namespace App\Presenters\Admin;
+use App\Company\Enums\CompanyUserRoles;
 use App\Components\Breadcrumb\BreadcrumbItem;
+use App\Entity\Product;
 use App\Presenters\BaseCompanyPresenter;
 use App\Product\Forms\ProductFormFactory;
 use App\Product\Action\DeleteProductAction;
-use App\Product\ORM\ProductRepository;
 use App\Utils\FlashMessageType;
 use Nette\Application\UI\Form;
 
@@ -16,7 +17,6 @@ final class ProductsPresenter extends BaseCompanyPresenter
 
     public function __construct(
         private readonly ProductFormFactory $addProductFormFactory,
-        protected ProductRepository $productRepository, // verify
         private readonly DeleteProductAction $deleteProductAction,
     )
     {
@@ -25,6 +25,8 @@ final class ProductsPresenter extends BaseCompanyPresenter
 
     public function actionDefault(): void
     {
+        $permittedRoles = $this->checkPermissionsForUser(CompanyUserRoles::getAllRoles());
+
         $this->getComponent('breadcrumb')->addItem(
             new BreadcrumbItem(
                 'Číselníky',
@@ -38,6 +40,7 @@ final class ProductsPresenter extends BaseCompanyPresenter
 
         $this->template->products = $this->currentCompany->getProducts();
         $this->template->singleProductsOptions = $this->currentCompany->getSingleProducts();
+        $this->template->isEditor = in_array(CompanyUserRoles::EDTIOR, $permittedRoles, true);
     }
 
     protected function createComponentAddProductForm(): Form
@@ -56,6 +59,8 @@ final class ProductsPresenter extends BaseCompanyPresenter
         $form->addSubmit('send');
 
         $form->onValidate[] = function (Form $form, \stdClass $values) {
+            $this->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+
             $product = $this->productRepository->find((int)$values->id);
 
             if (!$product) {
@@ -68,6 +73,7 @@ final class ProductsPresenter extends BaseCompanyPresenter
         };
 
         $form->onSuccess[] = function (Form $form, \stdClass $values) {
+            /** @var Product $product */
             $product = $this->productRepository->find((int)$values->id);
             $this->deleteProductAction->__invoke($product);
             $this->flashMessage('Produkt byl smazán.', FlashMessageType::SUCCESS);

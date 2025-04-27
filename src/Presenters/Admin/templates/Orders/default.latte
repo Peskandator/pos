@@ -44,7 +44,10 @@
             <div class="card">
                 <div class="card-header">
                     Seznam objednávek
-                    <a n:href=":Admin:Export:orders" class="btn btn-success btn-sm float-end">Export do XLSX</a>
+
+                    {if $isEditor}
+                        <a n:href=":Admin:Export:orders" class="btn btn-success btn-sm float-end">Export do XLSX</a>
+                    {/if}
                 </div>
                 <div class="card-body">
                     <div class="table-responsive px-3 py-3">
@@ -85,13 +88,16 @@
                                             <a n:href=":Admin:EditOrder:default, $order->getId()">
                                                 <i class="fas fa-pencil-alt text-primary icon" title="Upravit"></i>
                                             </a>
-                                            <i class="fa-solid fa-trash text-danger icon js-delete-record-button js-edit-text icon-left align-self-center"
-                                               title="Odstranit"
-                                               data-bs-toggle="modal"
-                                               data-bs-target="#deleteOrderModal"
-                                               data-record-name="{$order->getInventoryNumber()}"
-                                               data-record-id="{$order->getId()}"
-                                            ></i>
+
+                                            {if $isEditor}
+                                                <i class="fa-solid fa-trash text-danger icon js-delete-record-button js-edit-text icon-left align-self-center"
+                                                   title="Odstranit"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-target="#deleteOrderModal"
+                                                   data-record-name="{$order->getInventoryNumber()}"
+                                                   data-record-id="{$order->getId()}"
+                                                ></i>
+                                            {/if}
                                         </div>
                                     </td>
                                 </tr>

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Presenters\Admin;
+use App\Company\Enums\CompanyUserRoles;
 use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Presenters\BaseCompanyPresenter;
 use App\Product\Action\DeleteDiningTableAction;
@@ -27,6 +28,8 @@ final class DiningTablesPresenter extends BaseCompanyPresenter
 
     public function actionDefault(): void
     {
+        $permittedRoles = $this->checkPermissionsForUser(CompanyUserRoles::getAllRoles());
+
         $this->getComponent('breadcrumb')->addItem(
             new BreadcrumbItem(
                 'Číselníky',
@@ -40,6 +43,7 @@ final class DiningTablesPresenter extends BaseCompanyPresenter
 
         $diningTables = $this->currentCompany->getDiningTables();
         $this->template->diningTables = $diningTables;
+        $this->template->isEditor = in_array(CompanyUserRoles::EDTIOR, $permittedRoles, true);
     }
 
     protected function createComponentAddDiningTableForm(): Form
@@ -63,6 +67,8 @@ final class DiningTablesPresenter extends BaseCompanyPresenter
         $form->addSubmit('send');
 
         $form->onValidate[] = function (Form $form, \stdClass $values) {
+            $this->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+
             $diningTable = $this->diningTableRepository->find((int)$values->id);
 
             if (!$diningTable) {

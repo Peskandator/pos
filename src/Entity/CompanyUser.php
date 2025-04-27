@@ -60,6 +60,10 @@ class CompanyUser
 
     public function getRoles(): array
     {
+        if ($this->isAdmin()) {
+            return CompanyUserRoles::getAllRoles();
+        }
+
         return $this->roles;
     }
 

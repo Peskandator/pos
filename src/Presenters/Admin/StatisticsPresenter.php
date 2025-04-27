@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Presenters\Admin;
+use App\Company\Enums\CompanyUserRoles;
 use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Entity\Order;
 use App\Entity\OrderItem;
@@ -30,6 +31,9 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         ?string $fromDate = null,
         ?string $toDate = null
     ): void {
+
+        $this->checkPermissionsForUser([CompanyUserRoles::ADMIN]);
+
         $this->getComponent('breadcrumb')->addItem(new BreadcrumbItem('Statistika', null));
 
         $fromDay = $this->parseNullableInt($fromDay);

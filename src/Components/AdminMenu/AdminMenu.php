@@ -19,7 +19,7 @@ class AdminMenu extends Control
 
     public function render(?Company $company)
     {
-        $sections = $this->buildMenuItems();
+        $sections = $this->buildMenuItems($company);
         $this->template->currentCompany = $company;
         $this->template->sections = $sections;
 
@@ -63,13 +63,22 @@ class AdminMenu extends Control
         );
     }
 
-    private function buildMenuItems(): array
+    private function buildMenuItems(?Company $company): array
     {
         $menuItems = [];
 
         $loggedInUser = $this->currentUserManager->getCurrentLoggedInUser();
         if ($loggedInUser === null) {
             throw new NoSignedInUserException();
+        }
+
+        if ($company === null) {
+            return $menuItems;
+        }
+
+        $companyUser = $loggedInUser->getCompanyUser($company);
+        if ($companyUser === null) {
+            return $menuItems;
         }
 
         $ordersItems = $this->buildOrdersItems();
@@ -84,11 +93,13 @@ class AdminMenu extends Control
             $productManagementItems
         );
 
-        $statisticItems = $this->buildStatisticsItems();
-        $menuItems[] = $this->createMenuSection(
-            'Statistika',
-            $statisticItems
-        );
+        if ($companyUser->isAdmin()) {
+            $statisticItems = $this->buildStatisticsItems();
+            $menuItems[] = $this->createMenuSection(
+                'Statistika',
+                $statisticItems
+            );
+        }
 
         return $menuItems;
     }

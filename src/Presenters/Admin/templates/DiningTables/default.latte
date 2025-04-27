@@ -89,22 +89,24 @@
                                             {$diningTable->getDescription()}
                                         </td>
                                         <td>
-                                            <div class="d-flex">
-                                                <i class="fas fa-pencil-alt text-primary icon js-edit-dining-table-start" title="Upravit"
-                                                   data-bs-toggle="modal"
-                                                   data-bs-target="#editTableModal"
-                                                   data-dining-table-id="{$diningTable->getId()}"
-                                                   data-dining-table-number="{$diningTable->getNumber()}"
-                                                   data-dining-table-description="{$diningTable->getDescription()}"
-                                                >
-                                                </i>
-                                                <i class="fa-solid fa-trash text-danger icon js-delete-record-button js-edit-text icon-left align-self-center"
-                                                   title="Odstranit"
-                                                   data-bs-toggle="modal"
-                                                   data-bs-target="#deleteDiningTableModal"
-                                                   data-record-name="{$diningTable->getNumber()}"
-                                                   data-record-id="{$diningTable->getId()}"
-                                                ></i>
+                                            {if $isEditor}
+                                                <div class="d-flex">
+                                                    <i class="fas fa-pencil-alt text-primary icon js-edit-dining-table-start" title="Upravit"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#editTableModal"
+                                                       data-dining-table-id="{$diningTable->getId()}"
+                                                       data-dining-table-number="{$diningTable->getNumber()}"
+                                                       data-dining-table-description="{$diningTable->getDescription()}"
+                                                    >
+                                                    </i>
+                                                    <i class="fa-solid fa-trash text-danger icon js-delete-record-button js-edit-text icon-left align-self-center"
+                                                       title="Odstranit"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#deleteDiningTableModal"
+                                                       data-record-name="{$diningTable->getNumber()}"
+                                                       data-record-id="{$diningTable->getId()}"
+                                                    ></i>
+                                                {/if}
                                             </div>
                                         </td>
                                     </tr>
@@ -114,36 +116,38 @@
                         </div>
                     </div>
 
-                    <div class="card-header card-header-top">
-                        Přidat stůl
-                    </div>
-                    <div class="card-body">
-                        {form addDiningTableForm}
-                            <div class="form-errors" n:ifcontent>
-                                <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
-                            </div>
-                            <div class="row px-2 mb-3">
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <label for="tableNumber">Číslo stolu</label>
-                                        <input n:name="number" type="number" class="form-control" id="tableNumber" min="1" max="999">
-                                        <small class="form-error" n:ifcontent>{inputError number}</small>
+
+                    {if $isEditor}
+                        <div class="card-header card-header-top">
+                            Přidat stůl
+                        </div>
+                        <div class="card-body">
+                            {form addDiningTableForm}
+                                <div class="form-errors" n:ifcontent>
+                                    <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
+                                </div>
+                                <div class="row px-2 mb-3">
+                                    <div class="col-2">
+                                        <div class="form-group">
+                                            <label for="tableNumber">Číslo stolu</label>
+                                            <input n:name="number" type="number" class="form-control" id="tableNumber" min="1" max="999">
+                                            <small class="form-error" n:ifcontent>{inputError number}</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="tableDescription">Popis</label>
+                                            <input n:name="description" type="text" class="form-control" id="tableDescription">
+                                            <small class="form-error" n:ifcontent>{inputError description}</small>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <label for="tableDescription">Popis</label>
-                                        <input n:name="description" type="text" class="form-control" id="tableDescription">
-                                        <small class="form-error" n:ifcontent>{inputError description}</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
-                        {/form}
-                    </div>
+                                <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
+                            {/form}
+                        </div>
+                    {/if}
                 </div>
             </div>
         </div>
     </div>
-
 {/block}

@@ -84,18 +84,20 @@
                                             <input class="form-check-input" type="checkbox" disabled {if $product->isGroup()}checked=""{/if}>
                                         </td>
                                         <td>
-                                            <div class="d-flex">
-                                                <a n:href=":Admin:EditProduct:default, $product->getId()">
-                                                    <i class="fas fa-pencil-alt text-primary icon" title="Upravit"></i>
-                                                </a>
-                                                <i class="fa-solid fa-trash text-danger icon js-delete-record-button js-edit-text icon-left align-self-center"
-                                                   title="Odstranit"
-                                                   data-bs-toggle="modal"
-                                                   data-bs-target="#deleteProductModal"
-                                                   data-record-name="{$product->getName()}"
-                                                   data-record-id="{$product->getId()}"
-                                                ></i>
-                                            </div>
+                                            {if $isEditor}
+                                                <div class="d-flex">
+                                                    <a n:href=":Admin:EditProduct:default, $product->getId()">
+                                                        <i class="fas fa-pencil-alt text-primary icon" title="Upravit"></i>
+                                                    </a>
+                                                    <i class="fa-solid fa-trash text-danger icon js-delete-record-button js-edit-text icon-left align-self-center"
+                                                       title="Odstranit"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#deleteProductModal"
+                                                       data-record-name="{$product->getName()}"
+                                                       data-record-id="{$product->getId()}"
+                                                    ></i>
+                                                </div>
+                                            {/if}
                                         </td>
                                     </tr>
                                 {/foreach}
@@ -104,107 +106,110 @@
                         </div>
                     </div>
 
-                    <div class="card-header card-header-top">
-                        Přidat produkt
-                    </div>
-                    <div class="card-body">
-                        <form n:name="addProductForm" id="js-product-form">
-                            <div class="form-errors" n:ifcontent>
-                                <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
-                            </div>
+                    {if $isEditor}
 
-                            <div class="px-2">
-                                <div class="row mb-3">
-                                    <div class="col-3">
-                                        <div class="form-group">
-                                            <label for="inventoryNumber">Inventární číslo</label>
-                                            <input n:name="inventory_number" type="number" class="form-control" id="inventoryNumber" min="1" max="9999999999" step="1">
-                                            <small class="form-error" n:ifcontent>{inputError inventory_number}</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="form-group">
-                                            <label for="productName">Název</label>
-                                            <input n:name="name" type="text" class="form-control" id="productName">
-                                            <small class="form-error" n:ifcontent>{inputError name}</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="form-group">
-                                            <label for="productCategory">Kategorie</label>
-                                            <select
-                                                    n:name="category"
-                                                    class="form-select"
-                                                    id="productCategory"
-                                            >
-                                            </select>
-                                            <small class="form-error" n:ifcontent>{inputError category}</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-3">
-                                        <div class="form-group">
-                                            <label for="productPrice">Cena</label>
-                                            <input n:name="price" type="number" step="0.01" class="form-control" id="productPrice" min="0" max="1000000000">
-                                            <small class="form-error" n:ifcontent>{inputError price}</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-2">
-                                        <div class="form-group">
-                                            <label for="productVatRate">DPH</label>
-                                            <input n:name="vat_rate" type="number" step="1" class="form-control" id="productVatRate" min="0" max="100">
-                                            <small class="form-error" n:ifcontent>{inputError vat_rate}</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="form-group">
-                                            <label for="priceWithoutVat">Cena bez DPH</label>
-                                            <input type="number" class="form-control" id="priceWithoutVat" disabled>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-2">
-                                        <div class="form-check">
-                                            <input n:name="is_group" class="form-check-input" type="checkbox" id="isGroupCheckbox">
-                                            <label n:name="is_group" class="form-check-label" for="isGroupCheckbox">
-                                                Skupina
-                                            </label>
-                                        </div>
-                                    </div>
+                        <div class="card-header card-header-top">
+                            Přidat produkt
+                        </div>
+                        <div class="card-body">
+                            <form n:name="addProductForm" id="js-product-form">
+                                <div class="form-errors" n:ifcontent>
+                                    <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
                                 </div>
 
-                                <input n:name="products_in_group" id="js-products-in-group-input">
-                                <small class="form-error" n:ifcontent>{inputError products_in_group}</small>
-                                <div id="productGroupBox" style="display: none">
-                                    <div>Produkty ve skupině:</div>
-                                    <a class="btn btn-primary rounded btn-sm mt-1" id="addNextProductToGroupButton">Přidat další</a>
-                                    <div id="productGroupRows">
-                                        {include productInGroupRow, isTemplate: true, singleProductsOptions: $singleProductsOptions, productInGroup: null}
-                                        {include productInGroupRow, isTemplate: false, singleProductsOptions: $singleProductsOptions, productInGroup: null}
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-4">
-                                        <div class="form-group">
-                                            <label for="productManufacturer">Výrobce</label>
-                                            <input n:name="manufacturer" type="text" class="form-control" id="productManufacturer">
-                                            <small class="form-error" n:ifcontent>{inputError manufacturer}</small>
+                                <div class="px-2">
+                                    <div class="row mb-3">
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="inventoryNumber">Inventární číslo</label>
+                                                <input n:name="inventory_number" type="number" class="form-control" id="inventoryNumber" min="1" max="9999999999" step="1">
+                                                <small class="form-error" n:ifcontent>{inputError inventory_number}</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="productName">Název</label>
+                                                <input n:name="name" type="text" class="form-control" id="productName">
+                                                <small class="form-error" n:ifcontent>{inputError name}</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="productCategory">Kategorie</label>
+                                                <select
+                                                        n:name="category"
+                                                        class="form-select"
+                                                        id="productCategory"
+                                                >
+                                                </select>
+                                                <small class="form-error" n:ifcontent>{inputError category}</small>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="form-group">
-                                            <label for="productDescription">Popis</label>
-                                            <input n:name="description" type="text" class="form-control" id="productDescription">
-                                            <small class="form-error" n:ifcontent>{inputError description}</small>
+                                    <div class="row mb-3">
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="productPrice">Cena</label>
+                                                <input n:name="price" type="number" step="0.01" class="form-control" id="productPrice" min="0" max="1000000000">
+                                                <small class="form-error" n:ifcontent>{inputError price}</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-2">
+                                            <div class="form-group">
+                                                <label for="productVatRate">DPH</label>
+                                                <input n:name="vat_rate" type="number" step="1" class="form-control" id="productVatRate" min="0" max="100">
+                                                <small class="form-error" n:ifcontent>{inputError vat_rate}</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                <label for="priceWithoutVat">Cena bez DPH</label>
+                                                <input type="number" class="form-control" id="priceWithoutVat" disabled>
+                                            </div>
                                         </div>
                                     </div>
+                                    <div class="row mb-2">
+                                        <div class="col-2">
+                                            <div class="form-check">
+                                                <input n:name="is_group" class="form-check-input" type="checkbox" id="isGroupCheckbox">
+                                                <label n:name="is_group" class="form-check-label" for="isGroupCheckbox">
+                                                    Skupina
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <input n:name="products_in_group" id="js-products-in-group-input">
+                                    <small class="form-error" n:ifcontent>{inputError products_in_group}</small>
+                                    <div id="productGroupBox" style="display: none">
+                                        <div>Produkty ve skupině:</div>
+                                        <a class="btn btn-primary rounded btn-sm mt-1" id="addNextProductToGroupButton">Přidat další</a>
+                                        <div id="productGroupRows">
+                                            {include productInGroupRow, isTemplate: true, singleProductsOptions: $singleProductsOptions, productInGroup: null}
+                                            {include productInGroupRow, isTemplate: false, singleProductsOptions: $singleProductsOptions, productInGroup: null}
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="productManufacturer">Výrobce</label>
+                                                <input n:name="manufacturer" type="text" class="form-control" id="productManufacturer">
+                                                <small class="form-error" n:ifcontent>{inputError manufacturer}</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="productDescription">Popis</label>
+                                                <input n:name="description" type="text" class="form-control" id="productDescription">
+                                                <small class="form-error" n:ifcontent>{inputError description}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
                                 </div>
-                                <input n:name="send" class="mb-2 btn rounded-3 btn-primary" type="submit">
-                            </div>
-                        </form>
-                    </div>
+                            </form>
+                        </div>
+                    {/if}
                 </div>
             </div>
         </div>

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Presenters\Admin;
+use App\Company\Enums\CompanyUserRoles;
 use App\Components\Breadcrumb\BreadcrumbItem;
 use App\Presenters\BaseCompanyPresenter;
 use App\Product\Action\DeleteCategoryAction;
@@ -27,6 +28,8 @@ final class CategoriesPresenter extends BaseCompanyPresenter
 
     public function actionDefault(): void
     {
+        $permittedRoles = $this->checkPermissionsForUser(CompanyUserRoles::getAllRoles());
+
         $this->getComponent('breadcrumb')->addItem(
             new BreadcrumbItem(
                 'Číselníky',
@@ -39,6 +42,7 @@ final class CategoriesPresenter extends BaseCompanyPresenter
         );
 
         $this->template->categories = $this->currentCompany->getCategories();
+        $this->template->isEditor = in_array(CompanyUserRoles::EDTIOR, $permittedRoles, true);
     }
 
     protected function createComponentAddCategoryForm(): Form
@@ -62,6 +66,8 @@ final class CategoriesPresenter extends BaseCompanyPresenter
         $form->addSubmit('send');
 
         $form->onValidate[] = function (Form $form, \stdClass $values) {
+            $this->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+
             $category = $this->categoryRepository->find((int)$values->id);
 
             if (!$category) {

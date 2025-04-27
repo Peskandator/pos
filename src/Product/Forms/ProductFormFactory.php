@@ -2,6 +2,7 @@
 
 namespace App\Product\Forms;
 
+use App\Company\Enums\CompanyUserRoles;
 use App\Entity\Company;
 use App\Entity\Product;
 use App\Product\Action\AddProductAction;
@@ -80,6 +81,8 @@ class ProductFormFactory
         $form->addSubmit('send', $submitText);
 
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company, $editedProduct) {
+            $form->getPresenter()->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+
             if ($values->category !== null && $values->category !== 0) {
                 $category = $this->categoryRepository->find($values->category);
                 if ($category === null) {

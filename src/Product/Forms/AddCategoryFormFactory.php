@@ -2,6 +2,7 @@
 
 namespace App\Product\Forms;
 
+use App\Company\Enums\CompanyUserRoles;
 use App\Entity\Company;
 use App\Product\Action\AddCategoryAction;
 use App\Product\Services\CodeValidator;
@@ -33,6 +34,8 @@ class AddCategoryFormFactory
         $form->addSubmit('send', 'Přidat');
 
         $form->onValidate[] = function (Form $form, \stdClass $values) use ($company) {
+            $form->getPresenter()->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+
             $validationMsg = $this->codeValidator->isCategoryCodeValid($company, $values->code);
             if ($validationMsg !== '') {
                 $form['code']->addError($validationMsg);

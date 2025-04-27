@@ -2,6 +2,7 @@
 
 namespace App\Presenters;
 
+use App\Entity\CompanyUser;
 use App\Entity\Order;
 use App\Entity\Product;
 use App\Utils\FlashMessageType;
@@ -24,7 +25,7 @@ abstract class BaseCompanyPresenter extends BaseAdminPresenter
     public function findProductById(int $productId): Product
     {
         if (!$this->currentCompany) {
-            $this->addNoPermissionError();
+            $this->addNoPermissionError(true);
         }
 
         $product = $this->productRepository->find($productId);
@@ -47,7 +48,7 @@ abstract class BaseCompanyPresenter extends BaseAdminPresenter
     public function findOrderById(int $orderId): Order
     {
         if (!$this->currentCompany) {
-            $this->addNoPermissionError();
+            $this->addNoPermissionError(true);
         }
 
         $order = $this->orderRepository->find($orderId);
@@ -65,5 +66,24 @@ abstract class BaseCompanyPresenter extends BaseAdminPresenter
         }
 
         return $order;
+    }
+
+    public function checkPermissionsForUser(array $permittedRoles): array
+    {
+        $user = $this->getCurrentUser();
+        $company = $this->currentCompany;
+
+        if (!$user->isCompanyUser($company)) {
+            $this->addNoPermissionError(true);
+        }
+
+        /** @var CompanyUser $companyUser */
+        $companyUser = $user->getCompanyUser($company);
+
+        $matchedRoles = array_intersect($companyUser->getRoles(), $permittedRoles);
+        if (count($matchedRoles) === 0) {
+            $this->addNoPermissionError();
+        }
+        return $matchedRoles;
     }
 }

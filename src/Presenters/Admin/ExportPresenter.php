@@ -2,7 +2,7 @@
 
 namespace App\Presenters\Admin;
 
-use App\Order\Services\OrdersFilter;
+use App\Company\Enums\CompanyUserRoles;
 use App\Presenters\BaseCompanyPresenter;
 use App\Utils\XlsxExporter;
 use App\Product\ORM\CategoryRepository;
@@ -53,6 +53,8 @@ class ExportPresenter extends BaseCompanyPresenter
         string $filteredOrdersJson = ''
     ): void
     {
+        $permittedRoles = $this->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+
         $orders = $this->orderRepository->findAll();
 
         if ($filteredOrdersJson !== '') {
