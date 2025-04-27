@@ -7,7 +7,9 @@ use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Order\Requests\CreateOrderRequest;
 use App\Order\Services\OrderItemHelper;
+use App\Utils\FlashMessageType;
 use Doctrine\ORM\EntityManagerInterface;
+use Nette\Application\IPresenter;
 
 class EditOrderAction
 {
@@ -18,7 +20,7 @@ class EditOrderAction
     ) {
     }
 
-    public function __invoke(Company $company, Order $order, CreateOrderRequest $request, array $orderItems): void
+    public function __invoke(IPresenter $presenter, Company $company, Order $order, CreateOrderRequest $request, array $orderItems): void
     {
         $order->updateFromRequest($request);
 
@@ -38,6 +40,12 @@ class EditOrderAction
                 continue;
             }
 
+            if ($item->getOrderItemPayments()->count() > 0) {
+                // TODO: enable more flash messages
+//                $presenter->flashMessage('Některé z položek nelze smazat, protože jsou již zaplacené.', FlashMessageType::WARNING);
+                continue;
+            }
+            $order->removeOrderItem($item);
             $this->entityManager->remove($item);
         }
 

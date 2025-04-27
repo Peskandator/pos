@@ -105,7 +105,7 @@ class OrderFormFactory
 
             if ($editing) {
                 $message = 'Objednávka byla upravena.';
-                $this->editOrderAction->__invoke($company, $editedOrder, $request, $orderItems);
+                $this->editOrderAction->__invoke($form->getPresenter(), $company, $editedOrder, $request, $orderItems);
                 $form->getPresenter()->flashMessage($message, FlashMessageType::SUCCESS);
                 $form->getPresenter()->redirect('this');
             } else {

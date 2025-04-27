@@ -138,6 +138,11 @@ class Order
 //        $this->orderItems->clear(); // TODO: WHY IS NOT WORKING???????
     }
 
+    public function removeOrderItem(OrderItem $orderItem): void
+    {
+        $this->orderItems->removeElement($orderItem);
+    }
+
     public function getCreationDate(): \DateTimeInterface
     {
         return $this->creationDate;

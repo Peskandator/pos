@@ -18,10 +18,10 @@ class OrderItemHelper
 
             $productId = $orderItem['product'];
             if (array_key_exists($productId, $uniqueItems)) {
-                $uniqueItems[$productId] += $orderItem['quantity'];
+                $uniqueItems[$productId] += (int)$orderItem['quantity'];
                 continue;
             }
-            $uniqueItems[$productId] = $orderItem['quantity'];
+            $uniqueItems[$productId] = (int)$orderItem['quantity'];
         }
 
         return $uniqueItems;
