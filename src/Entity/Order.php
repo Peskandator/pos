@@ -38,7 +38,7 @@ class Order
      */
     private Company $company;
     /**
-     * @ORM\OneToMany(targetEntity="OrderItem", mappedBy="order")
+     * @ORM\OneToMany(targetEntity="OrderItem", mappedBy="order", orphanRemoval=true, cascade={"persist", "remove"})
      */
     private Collection $orderItems;
     /**
@@ -50,7 +50,7 @@ class Order
      */
     private \DateTimeInterface $updateDate;
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Payment", mappedBy="order")
+     * @ORM\OneToMany(targetEntity="App\Entity\Payment", mappedBy="order", orphanRemoval=true, cascade={"persist", "remove"})
      */
     private Collection $payments;
 
@@ -171,6 +171,12 @@ class Order
     public function getPayments(): Collection
     {
         return $this->payments;
+    }
+
+    public function clearPayments(): void
+    {
+        $this->payments->clear();
+        $this->payments = new ArrayCollection();
     }
 
     public function getTotalPrice(): float

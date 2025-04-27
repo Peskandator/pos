@@ -74,6 +74,7 @@ final class StatisticsPresenter extends BaseCompanyPresenter
         $this->template->totalPriceForYear = $this->getTotalPriceForYear($orders);
         $this->template->start = $start;
         $this->template->end = $end;
+        $this->template->exportFileName = 'Objednávky od ' . $start->format('d-m-Y') . ' do ' . $end->format('d-m-Y');
 
         $dataForChart = $this->getSalesChartData($orders, $start, $end, $scale);
         $this->template->salesLabels = json_encode($dataForChart['labels']);

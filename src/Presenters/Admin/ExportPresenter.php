@@ -5,16 +5,12 @@ namespace App\Presenters\Admin;
 use App\Company\Enums\CompanyUserRoles;
 use App\Presenters\BaseCompanyPresenter;
 use App\Utils\XlsxExporter;
-use App\Product\ORM\CategoryRepository;
-use App\Product\ORM\DiningTableRepository;
 use Nette\Utils\Json;
 
 class ExportPresenter extends BaseCompanyPresenter
 {
     public function __construct(
         private readonly XlsxExporter       $xlsxExporter,
-        private readonly CategoryRepository $categoryRepository,
-        private readonly DiningTableRepository    $tableRepository,
     )
     {
         parent::__construct();
@@ -22,7 +18,7 @@ class ExportPresenter extends BaseCompanyPresenter
 
     public function actionProducts(): void
     {
-        $products = $this->productRepository->findAll();
+        $products = $this->currentCompany->getProducts();
 
         $rows = $this->xlsxExporter->createProductsDataForExport($products);
 
@@ -32,7 +28,7 @@ class ExportPresenter extends BaseCompanyPresenter
 
     public function actionCategories(): void
     {
-        $categories = $this->categoryRepository->findAll();
+        $categories = $this->currentCompany->getCategories();
         $rows = $this->xlsxExporter->createCategoriesDataForExport($categories);
 
         $this->xlsxExporter->export($rows, 'Kategorie produktů');
@@ -41,21 +37,26 @@ class ExportPresenter extends BaseCompanyPresenter
 
     public function actionDiningTables(): void
     {
-        $tables = $this->tableRepository->findAll();
+        $tables = $this->currentCompany->getDiningTables();
         $rows = $this->xlsxExporter->createTablesDataForExport($tables);
 
         $this->xlsxExporter->export($rows, 'Stoly');
         $this->terminate();
     }
 
-    public function actionOrders
-    (
-        string $filteredOrdersJson = ''
-    ): void
+    public function actionOrders(): void
     {
         $permittedRoles = $this->checkPermissionsForUser([CompanyUserRoles::EDTIOR]);
+        $orders = $this->currentCompany->getOrders()->toArray();
+        $rows = $this->xlsxExporter->createOrdersDataForExport($orders);
 
-        $orders = $this->orderRepository->findAll();
+        $this->xlsxExporter->export($rows, 'Objednávky');
+        $this->terminate();
+    }
+
+    public function actionFilteredOrders(string $filteredOrdersJson, string $filename = "Objednávky"): void
+    {
+        $permittedRoles = $this->checkPermissionsForUser([CompanyUserRoles::ADMIN]);
 
         if ($filteredOrdersJson !== '') {
             $ordersIds = Json::decode($filteredOrdersJson, Json::FORCE_ARRAY);
@@ -67,7 +68,7 @@ class ExportPresenter extends BaseCompanyPresenter
 
         $rows = $this->xlsxExporter->createOrdersDataForExport($orders);
 
-        $this->xlsxExporter->export($rows, 'Objednávky');
+        $this->xlsxExporter->export($rows, $filename);
         $this->terminate();
     }
 }
