@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presenters\Admin;
 use App\Company\Enums\CompanyUserRoles;
 use App\Components\Breadcrumb\BreadcrumbItem;
+use App\Entity\DiningTable;
 use App\Presenters\BaseCompanyPresenter;
 use App\Product\Action\DeleteDiningTableAction;
 use App\Product\Forms\AddDiningTableFormFactory;
@@ -48,7 +49,15 @@ final class DiningTablesPresenter extends BaseCompanyPresenter
 
     protected function createComponentAddDiningTableForm(): Form
     {
-        return $this->addDiningTableFormFactory->create($this->currentCompany);
+        $nextNumber = $this->getNextNumber();
+
+        $form = $this->addDiningTableFormFactory->create($this->currentCompany);
+
+        $form->setDefaults([
+            'number' => $nextNumber,
+        ]);
+
+        return $form;
     }
 
     protected function createComponentEditDiningTableForm(): Form
@@ -88,5 +97,22 @@ final class DiningTablesPresenter extends BaseCompanyPresenter
         };
 
         return $form;
+    }
+
+    private function getNextNumber(): int
+    {
+        $diningTables = $this->currentCompany->getDiningTables();
+
+        $highest = 0;
+
+        /** @var DiningTable $diningTable */
+        foreach ($diningTables as $diningTable) {
+            $number = $diningTable->getNumber();
+            if ($number > $highest) {
+                $highest = $number;
+            }
+        }
+
+        return $highest + 1;
     }
 }

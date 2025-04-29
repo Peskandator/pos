@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presenters\Admin;
 use App\Company\Enums\CompanyUserRoles;
 use App\Components\Breadcrumb\BreadcrumbItem;
+use App\Entity\Category;
 use App\Presenters\BaseCompanyPresenter;
 use App\Product\Action\DeleteCategoryAction;
 use App\Product\Forms\AddCategoryFormFactory;
@@ -47,7 +48,15 @@ final class CategoriesPresenter extends BaseCompanyPresenter
 
     protected function createComponentAddCategoryForm(): Form
     {
-        return $this->addCategoryFormFactory->create($this->currentCompany);
+        $nextCode = $this->getNextCode();
+
+        $form = $this->addCategoryFormFactory->create($this->currentCompany);
+
+        $form->setDefaults([
+            'code' => $nextCode,
+        ]);
+
+        return $form;
     }
 
     protected function createComponentEditCategoryForm(): Form
@@ -87,5 +96,22 @@ final class CategoriesPresenter extends BaseCompanyPresenter
         };
 
         return $form;
+    }
+
+    private function getNextCode(): int
+    {
+        $categories = $this->currentCompany->getCategories();
+
+        $highest = 0;
+
+        /** @var Category $categories */
+        foreach ($categories as $category) {
+            $code = $category->getCode();
+            if ($code > $highest) {
+                $highest = $code;
+            }
+        }
+
+        return $highest + 1;
     }
 }

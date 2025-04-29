@@ -45,7 +45,15 @@ final class ProductsPresenter extends BaseCompanyPresenter
 
     protected function createComponentAddProductForm(): Form
     {
-        return $this->addProductFormFactory->create($this->currentCompany, null);
+        $nextInventoryNumber = $this->getNextInventoryNumber();
+
+        $form = $this->addProductFormFactory->create($this->currentCompany, null);
+
+        $form->setDefaults([
+            'inventory_number' => $nextInventoryNumber,
+        ]);
+
+        return $form;
     }
 
     protected function createComponentDeleteProductForm(): Form
@@ -81,5 +89,22 @@ final class ProductsPresenter extends BaseCompanyPresenter
         };
 
         return $form;
+    }
+
+    private function getNextInventoryNumber(): int
+    {
+        $products = $this->currentCompany->getProducts();
+
+        $highest = 0;
+
+        /** @var Product $product */
+        foreach ($products as $product) {
+            $inventoryNumber = $product->getInventoryNumber();
+            if ($inventoryNumber > $highest) {
+                $highest = $inventoryNumber;
+            }
+        }
+
+        return $highest + 1;
     }
 }
