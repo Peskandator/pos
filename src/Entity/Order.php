@@ -42,11 +42,11 @@ class Order
      */
     private Collection $orderItems;
     /**
-     * @ORM\Column(name="creation_date", type="date", nullable=false)
+     * @ORM\Column(name="creation_date", type="datetime", nullable=false)
      */
     private \DateTimeInterface $creationDate;
     /**
-     * @ORM\Column(name="update_date", type="date", nullable=false)
+     * @ORM\Column(name="update_date", type="datetime", nullable=false)
      */
     private \DateTimeInterface $updateDate;
     /**
