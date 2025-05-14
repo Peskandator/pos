@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Sloupcovy graf trzeb za den
+    // Sloupcovy graf trzeb za časové období
     const salesChartEl = document.getElementById('salesChart');
     if (salesChartEl) {
         const labels = JSON.parse(salesChartEl.dataset.labels || '[]');
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Tržby za den',
+                    label: 'Tržby',
                     data: values,
                     backgroundColor: 'rgba(54, 162, 235, 0.75)',
                     borderRadius: 8,
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         type: 'category',
                         title: {
                             display: true,
-                            text: 'Den'
+                            text: 'Čas'
                         },
                         ticks: {
                             autoSkip: true,
