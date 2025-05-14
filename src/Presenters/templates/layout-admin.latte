@@ -1,9 +1,14 @@
 {layout @layout.latte}
 {block body}
-    <main class="d-flex flex-nowrap">
-        {control adminMenu, $currentCompany}
+    <div class="d-lg-none">
+        {control adminMenu, $currentCompany, 'mobile'}
+    </div>
 
-        <div class="main-content">
+    <main class="d-flex">
+        <div class="d-none d-lg-block">
+            {control adminMenu, $currentCompany, 'desktop'}
+        </div>
+        <div class="main-content flex-grow-1">
             <div class="opacity-10">
                 {control breadcrumb}
             </div>

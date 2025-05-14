@@ -1,15 +1,6 @@
 .sidebar {
     background-color: white;
-}
-
-.sidebar-mobile {
-    width: 50px;
-    background-color: white;
-}
-
-#offcanvas {
-    width: 240px;
-    background-color: white;
+    min-height: 100vh;
 }
 
 .item-active {
@@ -20,20 +11,8 @@
     background-color: #d2f4ea;
 }
 
-.sidebar-mobile {
-    display: none;
-}
-
-@media only screen and (max-width: 768px) {
-    .sidebar-mobile {
-        display: block;
-    }
+@media (max-width: 991.98px) {
     .sidebar {
-        display: none;
+        display: none !important;
     }
 }
-
-.hamburger-button {
-    padding: 0;
-}
-

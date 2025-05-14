@@ -1,23 +1,30 @@
 {define menuItems}
     {if isset($currentCompany) && $currentCompany !== null}
-        <a href="{plink :Admin:Dashboard:default}" class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
+        <a href="{plink :Admin:Dashboard:default}" class="d-none d-lg-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
             <span class="fs-5 fw-semibold sidebar-title">{$currentCompany->getName()}</span>
         </a>
         <ul class="list-unstyled ps-0 links">
-
             {var $counter = 0}
             {foreach $sections as $section}
                 {var $counter = $counter + 1}
                 {var $isActive = $section->isActive()}
                 {var $items = $section->getItems()}
                 <li class="mb-1">
-                    <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#menu-item-{$counter}" aria-expanded="true">
+                    <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#menu-item-{$counter}"
+                            aria-expanded="true">
                         {$section->getText()}
                     </button>
                     <div class="collapse show" id="menu-item-{$counter}">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                             {foreach $items as $item}
-                                <li><a href="{$item->getLink()}" class="link-body-emphasis d-inline-flex text-decoration-none rounded {if $item->isActive()}item-active{/if}">{$item->getText()}</a></li>
+                                <li>
+                                    <a href="{$item->getLink()}"
+                                       class="link-body-emphasis d-inline-flex text-decoration-none rounded {if $item->isActive()}item-active{/if}">
+                                        {$item->getText()}
+                                    </a>
+                                </li>
                             {/foreach}
                         </ul>
                     </div>
@@ -29,17 +36,23 @@
     <ul class="list-unstyled ps-0 links">
         <li class="mb-1">
             <div class="menu-signout d-flex flex-column">
-                <div class="">
-                    <a href="{$profileLink}" class="link-dark d-inline-flex text-decoration-none rounded{if $isProfileLinkActive === true} item-active{/if}">Profil</a>
+                <div>
+                    <a href="{$profileLink}" class="link-dark d-inline-flex text-decoration-none rounded{if $isProfileLinkActive === true} item-active{/if}">
+                        Profil
+                    </a>
                 </div>
-                <div class="">
-                    <a href="{$companiesLink[0]}" class="link-dark d-inline-flex text-decoration-none rounded{if $companiesLink[1] === true} item-active{/if}">Firmy</a>
+                <div>
+                    <a href="{$companiesLink[0]}" class="link-dark d-inline-flex text-decoration-none rounded{if $companiesLink[1] === true} item-active{/if}">
+                        Firmy
+                    </a>
                 </div>
             </div>
         </li>
         <li class="border-bottom my-3"></li>
     </ul>
     <div class="menu-signout links">
-        <a href="{$signOutLink}" class="link-dark d-inline-flex text-decoration-none rounded">Odhlásit se</a>
+        <a href="{$signOutLink}" class="link-dark d-inline-flex text-decoration-none rounded">
+            Odhlásit se
+        </a>
     </div>
 {/define}
