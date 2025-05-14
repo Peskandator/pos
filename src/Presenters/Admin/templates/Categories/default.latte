@@ -125,18 +125,18 @@
                                 <div class="form-errors" n:ifcontent>
                                     <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
                                 </div>
-                                <div class="row px-2 mb-3">
-                                    <div class="col-2">
+                                <div class="row g-3 align-items-end mb-3">
+                                    <div class="col-12 col-sm-2">
                                         <div class="form-group">
                                             <label for="categoryCode">Kód kategorie</label>
                                             <input n:name="code" type="number" class="form-control" id="categoryCode" min="1" max="999">
                                             <small class="form-error" n:ifcontent>{inputError code}</small>
                                         </div>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-12 col-sm-10">
                                         <div class="form-group">
                                             <label for="categoryName">Název</label>
-                                            <input n:name="name" type="text" class="form-control" id="categoryName">
+                                            <input n:name="name" type="text" class="form-control" id="categoryName" style="max-width: 500px;">
                                             <small class="form-error" n:ifcontent>{inputError name}</small>
                                         </div>
                                     </div>

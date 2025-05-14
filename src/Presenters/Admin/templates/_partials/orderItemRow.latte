@@ -1,32 +1,32 @@
 {define orderItemRow, $isTemplate, $orderItemOptions, $orderItem}
-    <div class="row pl-5 mt-2 mb-2 orderItemRow" style="margin-left: 1rem; {if $isTemplate}display: none{/if}">
-        <div class="col-4">
-            <div class="form-group">
-                <select class="form-select orderItemSelect">
-                    {if !$orderItem}
-                        <option value="0">Vyberte ...</option>
-                    {/if}
+    <div class="orderItemRow px-2 mb-3 {if $isTemplate}d-none{/if}">
+        <div class="bg-light rounded shadow-sm p-3 w-100" style="max-width: 800px;">
+            <div class="row g-3 align-items-center">
+                <div class="form-group col-12 col-md-6">
+                    <select class="form-select orderItemSelect">
+                        {if !$orderItem}
+                            <option value="0">Vyberte ...</option>
+                        {/if}
+                        {foreach $orderItemOptions as $option}
+                            <option value="{$option->getId()}"
+                                    {if $orderItem && $option->getId() === $orderItem->getProduct()->getId()} selected{/if}>
+                                {$option->getName()}
+                            </option>
+                        {/foreach}
+                    </select>
+                </div>
+                <div class="form-group col-12 col-md-6 d-flex align-items-center">
+                    <input type="number" step="1" min="0" max="1000000" placeholder="Množství" class="form-control orderItemQuantity me-2 flex-grow-1"
+                           {if $orderItem}value="{$orderItem->getQuantity()}"{/if}
+                    >
 
-                    {foreach $orderItemOptions as $option}
-                        <option value="{$option->getId()}"
-                                {if $orderItem && $option->getId() === $orderItem->getProduct()->getId()} selected{/if}>
-                            {$option->getName()}
-                        </option>
-                    {/foreach}
-                </select>
+                    <i class="fa-solid fa-trash text-danger icon deleteOrderItemButton"
+                       title="Odstranit"
+                       role="button"
+                       style="cursor: pointer; font-size: 1.25rem; flex-shrink: 0;"
+                    ></i>
+                </div>
             </div>
-        </div>
-        <div class="col-2">
-            <div class="form-group">
-                <input type="number" step="1" class="form-control orderItemQuantity" min="0" max="1000000" placeholder="Množství"
-                       {if $orderItem}value="{$orderItem->getQuantity()}"{/if}
-                >
-            </div>
-        </div>
-        <div class="col-1" style="align-content: center">
-            <i class="fa-solid fa-trash text-danger icon align-self-center deleteOrderItemButton"
-               title="Odstranit"
-            ></i>
         </div>
     </div>
 {/define}
