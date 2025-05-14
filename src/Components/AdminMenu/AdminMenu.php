@@ -17,11 +17,12 @@ class AdminMenu extends Control
         $this->currentUserManager = $currentUser;
     }
 
-    public function render(?Company $company)
+    public function render(?Company $company, string $mode = 'desktop'): void
     {
         $sections = $this->buildMenuItems($company);
         $this->template->currentCompany = $company;
         $this->template->sections = $sections;
+        $this->template->mode = $mode;
 
         $profileLink = $this->getPresenter()->lazyLink(':Admin:Profile:default');
         $companiesLink = $this->getPresenter()->lazyLink(':Admin:Companies:default');
@@ -32,17 +33,10 @@ class AdminMenu extends Control
             $profileLink->getParameters()
         );
 
-        $isCompaniesLinkActive = $this->getPresenter()->isLinkCurrent(
-                $companiesLink->getDestination(),
-                $companiesLink->getParameters()
-            )
-            || $this->getPresenter()->getName() === 'Admin:Companies'
-        ;
+        $isCompaniesLinkActive = $this->getPresenter()->isLinkCurrent($companiesLink->getDestination(), $companiesLink->getParameters())
+            || $this->getPresenter()->getName() === 'Admin:Companies';
 
-        $this->template->companiesLink = [
-            $companiesLink,
-            $isCompaniesLinkActive
-        ];
+        $this->template->companiesLink = [$companiesLink, $isCompaniesLinkActive];
         $this->template->signOutLink = $signOutLink;
         $this->template->setFile(__DIR__ . '/templates/menu.latte');
         $this->template->render();
