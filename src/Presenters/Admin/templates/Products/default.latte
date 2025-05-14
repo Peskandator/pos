@@ -122,14 +122,14 @@
                                         <div class="col-12 col-md-2" style="min-width: 140px;">
                                             <div class="form-group">
                                                 <label for="inventoryNumber">Inventární číslo</label>
-                                                <input n:name="inventory_number" type="number" class="form-control" id="inventoryNumber" min="1" max="9999999999" step="1">
+                                                <input n:name="inventory_number" type="number" maxlength="50" class="form-control" id="inventoryNumber" min="1" max="9999999999" step="1">
                                                 <small class="form-error" n:ifcontent>{inputError inventory_number}</small>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-5">
                                             <div class="form-group">
                                                 <label for="productName">Název</label>
-                                                <input n:name="name" type="text" class="form-control" id="productName">
+                                                <input n:name="name" type="text" maxlength="50" class="form-control" id="productName">
                                                 <small class="form-error" n:ifcontent>{inputError name}</small>
                                             </div>
                                         </div>
@@ -188,14 +188,14 @@
                                         <div class="col-12 col-md-4">
                                             <div class="form-group">
                                                 <label for="productManufacturer">Výrobce</label>
-                                                <input n:name="manufacturer" type="text" class="form-control" id="productManufacturer">
+                                                <input n:name="manufacturer" type="text" maxlength="50" class="form-control" id="productManufacturer">
                                                 <small class="form-error" n:ifcontent>{inputError manufacturer}</small>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-8">
                                             <div class="form-group">
                                                 <label for="productDescription">Popis</label>
-                                                <input n:name="description" type="text" class="form-control" id="productDescription" style="max-width: 500px;">
+                                                <input n:name="description" type="text" maxlength="50" class="form-control" id="productDescription" style="max-width: 500px;">
                                                 <small class="form-error" n:ifcontent>{inputError description}</small>
                                             </div>
                                         </div>
