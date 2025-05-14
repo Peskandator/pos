@@ -2,6 +2,14 @@ $(document).ready(function () {
     const currentCompanyId = window.currentCompanyId;
     const orderId = window.orderId;
 
+    const formatCZK = (value) => {
+        return new Intl.NumberFormat('cs-CZ', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
+    };
+
     function calculateSelectedAmount() {
         var total = 0;
         $("input[id^='quantities-']").each(function() {
@@ -25,7 +33,7 @@ $(document).ready(function () {
         var paymentMethod = $("#paymentMethod").val();
         if (paymentMethod === "qr") {
             var selectedAmount = calculateSelectedAmount();
-            $("#selectedAmount").text(selectedAmount);
+            $("#selectedAmount").text(formatCZK(selectedAmount));
             if (selectedAmount <= 0) {
                 $("#qrCodeContainer").hide();
                 return;
@@ -68,7 +76,7 @@ $(document).ready(function () {
 
     $(document).on("input", "input[id^='quantities-']", function() {
         var selectedAmount = calculateSelectedAmount();
-        $("#selectedAmount").text(selectedAmount);
+        $("#selectedAmount").text(formatCZK(selectedAmount));
         updatePaymentButtonState();
         updateQRCode();
     });
@@ -111,13 +119,13 @@ $(document).ready(function () {
                 const itemName = $(this).closest("tr").find("td:nth-child(2)").text();
 
                 $tableBody.append(`
-                                    <tr>
-                                        <td>${ itemName }</td>
-                                        <td>${ quantity }</td>
-                                        <td>${ price.toFixed(2) } Kč</td>
-                                        <td>${ total.toFixed(2) } Kč</td>
-                                    </tr>
-                                `);
+                    <tr>
+                        <td>${ itemName }</td>
+                        <td>${ quantity }</td>
+                        <td>${ formatCZK(price) } Kč</td>
+                        <td>${ formatCZK(total) } Kč</td>
+                    </tr>
+                `);
 
                 totalToPay += total;
             }
@@ -130,7 +138,7 @@ $(document).ready(function () {
 
         const paymentMethodText = $("#paymentMethod option:selected").text();
         $("#confirmPaymentMethod").text(paymentMethodText);
-        $("#selectedAmountModal").text(totalToPay.toFixed(2));
+        $("#selectedAmountModal").text(formatCZK(totalToPay));
 
         const paymentMethodValue = $("#paymentMethod").val();
         if (paymentMethodValue === "qr") {
