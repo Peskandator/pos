@@ -16,14 +16,18 @@
 
 <body>
 
-	{foreach $flashes as $flash}
-		<div class="alert alert-{$flash->type} alert-dismissible fade show flash-message flash-message-alert" role="alert">
-			<div class="flash-message-text">
-				{$flash->message}
+	<div class="flash-messages-container">
+		{foreach $flashes as $flash}
+			<div class="alert alert-{$flash->type} alert-dismissible fade show flash-message flash-message-alert" role="alert">
+				<div class="flash-message-inner">
+					<div class="flash-message-text">
+						{$flash->message}
+					</div>
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
 			</div>
-			<span type="button" class="close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></span>
-		</div>
-	{/foreach}
+		{/foreach}
+	</div>
 
 	{block body}
 		{block content}
