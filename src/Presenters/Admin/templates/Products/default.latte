@@ -117,60 +117,55 @@
                                     <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
                                 </div>
 
-                                <div class="px-2">
-                                    <div class="row mb-3">
-                                        <div class="col-3">
+                                <div class="container-fluid px-0">
+                                    <div class="row g-3 mb-2">
+                                        <div class="col-12 col-md-2" style="min-width: 140px;">
                                             <div class="form-group">
                                                 <label for="inventoryNumber">Inventární číslo</label>
                                                 <input n:name="inventory_number" type="number" class="form-control" id="inventoryNumber" min="1" max="9999999999" step="1">
                                                 <small class="form-error" n:ifcontent>{inputError inventory_number}</small>
                                             </div>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-12 col-md-5">
                                             <div class="form-group">
                                                 <label for="productName">Název</label>
                                                 <input n:name="name" type="text" class="form-control" id="productName">
                                                 <small class="form-error" n:ifcontent>{inputError name}</small>
                                             </div>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-12 col-md-4">
                                             <div class="form-group">
                                                 <label for="productCategory">Kategorie</label>
-                                                <select
-                                                        n:name="category"
-                                                        class="form-select"
-                                                        id="productCategory"
-                                                >
-                                                </select>
+                                                <select n:name="category" class="form-select" id="productCategory"></select>
                                                 <small class="form-error" n:ifcontent>{inputError category}</small>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <div class="col-3">
+                                    <div class="row g-3 mb-2">
+                                        <div class="col-12 col-md-2" style="min-width: 140px;">
                                             <div class="form-group">
                                                 <label for="productPrice">Cena</label>
                                                 <input n:name="price" type="number" step="0.01" class="form-control" id="productPrice" min="0" max="1000000000">
                                                 <small class="form-error" n:ifcontent>{inputError price}</small>
                                             </div>
                                         </div>
-                                        <div class="col-2">
+                                        <div class="col-6 col-md-2">
                                             <div class="form-group">
                                                 <label for="productVatRate">DPH</label>
                                                 <input n:name="vat_rate" type="number" step="1" class="form-control" id="productVatRate" min="0" max="100">
                                                 <small class="form-error" n:ifcontent>{inputError vat_rate}</small>
                                             </div>
                                         </div>
-                                        <div class="col-3">
+                                        <div class="col-6 col-md-3">
                                             <div class="form-group">
                                                 <label for="priceWithoutVat">Cena bez DPH</label>
                                                 <input type="number" class="form-control" id="priceWithoutVat" disabled>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mb-2">
-                                        <div class="col-2">
-                                            <div class="form-check">
+                                    <div class="row mb-3">
+                                        <div class="col-auto">
+                                            <div class="form-check mt-1">
                                                 <input n:name="is_group" class="form-check-input" type="checkbox" id="isGroupCheckbox">
                                                 <label n:name="is_group" class="form-check-label" for="isGroupCheckbox">
                                                     Skupina
@@ -189,18 +184,18 @@
                                             {include productInGroupRow, isTemplate: false, singleProductsOptions: $singleProductsOptions, productInGroup: null}
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <div class="col-4">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-12 col-md-4">
                                             <div class="form-group">
                                                 <label for="productManufacturer">Výrobce</label>
                                                 <input n:name="manufacturer" type="text" class="form-control" id="productManufacturer">
                                                 <small class="form-error" n:ifcontent>{inputError manufacturer}</small>
                                             </div>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-12 col-md-8">
                                             <div class="form-group">
                                                 <label for="productDescription">Popis</label>
-                                                <input n:name="description" type="text" class="form-control" id="productDescription">
+                                                <input n:name="description" type="text" class="form-control" id="productDescription" style="max-width: 500px;">
                                                 <small class="form-error" n:ifcontent>{inputError description}</small>
                                             </div>
                                         </div>
