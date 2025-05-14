@@ -1,67 +1,65 @@
-export default function() {
+export default function () {
     const selectorPrefix = '.js-page-order';
     if ($(selectorPrefix).length === 0) {
         return;
     }
 
     function addNewOrderItemRow() {
-        let firstOrderItemRow = $('.orderItemRow').first();
-        let newOrderItemRow = firstOrderItemRow.clone();
-        newOrderItemRow.show();
+        let templateRow = $('.orderItemRow.d-none').first();
+        let newOrderItemRow = templateRow.clone(false, false);
 
-        newOrderItemRow.find('.deleteOrderItemButton').click(function() {
-            deleteOrderItemRow($(this));
-        });
+        newOrderItemRow.removeClass('d-none');
+        newOrderItemRow.find('select.orderItemSelect').val("0");
+        newOrderItemRow.find('input.orderItemQuantity').val("");
+        newOrderItemRow.find('.is-invalid').removeClass('is-invalid');
+        newOrderItemRow.find('.form-error').remove();
 
-        newOrderItemRow.find('.orderItemSelect').change(function() {
-            shouldAddNewOrderItemRow();
-        });
-
-        newOrderItemRow.insertAfter("div.orderItemRow:last");
+        const lastRow = $('.orderItemRow:not(.d-none):last');
+        if (lastRow.length > 0) {
+            newOrderItemRow.insertAfter(lastRow);
+        } else {
+            $('#orderItemRows').append(newOrderItemRow);
+        }
     }
 
-    $('#addNextOrderItemButton').click(function() {
+    $('#addNextOrderItemButton').click(function () {
         addNewOrderItemRow();
     });
 
-    $('.orderItemSelect').change(function() {
+    $(document).on('click', '.deleteOrderItemButton', function () {
+        deleteOrderItemRow($(this));
+    });
+
+    $(document).on('change', '.orderItemSelect', function () {
         shouldAddNewOrderItemRow();
     });
 
     function shouldAddNewOrderItemRow() {
-        if ($('.orderItemSelect').filter(function() {
+        if ($('.orderItemSelect').filter(function () {
             return $(this).val() === "0";
         }).length < 2) {
             addNewOrderItemRow();
         }
     }
 
-
-    $('.deleteOrderItemButton').click(function() {
-        deleteOrderItemRow($(this));
-    });
-
     function deleteOrderItemRow(buttonElement) {
-        buttonElement.parent().parent().remove();
-        updateOrderItemsJson()
+        buttonElement.closest('.orderItemRow').remove();
+        updateOrderItemsJson();
     }
 
-    $('#js-order-form').submit(function() {
+    $('#js-order-form').submit(function () {
         updateOrderItemsJson();
     });
 
     function updateOrderItemsJson() {
         let jsonObj = [];
-        $('.orderItemRow').each(function() {
+        $('.orderItemRow:not(.d-none)').each(function () {
             let product = $(this).find('.orderItemSelect').val();
             let quantity = $(this).find('.orderItemQuantity').val();
 
-            let orderItems = {product: product, quantity: quantity};
-
-            jsonObj.push(orderItems);
+            jsonObj.push({ product, quantity });
         });
 
-        let jsonString = JSON.stringify(jsonObj);
-        $('#js-order-items-input').val(jsonString);
+        $('#js-order-items-input').val(JSON.stringify(jsonObj));
     }
 }

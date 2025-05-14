@@ -16,15 +16,15 @@
                                 <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger custom-alert">{$error}</div>
                             </div>
                             <div class="px-2">
-                                <div class="row mb-3">
-                                    <div class="col-3">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12 col-md-auto" style="max-width: 200px;">
                                         <div class="form-group">
                                             <label for="inventoryNumber">Inventární číslo</label>
                                             <input n:name="inventory_number" type="number" class="form-control" id="inventoryNumber" min="1" max="9999999999" step="1">
                                             <small class="form-error" n:ifcontent>{inputError inventory_number}</small>
                                         </div>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-12 col-md-5">
                                         <div class="form-group">
                                             <label for="diningTable">Stůl</label>
                                             <select n:name="dining_table" class="form-select" id="diningTable"></select>
@@ -33,24 +33,25 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <input n:name="order_items" id="js-order-items-input">
-                                    <small class="form-error" n:ifcontent>{inputError order_items}</small>
-                                    <label>Položky objednávky:</label>
-                                    <div id="orderItemsBox">
-                                        <a class="btn btn-primary rounded btn-sm mt-1" id="addNextOrderItemButton">Přidat další</a>
-                                        <div id="orderItemRows">
-                                            {include orderItemRow, isTemplate: true, orderItemOptions: $orderItemOptions, orderItem: null}
-                                             {foreach $order->getOrderItems() as $orderItem}
-                                                {include orderItemRow, isTemplate: false, orderItemOptions: $orderItemOptions, orderItem: $orderItem}
-                                            {/foreach}
-                                        </div>
+                                <input n:name="order_items" id="js-order-items-input">
+                                <small class="form-error" n:ifcontent>{inputError order_items}</small>
+
+                                <div id="orderItemsBox" class="mt-2 mb-2">
+                                    <div class="fw-bold mb-2">Položky objednávky:</div>
+                                    <div class="mb-3">
+                                        <a class="btn btn-primary rounded btn-sm" id="addNextOrderItemButton">Přidat další</a>
+                                    </div>
+                                    <div id="orderItemRows">
+                                        {include orderItemRow, isTemplate: true, orderItemOptions: $orderItemOptions, orderItem: null}
+                                        {foreach $order->getOrderItems() as $orderItem}
+                                            {include orderItemRow, isTemplate: false, orderItemOptions: $orderItemOptions, orderItem: $orderItem}
+                                        {/foreach}
                                     </div>
                                 </div>
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <label for="productDescription">Popis</label>
-                                        <input n:name="description" type="text" class="form-control" id="orderDescription">
+                                <div class="row g-3 mb-3">
+                                    <div class="form-group col-12">
+                                        <label for="orderDescription">Popis</label>
+                                        <input n:name="description" type="text" class="form-control" id="orderDescription" style="max-width: 800px;">
                                         <small class="form-error" n:ifcontent>{inputError description}</small>
                                     </div>
                                 </div>
