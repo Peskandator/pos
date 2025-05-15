@@ -1,3 +1,4 @@
+import './datatable-czech.js';
 import './tables.js';
 
 import category from './category.js';
