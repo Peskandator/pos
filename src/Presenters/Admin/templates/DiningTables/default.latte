@@ -19,7 +19,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="editTableDescription">Popis</label>
-                                <input n:name="description" type="text" class="form-control js-edit-dining-table-description" id="editTableDescription">
+                                <input n:name="description" type="text" maxlength="100" class="form-control js-edit-dining-table-description" id="editTableDescription">
                                 <small class="form-error" n:ifcontent>{inputError description}</small>
                             </div>
                         </div>
@@ -137,7 +137,7 @@
                                     <div class="col-12 col-sm-10">
                                         <div class="form-group">
                                             <label for="tableDescription">Popis</label>
-                                            <input n:name="description" type="text" class="form-control" id="tableDescription" style="max-width: 500px;">
+                                            <input n:name="description" type="text" maxlength="100" class="form-control" id="tableDescription" style="max-width: 500px;">
                                             <small class="form-error" n:ifcontent>{inputError description}</small>
                                         </div>
                                     </div>

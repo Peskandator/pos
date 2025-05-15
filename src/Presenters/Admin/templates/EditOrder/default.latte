@@ -51,7 +51,7 @@
                                 <div class="row g-3 mb-3">
                                     <div class="form-group col-12">
                                         <label for="orderDescription">Popis</label>
-                                        <input n:name="description" type="text" class="form-control" id="orderDescription" style="max-width: 800px;">
+                                        <input n:name="description" type="text" maxlength="255" class="form-control" id="orderDescription" style="max-width: 800px;">
                                         <small class="form-error" n:ifcontent>{inputError description}</small>
                                     </div>
                                 </div>
